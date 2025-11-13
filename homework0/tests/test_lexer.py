@@ -15,7 +15,7 @@ def build():
     if any(p.exists() and os.access(p, os.X_OK) for p in BIN_CANDIDATES):
         return
     print('Building with make part1...')
-    res = subprocess.run(['make', 'part1'], cwd=ROOT, capture_output=True, text=True)
+    res = subprocess.run(['make', 'part1'], cwd=str(ROOT), stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
     if res.returncode != 0:
         print(res.stdout)
         print(res.stderr, file=sys.stderr)
@@ -30,7 +30,7 @@ def find_binary():
 
 
 def run_lexer_on_text(binary, text: str):
-    proc = subprocess.run([binary], input=text, text=True, capture_output=True)
+    proc = subprocess.run([binary], input=text, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
     return proc.returncode, proc.stdout, proc.stderr
 
 
@@ -71,9 +71,9 @@ def main():
             if not assert_equal(out, expected, label):
                 failures += 1
         else:
-            print(f'WARN  {label}: no expected file found, skipping compare')
+            print('WARN  {}: no expected file found, skipping compare'.format(label))
 
-    # Negative test: 06_error.cmm should produce lexical error and non-zero rc
+    # Negative test: 06_error.cmm should  produce lexical error and non-zero rc
     err_inp = INPUT_DIR / '06_error.cmm'
     if err_inp.exists():
         rc, out, err = run_lexer_on_file(binary, err_inp)
@@ -91,7 +91,7 @@ def main():
             print('PASS  06_error.cmm (error handling)')
 
     if failures:
-        print(f"\n{failures} test(s) failed.")
+        print("\n{} test(s) failed.".format(failures))
         sys.exit(1)
     else:
         print('\nAll tests passed.')
