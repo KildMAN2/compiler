@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h> /* for strlen used in string token processing */
+extern FILE *yyin; /* allow feeding lexer from files */
 int line_number = 1;
 %}
 
@@ -88,7 +89,24 @@ str         \"([^\"\\]|\\.)*\"
 
 %%
 
-int main() {
-    yylex();
+int main(int argc, char **argv) {
+    if (argc == 1) {
+        /* No files passed: read from stdin */
+        yylex();
+        return 0;
+    }
+
+    /* One or more files passed: process each sequentially */
+    for (int i = 1; i < argc; ++i) {
+        FILE *f = fopen(argv[i], "r");
+        if (!f) {
+            fprintf(stderr, "Error: cannot open %s\n", argv[i]);
+            return 1;
+        }
+        yyin = f;
+        line_number = 1; /* reset line counter per file */
+        yylex();
+        fclose(f);
+    }
     return 0;
 }
