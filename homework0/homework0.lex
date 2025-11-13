@@ -73,8 +73,8 @@ str         \"([^\"\\]|\\.)*\"
 "||"        { printf("<or,||>"); }
 "!"         { printf("<not,!>"); }
 
-    /* Comments - ignore everything from # to end of line */
-^#.*        { /* Ignore full-line comments starting with # */ }
+    /* Comments - ignore everything from # to end of line (not including CR/LF) */
+#[^\r\n]*    { /* Ignore comments anywhere on the line; # inside strings is matched by {str} */ }
 
     /* Whitespace - pass through unchanged */
 [ \t]       { printf("%s", yytext); }
