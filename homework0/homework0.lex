@@ -1,6 +1,7 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h> /* for strlen used in string token processing */
 int line_number = 1;
 %}
 
@@ -72,7 +73,7 @@ str         \"([^\"\\]|\\.)*\"
 "!"         { printf("<not,!>"); }
 
     /* Comments - ignore everything from # to end of line */
-"#".*       { /* Ignore comments */ }
+^#.*        { /* Ignore full-line comments starting with # */ }
 
     /* Whitespace - pass through unchanged */
 [ \t]       { printf("%s", yytext); }
