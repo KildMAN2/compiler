@@ -1,0 +1,4 @@
+int main(){
+	x=1; y=2.5; write "hi"; # trailing comment
+	if(x>=1 && y<=3.14 || !doit) { read z; } else { return; }
+}

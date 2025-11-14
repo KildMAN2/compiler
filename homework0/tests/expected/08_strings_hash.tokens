@@ -1,0 +1,3 @@
+<write> <str,abc#def>; 
+
+<write> <str,#notcomment>;

@@ -92,6 +92,53 @@ def main():
         else:
             print('PASS  06_error.cmm (error handling)')
 
+    # Stress test: generate ~1000-line complex input and ensure lexer completes
+    stress_inp = INPUT_DIR / '10_stress_large.cmm'
+    if not stress_inp.exists():
+        # Generate a large input with varying patterns per line
+        try:
+            INPUT_DIR.mkdir(parents=True)
+        except Exception:
+            pass
+        lines = []
+        # Build 1000 lines with mixed tokens, comments, strings, and spacing
+        for i in range(1, 1001):
+            if i % 5 == 0:
+                # Compact conditional without spaces
+                lines.append('if(x<=%d&&y>=%d||!flag){write"L%d";}#c' % (i, i//2 + 1, i))
+            elif i % 5 == 1:
+                # Assignment with spaces and trailing comment
+                lines.append('int v%d; v%d=%d; # line %d' % (i, i, i, i))
+            elif i % 5 == 2:
+                # Real numbers and add/mul ops
+                lines.append('sum=sum+%d.%d*2;' % (i % 13, i % 7))
+            elif i % 5 == 3:
+                # String with escapes and hash in content
+                lines.append('write "row\"%d\"#tag\n";' % i)
+            else:
+                # Mixed symbols only line
+                lines.append('(){} ,;:')
+        data = '\n'.join(lines) + '\n'
+        with open(str(stress_inp), 'w') as f:
+            f.write(data)
+
+    rc, out, err = run_lexer_on_file(binary, stress_inp)
+    if rc != 0:
+        print('--- FAIL: 10_stress_large.cmm returned non-zero exit code')
+        failures += 1
+    else:
+        # Basic sanity on size and presence of representative tokens
+        ok = True
+        if out.count('\n') < 1000:
+            print('--- FAIL: 10_stress_large.cmm output too short (lines=%d)' % out.count('\n'))
+            ok = False
+        for needle in ['<if>', '<write>', '<assign,=>', '<relop,<=>', '<relop,>=>', '<or,||>', '<and,&&>']:
+            if needle not in out:
+                print('--- FAIL: 10_stress_large.cmm missing token', needle)
+                ok = False
+        if ok:
+            print('PASS  10_stress_large.cmm (stress)')
+
     if failures:
         print("\n{} test(s) failed.".format(failures))
         sys.exit(1)

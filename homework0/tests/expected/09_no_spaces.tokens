@@ -1,0 +1,1 @@
+<if>(<id,x><relop,==><integernum,1>){<write><str,ok>;}<else>{<write><str,no>;}

@@ -6,7 +6,7 @@ This is a compiler course homework implementing a lexical analyzer (lexer/scanne
 ## Build and Run Workflow
 ```bash
 # Build the lexer (generates lex.yy.c and compiles to homework0 executable)
-make part1
+make homework0
 
 # Run on input (redirect or pipe input)
 ./homework0 < input.txt
