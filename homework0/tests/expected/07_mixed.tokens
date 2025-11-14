@@ -1,4 +1,4 @@
 <int> <id,main>(){
 	<id,x><assign,=><integernum,1>; <id,y><assign,=><realnum,2.5>; <write> <str,hi>; 
-	<if>(<id,x><relop,>=><integernum,1> <and,&&> <id,y><relop,<=>><realnum,3.14> <or,||> <not,!><id,doit>) { <read> <id,z>; } <else> { <return>; }
+	<if>(<id,x><relop,>=><integernum,1> <and,&&> <id,y><relop,<=><realnum,3.14> <or,||> <not,!><id,doit>) { <read> <id,z>; } <else> { <return>; }
 }
