@@ -83,7 +83,7 @@ str         \"([^\"\\]|\\.)*\"
 
     /* Error handling */
 .           { 
-              printf("Lexical error: '%s' in line number %d\n", yytext, line_number);
+              printf("\nLexical error: '%s' in line number %d\n", yytext, line_number);
               exit(1);
             }
 
