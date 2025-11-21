@@ -51,9 +51,6 @@ str         \"([^\"\\]|\\.)*\"
               printf(">");
             }
 
-    /* Unterminated string (newline before closing quote) */
-"([^"\\\n]|\\.)*\n        { printf("Lexical error: '\"' in line number %d\n", line_number); exit(1); }
-
     /* Relational operators */
 "=="        { printf("<relop,==>"); }
 "<>"        { printf("<relop,<>>"); }
