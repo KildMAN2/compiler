@@ -1,0 +1,14 @@
+<id,a><relop,==><id,b>
+<id,a><relop,<>><id,b>
+<id,a><relop,<><id,b>
+<id,a><relop,<=><id,b>
+<id,a><relop,>><id,b>
+<id,a><relop,>=><id,b>
+<id,a><addop,+><id,b>
+<id,a><addop,-><id,b>
+<id,a><mulop,*><id,b>
+<id,a><mulop,/><id,b>
+<id,a><assign,=><id,b>
+<id,a><and,&&><id,b>
+<id,a><or,||><id,b>
+<not,!><id,a>

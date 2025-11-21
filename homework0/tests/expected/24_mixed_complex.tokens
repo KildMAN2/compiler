@@ -1,0 +1,17 @@
+<int> <id,main>(){
+<float> <id,x><assign,=><realnum,3.14>;
+<float> <id,y><assign,=><realnum,2.71>;
+<if>(<id,x><relop,>><id,y>){
+<write> <str,x is greater\n>;
+}<else>{
+<write> <str,y is greater\n>;
+}
+<int> <id,i><assign,=><integernum,0>;
+<while>(<id,i><relop,<><integernum,10>){
+<if>(<id,i><relop,==><integernum,5>){
+<write> <str,halfway\n>;
+}
+<id,i><assign,=><id,i><addop,+><integernum,1>;
+}
+<return>;
+}

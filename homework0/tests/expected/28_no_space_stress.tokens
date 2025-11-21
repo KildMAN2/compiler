@@ -1,0 +1,1 @@
+<int> <id,x>(){<if>(<id,a><relop,==><id,b><and,&&><id,c><relop,<>><id,d><or,||><id,e><relop,<><id,f><and,&&><id,g><relop,<=><id,h><or,||><id,i><relop,>><id,j><and,&&><id,k><relop,>=><id,l>){<id,x><assign,=><id,y><addop,+><id,z><addop,-><id,a><mulop,*><id,b><mulop,/><id,c>;<return>;}}

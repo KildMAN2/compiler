@@ -1,0 +1,10 @@
+#comment at start
+int a;#comment after code
+#comment with symbols (){}[]<>=+-*/
+#comment with reserved words int float void
+a=1;#
+a=2;##double hash
+a=3;###triple
+   #indented comment
+	#tab comment
+a=4;
