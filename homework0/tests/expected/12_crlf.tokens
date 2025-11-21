@@ -1,0 +1,4 @@
+<int> <id,x><assign,=><integernum,1>;
+<write> <str,line1\nline2>;
+
+<float> <id,y><assign,=><realnum,3.5>;

@@ -92,6 +92,22 @@ def main():
         else:
             print('PASS  06_error.cmm (error handling)')
 
+    # Negative test: 13_unterminated_string.cmm should produce lexical error for unterminated string
+    unterm_inp = INPUT_DIR / '13_unterminated_string.cmm'
+    if unterm_inp.exists():
+        rc, out, err = run_lexer_on_file(binary, unterm_inp)
+        if rc == 0:
+            print('--- FAIL: 13_unterminated_string.cmm expected non-zero exit code')
+            failures += 1
+        needle = "Lexical error: '\"' in line number 1"
+        if needle not in out:
+            print('--- FAIL: 13_unterminated_string.cmm missing error line')
+            print('Output:')
+            print(out)
+            failures += 1
+        else:
+            print('PASS  13_unterminated_string.cmm (unterminated string)')
+
     # Stress test: generate ~1000-line complex input and ensure lexer completes
     stress_inp = INPUT_DIR / '10_stress_large.cmm'
     if not stress_inp.exists():

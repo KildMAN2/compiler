@@ -1,0 +1,4 @@
+int x=1;
+write "line1\nline2";
+# comment after tokens
+float y=3.5;
