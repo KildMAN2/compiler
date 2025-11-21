@@ -1,6 +1,9 @@
 
 <int> <id,a>;
 
+
+<int> <id,a>;
+
 <id,a><assign,=><integernum,1>;
 <id,a><assign,=><integernum,2>;
 <id,a><assign,=><integernum,3>;
