@@ -2,11 +2,11 @@ CC = gcc
 CFLAGS = -Wall -g
 LEX = flex
 
-part1: homework0.lex
-	$(LEX) -o lex.yy.c homework0.lex
-	$(CC) $(CFLAGS) -o homework0 lex.yy.c -lfl
+part1: part1.lex
+	$(LEX) -o lex.yy.c part1.lex
+	$(CC) $(CFLAGS) -o part1 lex.yy.c -lfl
 
 clean:
-	rm -f homework0 lex.yy.c
+	rm -f part1 lex.yy.c
 
 .PHONY: clean
