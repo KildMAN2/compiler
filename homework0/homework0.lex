@@ -8,6 +8,7 @@ int line_number = 1;
 
 %option noyywrap
 
+
 /* Macro definitions for regular expressions */
 id          [a-zA-Z][a-zA-Z0-9_]*
 integernum  [0-9]+
