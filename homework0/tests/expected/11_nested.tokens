@@ -1,9 +1,9 @@
 <int> <id,outer> {
     <int> <id,inner> {
         <id,x><assign,=><integernum,1>; <id,y><assign,=><integernum,2>; <id,z><assign,=><integernum,3>;
-        <if>(<id,x><relop,<>><id,y> <and,&&> <id,y><relop,<>><id,z>) { <write> <str,nested>; }
+        <if>(<id,x><relop,<><id,y> <and,&&> <id,y><relop,<><id,z>) { <write> <str,nested>; }
         <else> { <write> <str,flat>; }
     }
-    <while>(<id,x><relop,<>><integernum,10>){ <id,x> <assign,=> <id,x> <addop,+> <integernum,1>; }
+    <while>(<id,x><relop,<><integernum,10>){ <id,x> <assign,=> <id,x> <addop,+> <integernum,1>; }
     <return>;
 }
