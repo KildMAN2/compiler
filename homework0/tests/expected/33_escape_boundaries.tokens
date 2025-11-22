@@ -6,5 +6,5 @@
 <write> <str,\\both\\>;
 <write> <str,\"\">;
 <write> <str,\\\\>;
-<write> <str,\"\\\"\\">;
+<write> <str,\"\\\"\\>;
 <write> <str,\"\"\"\"\"\"\"\"\"\">;
