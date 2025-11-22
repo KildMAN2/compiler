@@ -1,0 +1,10 @@
+write "\"start";
+write "end\"";
+write "\"both\"";
+write "\\start";
+write "end\\";
+write "\\both\\";
+write "\"\"";
+write "\\\\";
+write "\"\\\"\\";
+write "\"\"\"\"\"\"\"\"\"\"";

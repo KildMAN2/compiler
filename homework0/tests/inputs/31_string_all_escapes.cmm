@@ -1,0 +1,10 @@
+write "valid: \" \\ \n \t";
+write "invalid: \q \r \0 \a \x \v \?";
+write "mixed: \"quote\" \\slash\\ \nline\n \ttab\t";
+write "edge: \\\" \"\\";
+write "single: \"";
+write "single: \\";
+write "single: \n";
+write "single: \t";
+write "combo: \t\n\"\\all";
+write "invalid: \u \b \f \' \1 \2 \9";

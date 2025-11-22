@@ -1,0 +1,10 @@
+<write> <str,valid: \" \\ \n \t>;
+<write> <str,invalid: \q \r \0 \a \x \v \?>;
+<write> <str,mixed: \"quote\" \\slash\\ \nline\n \ttab\t>;
+<write> <str,edge: \\\" \"\\">;
+<write> <str,single: \">;
+<write> <str,single: \\>;
+<write> <str,single: \n>;
+<write> <str,single: \t>;
+<write> <str,combo: \t\n\"\\all>;
+<write> <str,invalid: \u \b \f \' \1 \2 \9>;
