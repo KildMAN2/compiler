@@ -45,6 +45,16 @@ str         \"([^\"\\]|\\[nt\"])*\"
 {realnum}   { printf("<realnum,%s>", yytext); }
 {str}       { 
               int len = strlen(yytext);
+              /* Check for invalid escape sequences */
+              for (int i = 1; i < len - 1; i++) {
+                  if (yytext[i] == '\\' && i + 1 < len - 1) {
+                      char next = yytext[i + 1];
+                      if (next != 'n' && next != 't' && next != '"') {
+                          printf("\nLexical error: '\\%c' in line number %d\n", next, line_number);
+                          exit(1);
+                      }
+                  }
+              }
               printf("<str,");
               for (int i = 1; i < len - 1; i++) {
                   printf("%c", yytext[i]);
