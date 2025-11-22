@@ -13,7 +13,7 @@ int line_number = 1;
 id          [a-zA-Z][a-zA-Z0-9_]*
 integernum  [0-9]+
 realnum     [0-9]+\.[0-9]+
-str         \"([^\"\\]|\\.)*\"
+str         \"([^\"\\\n]|\\[nt\"])*\"
 
 %%
 

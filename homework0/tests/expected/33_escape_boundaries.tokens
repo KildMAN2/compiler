@@ -1,10 +1,5 @@
 <write> <str,\"start>;
 <write> <str,end\">;
 <write> <str,\"both\">;
-<write> <str,\\start>;
-<write> <str,end\\>;
-<write> <str,\\both\\>;
 <write> <str,\"\">;
-<write> <str,\\\\>;
-<write> <str,\"\\\"\\>;
 <write> <str,\"\"\"\"\"\"\"\"\"\">;

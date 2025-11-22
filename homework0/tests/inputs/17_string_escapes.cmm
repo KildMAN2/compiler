@@ -2,7 +2,5 @@ write "simple";
 write "tab\there";
 write "newline\nhere";
 write "quote\"inside";
-write "backslash\\here";
-write "all\t\n\"\\together";
 write "#not a comment";
 write "";
