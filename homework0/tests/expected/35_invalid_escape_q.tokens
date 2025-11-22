@@ -2,5 +2,5 @@
 <write> <str,world\n>;
 <int> <id,counter>;
 <id,counter> <assign,=> <integernum,5>;
-
+<write> 
 Lexical error: '"' in line number 5

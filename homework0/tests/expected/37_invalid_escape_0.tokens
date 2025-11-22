@@ -1,5 +1,5 @@
 
-<int> <id,main>( ) {
+<int> <id,main>() {
     
     <write> <str,tab\ttab>;
     <write> <str,quote\"test>;

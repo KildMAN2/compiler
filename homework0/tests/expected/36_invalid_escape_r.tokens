@@ -1,7 +1,7 @@
-<void> <id,function>( ) {
+<void> <id,function>() {
     <int> <id,x>;
     <float> <id,y>;
     <id,x> <assign,=> <integernum,10>;
-    <if> ( <id,x> <relop,==> <integernum,10> ) <then>
+    <if> (<id,x> <relop,==> <integernum,10>) <then>
         <write> 
 Lexical error: '"' in line number 6

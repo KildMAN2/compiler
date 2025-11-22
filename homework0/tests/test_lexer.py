@@ -134,7 +134,7 @@ def main():
                 lines.append('sum=sum+%d.%d*2;' % (i % 13, i % 7))
             elif i % 5 == 3:
                 # String with escapes and hash in content
-                lines.append('write "row\"%d\"#tag\n";' % i)
+                lines.append('write "row\\"%d\\"#tag\\n";' % i)
             else:
                 # Mixed symbols only line
                 lines.append('(){} ,;:')

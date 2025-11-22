@@ -4,14 +4,5 @@
 <str,\t>
 <str,\n>
 <str,\">
-<str,\\>
-<str,a>
-<str,ab>
-<str,abc>
-<str,#>
-<str,##>
-<str,#comment inside string>
-<str,(){},:;>
-<str,<>=+-*/>
-<str,int float void>
-<str,mixed 123 abc !@#>
+
+Lexical error: '"' in line number 7

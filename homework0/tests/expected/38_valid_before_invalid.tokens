@@ -4,7 +4,7 @@
 <write> <str,quote\"inside>;
 <id,x> <assign,=> <integernum,42>;
 <id,ratio> <assign,=> <realnum,3.14>;
-<while> ( <id,x> <relop,>> <integernum,0> ) <do> {
+<while> (<id,x> <relop,>> <integernum,0>) <do> {
     <write> <str,newline\ntest>;
     <id,x> <assign,=> <id,x> <addop,-> <integernum,1>;
     <write> 
