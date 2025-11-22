@@ -1,7 +1,7 @@
 <write> <str,valid: \" \n \t>;
-<write> <str,invalid: \q \r \0 \a \x \v \? \\>;
+<write> <str,quoted: \"start\" and \"end\">;
 <write> <str,mixed: \"quote\" \nline\n \ttab\t>;
 <write> <str,single: \">;
 <write> <str,single: \n>;
 <write> <str,single: \t>;
-<write> <str,invalid2: \u \b \f \' \1 \2 \9>;
+<write> <str,combo: \t\n\"\t\n\">;

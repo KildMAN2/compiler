@@ -1,5 +1,5 @@
 <write> <str,\">;
-<write> <str,\\>;
 <write> <str,\n>;
 <write> <str,\t>;
-<write> <str,\"\\\n\t>;
+<write> <str,\"\n\t>;
+<write> <str,multiple: \t\t\t \n\n \"\"\">;

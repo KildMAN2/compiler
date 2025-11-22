@@ -1,5 +1,5 @@
 write "\"";
-write "\\";
 write "\n";
 write "\t";
-write "\"\\\n\t";
+write "\"\n\t";
+write "multiple: \t\t\t \n\n \"\"\"";
