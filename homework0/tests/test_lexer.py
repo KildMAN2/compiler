@@ -70,6 +70,10 @@ def main():
         rc, out, err = run_lexer_on_file(binary, inp)
         if exp.exists():
             expected = exp.read_text()
+            # Check if expected output contains error (should have non-zero exit code)
+            if 'Lexical error:' in expected and rc == 0:
+                print('--- FAIL: {} expected non-zero exit code for lexical error'.format(label))
+                failures += 1
             if not assert_equal(out, expected, label):
                 failures += 1
         else:

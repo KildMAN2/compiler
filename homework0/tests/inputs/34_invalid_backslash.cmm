@@ -1,0 +1,5 @@
+int x;
+float y;
+write "valid string";
+write "path\\file";
+write "another";

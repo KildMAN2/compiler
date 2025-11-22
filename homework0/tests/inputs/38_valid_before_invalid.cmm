@@ -1,0 +1,12 @@
+int x;
+float ratio;
+write "valid\ttab";
+write "quote\"inside";
+x = 42;
+ratio = 3.14;
+while (x > 0) do {
+    write "newline\ntest";
+    x = x - 1;
+    write "invalid\\backslash";
+}
+write "unreachable";
