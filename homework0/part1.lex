@@ -1,3 +1,9 @@
+/*
+ * Compilation Course - Homework 0
+ * Lexical Analyzer for C-- Language
+ * Student IDs: 322449539, 323885350
+ */
+
 %{
 #include <stdio.h>
 #include <stdlib.h>
