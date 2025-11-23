@@ -6,18 +6,18 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 # Keep Path objects for filesystem ops, but maintain string versions for os.* calls (Python 3.5)
-BIN_CANDIDATE_PATHS = [ROOT / 'homework0']
+BIN_CANDIDATE_PATHS = [ROOT / 'part1', ROOT / 'homework0']
 BIN_CANDIDATES = [str(p) for p in BIN_CANDIDATE_PATHS]
 INPUT_DIR = ROOT / 'tests' / 'inputs'
 EXPECTED_DIR = ROOT / 'tests' / 'expected'
 
 
 def build():
-    # Build only if binary missing; prefer 'homework0' as makefile target
+    # Build only if binary missing; prefer 'part1' as makefile target
     if any(os.path.exists(p) and os.access(p, os.X_OK) for p in BIN_CANDIDATES):
         return
-    print('Building with make homework0...')
-    res = subprocess.run(['make', 'homework0'], cwd=str(ROOT), stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+    print('Building with make part1...')
+    res = subprocess.run(['make', 'part1'], cwd=str(ROOT), stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
     if res.returncode != 0:
         print(res.stdout)
         print(res.stderr, file=sys.stderr)
@@ -59,7 +59,7 @@ def main():
     build()
     binary = find_binary()
     if not binary:
-        raise SystemExit('No lexer binary found (homework0). Build failed?')
+        raise SystemExit('No lexer binary found (part1 or homework0). Build failed?')
 
     failures = 0
 
