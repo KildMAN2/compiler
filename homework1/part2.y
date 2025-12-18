@@ -77,7 +77,8 @@ FDEFS:
     }
     | /* empty */
     {
-        $$ = makeNode("EPSILON", NULL, NULL);
+        ParserNode *epsilon = makeNode("EPSILON", NULL, NULL);
+        $$ = makeNode("FDEFS", NULL, epsilon);
     }
     ;
 
@@ -184,7 +185,8 @@ STLIST:
     }
     | /* empty */
     {
-        $$ = makeNode("EPSILON", NULL, NULL);
+        ParserNode *epsilon = makeNode("EPSILON", NULL, NULL);
+        $$ = makeNode("STLIST", NULL, epsilon);
     }
     ;
 
