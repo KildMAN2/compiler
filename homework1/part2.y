@@ -85,7 +85,8 @@ FUNC_DEC_API:
     TYPE ID LPAREN RPAREN SEMICOLON
     {
         ParserNode *type = makeNode("TYPE", NULL, $1);
-        $$ = type;
+        ParserNode *funcDecApi = makeNode("FUNC_DEC_API", NULL, type);
+        $$ = funcDecApi;
         type->sibling = $2;
         $2->sibling = $3;
         $3->sibling = $4;
@@ -95,7 +96,8 @@ FUNC_DEC_API:
     {
         ParserNode *type = makeNode("TYPE", NULL, $1);
         ParserNode *arglist = makeNode("FUNC_ARGLIST", NULL, $4);
-        $$ = type;
+        ParserNode *funcDecApi = makeNode("FUNC_DEC_API", NULL, type);
+        $$ = funcDecApi;
         type->sibling = $2;
         $2->sibling = $3;
         $3->sibling = arglist;
@@ -108,7 +110,8 @@ FUNC_DEF_API:
     TYPE ID LPAREN RPAREN
     {
         ParserNode *type = makeNode("TYPE", NULL, $1);
-        $$ = type;
+        ParserNode *funcDefApi = makeNode("FUNC_DEF_API", NULL, type);
+        $$ = funcDefApi;
         type->sibling = $2;
         $2->sibling = $3;
         $3->sibling = $4;
@@ -117,7 +120,8 @@ FUNC_DEF_API:
     {
         ParserNode *type = makeNode("TYPE", NULL, $1);
         ParserNode *arglist = makeNode("FUNC_ARGLIST", NULL, $4);
-        $$ = type;
+        ParserNode *funcDefApi = makeNode("FUNC_DEF_API", NULL, type);
+        $$ = funcDefApi;
         type->sibling = $2;
         $2->sibling = $3;
         $3->sibling = arglist;
@@ -342,9 +346,11 @@ BEXP:
     }
     | EXP RELOP EXP
     {
-        $$ = makeNode("BEXP", NULL, $1);
-        $1->sibling = $2;
-        $2->sibling = $3;
+        ParserNode *exp1 = makeNode("EXP", NULL, $1);
+        ParserNode *exp2 = makeNode("EXP", NULL, $3);
+        $$ = makeNode("BEXP", NULL, exp1);
+        exp1->sibling = $2;
+        $2->sibling = exp2;
     }
     | LPAREN BEXP RPAREN
     {
