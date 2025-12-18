@@ -65,17 +65,15 @@ FDEFS:
     FDEFS FUNC_DEF_API BLK
     {
         ParserNode *fdefs_inner = makeNode("FDEFS", NULL, $1);
-        ParserNode *funcDefApi = makeNode("FUNC_DEF_API", NULL, $2);
-        $$ = makeNode("FDEFS", NULL, fdefs_inner);
-        fdefs_inner->sibling = funcDefApi;
-        funcDefApi->sibling = $3;
+        $$ = fdefs_inner;
+        $1->sibling = $2;
+        $2->sibling = $3;
     }
     | FDEFS FUNC_DEC_API
     {
         ParserNode *fdefs_inner = makeNode("FDEFS", NULL, $1);
-        ParserNode *funcDecApi = makeNode("FUNC_DEC_API", NULL, $2);
-        $$ = makeNode("FDEFS", NULL, fdefs_inner);
-        fdefs_inner->sibling = funcDecApi;
+        $$ = fdefs_inner;
+        $1->sibling = $2;
     }
     | /* empty */
     {
@@ -177,8 +175,8 @@ STLIST:
     STLIST STMT
     {
         ParserNode *stlist_inner = makeNode("STLIST", NULL, $1);
-        $$ = makeNode("STLIST", NULL, stlist_inner);
-        stlist_inner->sibling = $2;
+        $$ = stlist_inner;
+        $1->sibling = $2;
     }
     | /* empty */
     {
@@ -389,15 +387,15 @@ EXP:
     }
     | ID    
     { 
-        $$ = $1; 
+        $$ = makeNode("EXP", NULL, $1); 
     }
     | NUM   
     { 
-        $$ = $1; 
+        $$ = makeNode("EXP", NULL, $1); 
     }
     | CALL  
     { 
-        $$ = $1; 
+        $$ = makeNode("EXP", NULL, $1); 
     }
     ;
 
