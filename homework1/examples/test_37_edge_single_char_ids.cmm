@@ -1,4 +1,4 @@
-/* Test: Single character identifiers */
+# Test: Single character identifiers
 void main() {
     a:int;
     b:int;

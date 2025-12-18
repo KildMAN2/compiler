@@ -1,4 +1,4 @@
-/* Test: Deeply nested blocks */
+# Test: Deeply nested blocks
 void main() {
     {
         {

@@ -1,4 +1,4 @@
-/* Test: Zero values */
+# Test: Zero values
 void main() {
     x:int;
     y:float;

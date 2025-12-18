@@ -1,4 +1,4 @@
-/* Test: All arithmetic and boolean operators */
+# Test: All arithmetic and boolean operators
 void main() {
     a:int;
     b:int;

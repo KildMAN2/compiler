@@ -1,4 +1,4 @@
-/* Error: Missing function body */
+# Error: Missing function body
 void test() 
 
 void main() {

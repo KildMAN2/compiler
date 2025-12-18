@@ -1,4 +1,4 @@
-/* Test: Boolean NOT operations */
+# Test: Boolean NOT operations
 void main() {
     x:int;
     

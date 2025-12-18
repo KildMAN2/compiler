@@ -1,4 +1,4 @@
-/* Error: Missing type in function declaration */
+# Error: Missing type in function declaration
 foo(x:int);
 
 void main() {

@@ -1,4 +1,4 @@
-/* Test: Function calls with mixed positional and named arguments */
+# Test: Function calls with mixed positional and named arguments
 int compute(a:int, b:int, c:int) {
     return a + b * c;
 }

@@ -1,4 +1,4 @@
-/* Error: Missing then keyword in if statement */
+# Error: Missing then keyword in if statement
 void main() {
     x:int;
     if x > 0 x = 1;

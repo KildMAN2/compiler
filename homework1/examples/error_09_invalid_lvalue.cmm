@@ -1,4 +1,4 @@
-/* Error: Invalid assignment target */
+# Error: Invalid assignment target
 void main() {
     123 = x;
 }

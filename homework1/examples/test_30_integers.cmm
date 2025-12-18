@@ -1,4 +1,4 @@
-/* Test: Integer literals */
+# Test: Integer literals
 void main() {
     x:int;
     

@@ -1,4 +1,4 @@
-/* Test: While loops */
+# Test: While loops
 void main() {
     i:int;
     

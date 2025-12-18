@@ -1,4 +1,4 @@
-/* Test: Parenthesized boolean expressions */
+# Test: Parenthesized boolean expressions
 void main() {
     x:int;
     y:int;

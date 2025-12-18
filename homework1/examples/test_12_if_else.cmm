@@ -1,4 +1,4 @@
-/* Test: If-then-else */
+# Test: If-then-else
 void main() {
     x:int;
     y:int;

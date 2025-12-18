@@ -1,4 +1,4 @@
-/* Test: Various identifier names */
+# Test: Various identifier names
 void main() {
     a:int;
     abc:int;

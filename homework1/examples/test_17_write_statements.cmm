@@ -1,4 +1,4 @@
-/* Test: Write statements */
+# Test: Write statements
 void main() {
     x:int;
     

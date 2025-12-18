@@ -1,2 +1,2 @@
-/* Test: Single function declaration only */
+# Test: Single function declaration only
 void foo();

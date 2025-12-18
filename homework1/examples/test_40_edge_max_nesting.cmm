@@ -1,4 +1,4 @@
-/* Test: Maximum nesting depth */
+# Test: Maximum nesting depth
 void main() {
     if 1 > 0 then {
         if 1 > 0 then {

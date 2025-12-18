@@ -1,4 +1,4 @@
-/* Test: Long sequence of statements */
+# Test: Long sequence of statements
 void main() {
     a:int;
     b:int;

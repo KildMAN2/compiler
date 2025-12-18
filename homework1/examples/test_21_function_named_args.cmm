@@ -1,4 +1,4 @@
-/* Test: Function calls with named arguments only */
+# Test: Function calls with named arguments only
 int subtract(a:int, b:int) {
     return a - b;
 }

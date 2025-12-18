@@ -1,4 +1,4 @@
-/* Test: Complex boolean expressions */
+# Test: Complex boolean expressions
 void main() {
     a:int;
     b:int;

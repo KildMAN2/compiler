@@ -1,4 +1,4 @@
-/* Error: Missing colon in declaration */
+# Error: Missing colon in declaration
 void main() {
     x int;
 }

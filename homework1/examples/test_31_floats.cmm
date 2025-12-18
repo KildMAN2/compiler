@@ -1,4 +1,4 @@
-/* Test: Float literals */
+# Test: Float literals
 void main() {
     f:float;
     

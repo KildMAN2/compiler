@@ -1,4 +1,4 @@
-/* Test: Read statements */
+# Test: Read statements
 void main() {
     x:int;
     y:float;

@@ -1,4 +1,4 @@
-/* Test: Long identifier names */
+# Test: Long identifier names
 void main() {
     very_long_variable_name_that_is_descriptive:int;
     anotherVeryLongNameWithCamelCase:float;

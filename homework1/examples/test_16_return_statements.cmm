@@ -1,4 +1,4 @@
-/* Test: Return statements */
+# Test: Return statements
 int getValue() {
     return 42;
 }

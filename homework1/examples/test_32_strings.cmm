@@ -1,4 +1,4 @@
-/* Test: String literals */
+# Test: String literals
 void main() {
     write("");
     write("Hello");

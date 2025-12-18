@@ -1,4 +1,4 @@
-/* Test: Mix of declarations and definitions */
+# Test: Mix of declarations and definitions
 int helper(x:int);
 
 int compute(a:int, b:int) {

@@ -1,4 +1,4 @@
-/* Error: Missing semicolon after declaration */
+# Error: Missing semicolon after declaration
 void main() {
     x:int
     y:int;

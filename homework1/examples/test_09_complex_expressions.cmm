@@ -1,4 +1,4 @@
-/* Test: Complex nested expressions */
+# Test: Complex nested expressions
 void main() {
     x:int;
     

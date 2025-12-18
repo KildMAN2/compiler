@@ -1,4 +1,4 @@
-/* Test: Empty blocks in various contexts */
+# Test: Empty blocks in various contexts
 void main() {
     if 1 > 0 then {
     }

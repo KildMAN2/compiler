@@ -1,4 +1,4 @@
-/* Test: If-then without else */
+# Test: If-then without else
 void main() {
     x:int;
     

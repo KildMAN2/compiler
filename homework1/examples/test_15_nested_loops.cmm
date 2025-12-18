@@ -1,4 +1,4 @@
-/* Test: Nested while loops */
+# Test: Nested while loops
 void main() {
     i:int;
     j:int;

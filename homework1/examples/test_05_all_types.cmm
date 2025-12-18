@@ -1,4 +1,4 @@
-/* Test: All variable types */
+# Test: All variable types
 void main() {
     x:int;
     y:float;

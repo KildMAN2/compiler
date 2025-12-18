@@ -1,4 +1,4 @@
-/* Test: Operator precedence */
+# Test: Operator precedence
 void main() {
     result:int;
     

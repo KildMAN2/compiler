@@ -1,4 +1,4 @@
-/* Test: Boolean OR operations */
+# Test: Boolean OR operations
 void main() {
     x:int;
     y:int;

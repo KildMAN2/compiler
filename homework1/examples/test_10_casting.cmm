@@ -1,4 +1,4 @@
-/* Test: Type casting */
+# Test: Type casting
 void main() {
     i:int;
     f:float;

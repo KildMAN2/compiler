@@ -1,4 +1,4 @@
-/* Test: Function calls with no arguments */
+# Test: Function calls with no arguments
 void helper() {
     write("Helper called");
 }

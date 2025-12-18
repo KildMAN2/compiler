@@ -1,4 +1,4 @@
-/* Test: Function calls within expressions */
+# Test: Function calls within expressions
 int getValue() {
     return 10;
 }

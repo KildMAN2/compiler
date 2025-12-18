@@ -1,4 +1,4 @@
-/* Error: Missing condition in if statement */
+# Error: Missing condition in if statement
 void main() {
     if then write("Error");
 }

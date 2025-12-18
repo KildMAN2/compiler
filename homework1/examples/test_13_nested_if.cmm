@@ -1,4 +1,4 @@
-/* Test: Nested if statements */
+# Test: Nested if statements
 void main() {
     x:int;
     y:int;

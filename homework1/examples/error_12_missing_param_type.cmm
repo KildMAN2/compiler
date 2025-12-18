@@ -1,4 +1,4 @@
-/* Error: Missing parameter type */
+# Error: Missing parameter type
 void foo(x) {
 }
 
