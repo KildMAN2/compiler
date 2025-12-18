@@ -417,36 +417,31 @@ CALL:
     {
         $$ = makeNode("CALL", NULL, $1);
         $1->sibling = $2;
-        if ($3 != NULL) {
-            $2->sibling = $3;
-            ParserNode *last = $3;
-            while (last->sibling != NULL) last = last->sibling;
-            last->sibling = $4;
-        } else {
-            $2->sibling = $4;
-        }
+        $2->sibling = $3;
+        ParserNode *last = $3;
+        while (last->sibling != NULL) last = last->sibling;
+        last->sibling = $4;
     }
     ;
 
 CALL_ARGS:
     /* empty */
     {
-        $$ = NULL;
+        ParserNode *epsilon = makeNode("EPSILON", NULL, NULL);
+        $$ = makeNode("CALL_ARGS", NULL, epsilon);
     }
     | POS_ARGLIST
     {
-        $$ = $1;
+        $$ = makeNode("CALL_ARGS", NULL, $1);
     }
     | NAMED_ARGLIST
     {
-        $$ = $1;
+        $$ = makeNode("CALL_ARGS", NULL, $1);
     }
     | POS_ARGLIST COMMA NAMED_ARGLIST
     {
-        $$ = $1;
-        ParserNode *last = $1;
-        while (last->sibling != NULL) last = last->sibling;
-        last->sibling = $2;
+        $$ = makeNode("CALL_ARGS", NULL, $1);
+        $1->sibling = $2;
         $2->sibling = $3;
     }
     ;
@@ -454,7 +449,7 @@ CALL_ARGS:
 POS_ARGLIST:
     EXP
     {
-        $$ = $1;
+        $$ = makeNode("POS_ARGLIST", NULL, $1);
     }
     | POS_ARGLIST COMMA EXP
     {
@@ -469,7 +464,7 @@ POS_ARGLIST:
 NAMED_ARGLIST:
     NAMED_ARG
     {
-        $$ = $1;
+        $$ = makeNode("NAMED_ARGLIST", NULL, $1);
     }
     | NAMED_ARGLIST COMMA NAMED_ARG
     {
