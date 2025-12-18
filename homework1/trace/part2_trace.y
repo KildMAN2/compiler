@@ -37,6 +37,42 @@ void trace_sibling_link(const char *from, const char *to) {
     fprintf(trace_file, "  Action: Linking sibling %s -> %s\n", from, to);
 }
 
+void print_tree_indented(FILE *f, ParserNode *node, int indent, const char *prefix) {
+    if (node == NULL) return;
+    
+    for (int i = 0; i < indent; i++) fprintf(f, "  ");
+    fprintf(f, "%s", prefix);
+    
+    if (node->type != NULL && node->value != NULL) {
+        fprintf(f, "[%s: %s]\n", node->type, node->value);
+    } else if (node->type != NULL) {
+        fprintf(f, "[%s]\n", node->type);
+    } else if (node->value != NULL) {
+        fprintf(f, "[%s]\n", node->value);
+    } else {
+        fprintf(f, "[NULL]\n");
+    }
+    
+    // Print child
+    if (node->child != NULL) {
+        print_tree_indented(f, node->child, indent + 1, "↓ child: ");
+    }
+    
+    // Print sibling
+    if (node->sibling != NULL) {
+        print_tree_indented(f, node->sibling, indent, "→ sibling: ");
+    }
+}
+
+void trace_tree_state(ParserNode *result) {
+    fprintf(trace_file, "  Tree after this reduction:\n");
+    if (result == NULL) {
+        fprintf(trace_file, "    (NULL)\n");
+    } else {
+        print_tree_indented(trace_file, result, 2, "");
+    }
+}
+
 void yyerror(const char *s);
 %}
 
@@ -73,6 +109,7 @@ PROGRAM:
         $$ = makeNode("PROGRAM", NULL, $1);
         parseTree = $$;
         fprintf(trace_file, "  Result: Parse tree root created and stored in 'parseTree'\n");
+        trace_tree_state($$);
     }
     ;
 
@@ -88,6 +125,7 @@ FDEFS:
         trace_sibling_link("FUNC_DEF_API", "BLK");
         fdefs_inner->sibling = funcDefApi;
         funcDefApi->sibling = $3;
+        trace_tree_state($$);
     }
     | FDEFS FUNC_DEC_API
     {
@@ -96,12 +134,14 @@ FDEFS:
         ParserNode *funcDecApi = makeNode("FUNC_DEC_API", NULL, $2);
         $$ = makeNode("FDEFS", NULL, fdefs_inner);
         fdefs_inner->sibling = funcDecApi;
+        trace_tree_state($$);
     }
     | /* empty */
     {
         trace_reduction("FDEFS", "epsilon", "Empty function list (base case)");
         trace_node_creation("EPSILON", NULL);
         $$ = makeNode("EPSILON", NULL, NULL);
+        trace_tree_state($$);
     }
     ;
 
@@ -117,6 +157,7 @@ FUNC_DEC_API:
         $4->sibling = $5;
         trace_node_creation("TYPE", NULL);
         trace_sibling_link("TYPE", "ID");
+        trace_tree_state($$);
     }
     | TYPE ID LPAREN FUNC_ARGLIST RPAREN SEMICOLON
     {
@@ -128,6 +169,7 @@ FUNC_DEC_API:
         $3->sibling = $4;
         $4->sibling = $5;
         $5->sibling = $6;
+        trace_tree_state($$);
     }
     ;
 
@@ -140,6 +182,7 @@ FUNC_DEF_API:
         type->sibling = $2;
         $2->sibling = $3;
         $3->sibling = $4;
+        trace_tree_state($$);
     }
     | TYPE ID LPAREN FUNC_ARGLIST RPAREN
     {
@@ -150,6 +193,7 @@ FUNC_DEF_API:
         $2->sibling = $3;
         $3->sibling = $4;
         $4->sibling = $5;
+        trace_tree_state($$);
     }
     ;
 
@@ -161,11 +205,13 @@ FUNC_ARGLIST:
         $$ = arglist;
         $1->sibling = $2;
         $2->sibling = $3;
+        trace_tree_state($$);
     }
     | DCL
     {
         trace_reduction("FUNC_ARGLIST", "DCL", "First argument in list");
         $$ = $1;
+        trace_tree_state($$);
     }
     ;
 
@@ -177,6 +223,7 @@ BLK:
         $$ = makeNode("BLK", NULL, $1);
         $1->sibling = $2;
         $2->sibling = $3;
+        trace_tree_state($$);
     }
     ;
 
@@ -189,6 +236,7 @@ DCL:
         $1->sibling = $2;
         $2->sibling = type;
         trace_node_creation("DCL", NULL);
+        trace_tree_state($$);
     }
     | ID COMMA DCL
     {
@@ -196,21 +244,25 @@ DCL:
         $$ = makeNode("DCL", NULL, $1);
         $1->sibling = $2;
         $2->sibling = $3;
+        trace_tree_state($$);
     }
     ;
 
 TYPE:
     INT     { 
         trace_reduction("TYPE", "int", "Integer type");
-        $$ = $1; 
+        $$ = $1;
+        trace_tree_state($$);
     }
     | FLOAT { 
         trace_reduction("TYPE", "float", "Float type");
-        $$ = $1; 
+        $$ = $1;
+        trace_tree_state($$);
     }
     | VOID  { 
         trace_reduction("TYPE", "void", "Void type");
-        $$ = $1; 
+        $$ = $1;
+        trace_tree_state($$);
     }
     ;
 
@@ -221,11 +273,13 @@ STLIST:
         ParserNode *stlist_inner = makeNode("STLIST", NULL, $1);
         $$ = makeNode("STLIST", NULL, stlist_inner);
         stlist_inner->sibling = $2;
+        trace_tree_state($$);
     }
     | /* empty */
     {
         trace_reduction("STLIST", "epsilon", "Empty statement list");
         $$ = makeNode("EPSILON", NULL, NULL);
+        trace_tree_state($$);
     }
     ;
 
@@ -237,11 +291,13 @@ STMT:
         ParserNode *last = $1;
         while (last->sibling != NULL) last = last->sibling;
         last->sibling = $2;
+        trace_tree_state($$);
     }
     | ASSN          
     { 
         trace_reduction("STMT", "ASSN", "Assignment statement");
-        $$ = makeNode("STMT", NULL, $1); 
+        $$ = makeNode("STMT", NULL, $1);
+        trace_tree_state($$);
     }
     | EXP SEMICOLON 
     {
@@ -250,31 +306,37 @@ STMT:
         ParserNode *last = $1;
         while (last->sibling != NULL) last = last->sibling;
         last->sibling = $2;
+        trace_tree_state($$);
     }
     | CNTRL         
     { 
         trace_reduction("STMT", "CNTRL", "Control flow statement");
-        $$ = makeNode("STMT", NULL, $1); 
+        $$ = makeNode("STMT", NULL, $1);
+        trace_tree_state($$);
     }
     | READ_STMT     
     { 
         trace_reduction("STMT", "READ_STMT", "Read statement");
-        $$ = makeNode("STMT", NULL, $1); 
+        $$ = makeNode("STMT", NULL, $1);
+        trace_tree_state($$);
     }
     | WRITE_STMT    
     { 
         trace_reduction("STMT", "WRITE_STMT", "Write statement");
-        $$ = makeNode("STMT", NULL, $1); 
+        $$ = makeNode("STMT", NULL, $1);
+        trace_tree_state($$);
     }
     | RETURN_STMT        
     { 
         trace_reduction("STMT", "RETURN_STMT", "Return statement");
-        $$ = makeNode("STMT", NULL, $1); 
+        $$ = makeNode("STMT", NULL, $1);
+        trace_tree_state($$);
     }
     | BLK           
     { 
         trace_reduction("STMT", "BLK", "Block statement");
-        $$ = makeNode("STMT", NULL, $1); 
+        $$ = makeNode("STMT", NULL, $1);
+        trace_tree_state($$);
     }
     ;
 
@@ -287,12 +349,14 @@ RETURN_STMT:
         ParserNode *last = $2;
         while (last->sibling != NULL) last = last->sibling;
         last->sibling = $3;
+        trace_tree_state($$);
     }
     | RETURN SEMICOLON
     {
         trace_reduction("RETURN_STMT", "return ;", "Return without value");
         $$ = makeNode("RETURN", NULL, $1);
         $1->sibling = $2;
+        trace_tree_state($$);
     }
     ;
 
@@ -307,6 +371,7 @@ WRITE_STMT:
         while (last->sibling != NULL) last = last->sibling;
         last->sibling = $4;
         $4->sibling = $5;
+        trace_tree_state($$);
     }
     | WRITE LPAREN STR RPAREN SEMICOLON
     {
@@ -316,6 +381,7 @@ WRITE_STMT:
         $2->sibling = $3;
         $3->sibling = $4;
         $4->sibling = $5;
+        trace_tree_state($$);
     }
     ;
 
@@ -330,6 +396,7 @@ READ_STMT:
         while (last->sibling != NULL) last = last->sibling;
         last->sibling = $4;
         $4->sibling = $5;
+        trace_tree_state($$);
     }
     ;
 
@@ -346,6 +413,7 @@ ASSN:
         last = $3;
         while (last->sibling != NULL) last = last->sibling;
         last->sibling = $4;
+        trace_tree_state($$);
     }
     ;
 
@@ -353,7 +421,8 @@ LVAL:
     ID 
     { 
         trace_reduction("LVAL", "ID", "Left-value (variable)");
-        $$ = makeNode("LVAL", NULL, $1); 
+        $$ = makeNode("LVAL", NULL, $1);
+        trace_tree_state($$);
     }
     ;
 
@@ -367,6 +436,7 @@ CNTRL:
         $3->sibling = $4;
         $4->sibling = $5;
         $5->sibling = $6;
+        trace_tree_state($$);
     }
     | IF BEXP THEN STMT
     {
@@ -375,6 +445,7 @@ CNTRL:
         $1->sibling = $2;
         $2->sibling = $3;
         $3->sibling = $4;
+        trace_tree_state($$);
     }
     | WHILE BEXP DO STMT
     {
@@ -383,6 +454,7 @@ CNTRL:
         $1->sibling = $2;
         $2->sibling = $3;
         $3->sibling = $4;
+        trace_tree_state($$);
     }
     ;
 
@@ -393,6 +465,7 @@ BEXP:
         $$ = makeNode("BEXP", NULL, $1);
         $1->sibling = $2;
         $2->sibling = $3;
+        trace_tree_state($$);
     }
     | BEXP AND BEXP
     {
@@ -400,12 +473,14 @@ BEXP:
         $$ = makeNode("BEXP", NULL, $1);
         $1->sibling = $2;
         $2->sibling = $3;
+        trace_tree_state($$);
     }
     | NOT BEXP
     {
         trace_reduction("BEXP", "! BEXP", "Logical NOT");
         $$ = makeNode("BEXP", NULL, $1);
         $1->sibling = $2;
+        trace_tree_state($$);
     }
     | EXP RELOP EXP
     {
@@ -413,6 +488,7 @@ BEXP:
         $$ = makeNode("BEXP", NULL, $1);
         $1->sibling = $2;
         $2->sibling = $3;
+        trace_tree_state($$);
     }
     | LPAREN BEXP RPAREN
     {
@@ -420,6 +496,7 @@ BEXP:
         $$ = makeNode("BEXP", NULL, $1);
         $1->sibling = $2;
         $2->sibling = $3;
+        trace_tree_state($$);
     }
     ;
 
@@ -430,6 +507,7 @@ EXP:
         $$ = makeNode("EXP", NULL, $1);
         $1->sibling = $2;
         $2->sibling = $3;
+        trace_tree_state($$);
     }
     | EXP MULOP EXP
     {
@@ -437,6 +515,7 @@ EXP:
         $$ = makeNode("EXP", NULL, $1);
         $1->sibling = $2;
         $2->sibling = $3;
+        trace_tree_state($$);
     }
     | LPAREN EXP RPAREN
     {
@@ -444,6 +523,7 @@ EXP:
         $$ = makeNode("EXP", NULL, $1);
         $1->sibling = $2;
         $2->sibling = $3;
+        trace_tree_state($$);
     }
     | LPAREN TYPE RPAREN EXP %prec CAST
     {
@@ -453,21 +533,25 @@ EXP:
         $1->sibling = type;
         type->sibling = $3;
         $3->sibling = $4;
+        trace_tree_state($$);
     }
     | ID    
     { 
         trace_reduction("EXP", "ID", "Identifier expression");
-        $$ = $1; 
+        $$ = $1;
+        trace_tree_state($$);
     }
     | NUM   
     { 
         trace_reduction("EXP", "NUM", "Number expression");
-        $$ = $1; 
+        $$ = $1;
+        trace_tree_state($$);
     }
     | CALL  
     { 
         trace_reduction("EXP", "CALL", "Function call expression");
-        $$ = $1; 
+        $$ = $1;
+        trace_tree_state($$);
     }
     ;
 
@@ -475,12 +559,14 @@ NUM:
     INTEGERNUM  
     { 
         trace_reduction("NUM", "INTEGERNUM", "Integer number");
-        $$ = makeNode("NUM", NULL, $1); 
+        $$ = makeNode("NUM", NULL, $1);
+        trace_tree_state($$);
     }
     | REALNUM   
     { 
         trace_reduction("NUM", "REALNUM", "Real number");
-        $$ = makeNode("NUM", NULL, $1); 
+        $$ = makeNode("NUM", NULL, $1);
+        trace_tree_state($$);
     }
     ;
 
@@ -498,6 +584,7 @@ CALL:
         } else {
             $2->sibling = $4;
         }
+        trace_tree_state($$);
     }
     ;
 
@@ -506,16 +593,19 @@ CALL_ARGS:
     {
         trace_reduction("CALL_ARGS", "epsilon", "No arguments");
         $$ = NULL;
+        trace_tree_state($$);
     }
     | POS_ARGLIST
     {
         trace_reduction("CALL_ARGS", "POS_ARGLIST", "Positional arguments");
         $$ = $1;
+        trace_tree_state($$);
     }
     | NAMED_ARGLIST
     {
         trace_reduction("CALL_ARGS", "NAMED_ARGLIST", "Named arguments");
         $$ = $1;
+        trace_tree_state($$);
     }
     | POS_ARGLIST COMMA NAMED_ARGLIST
     {
@@ -525,6 +615,7 @@ CALL_ARGS:
         while (last->sibling != NULL) last = last->sibling;
         last->sibling = $2;
         $2->sibling = $3;
+        trace_tree_state($$);
     }
     ;
 
@@ -533,6 +624,7 @@ POS_ARGLIST:
     {
         trace_reduction("POS_ARGLIST", "EXP", "Single positional argument");
         $$ = $1;
+        trace_tree_state($$);
     }
     | POS_ARGLIST COMMA EXP
     {
@@ -542,6 +634,7 @@ POS_ARGLIST:
         while (last->sibling != NULL) last = last->sibling;
         last->sibling = $2;
         $2->sibling = $3;
+        trace_tree_state($$);
     }
     ;
 
@@ -550,6 +643,7 @@ NAMED_ARGLIST:
     {
         trace_reduction("NAMED_ARGLIST", "NAMED_ARG", "Single named argument");
         $$ = $1;
+        trace_tree_state($$);
     }
     | NAMED_ARGLIST COMMA NAMED_ARG
     {
@@ -559,6 +653,7 @@ NAMED_ARGLIST:
         while (last->sibling != NULL) last = last->sibling;
         last->sibling = $2;
         $2->sibling = $3;
+        trace_tree_state($$);
     }
     ;
 
@@ -569,6 +664,7 @@ NAMED_ARG:
         $$ = makeNode("NAMED_ARG", NULL, $1);
         $1->sibling = $2;
         $2->sibling = $3;
+        trace_tree_state($$);
     }
     ;
 
