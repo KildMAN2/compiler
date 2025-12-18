@@ -1,6 +1,15 @@
 # Tracing Parser - Learning Tool
 
+## ✅ **UPDATED** - Now synchronized with working parser!
+
 This is a special version of the parser that prints **detailed trace information** showing every step of lexical analysis and parsing.
+
+**All parser fixes applied:**
+- ✅ FUNC_DEC_API and FUNC_DEF_API wrapper nodes
+- ✅ FUNC_ARGLIST wrapper for parameters
+- ✅ EPSILON wrapping in FDEFS/STLIST
+- ✅ CALL_ARGS, POS_ARGLIST, NAMED_ARGLIST wrappers
+- ✅ Proper EXP node structure
 
 ## 📁 Files
 
