@@ -1,0 +1,10 @@
+/* Test: Function calls with positional arguments only */
+int add(a:int, b:int) {
+    return a + b;
+}
+
+void main() {
+    result:int;
+    result = add(5, 10);
+    result = add(1, 2);
+}

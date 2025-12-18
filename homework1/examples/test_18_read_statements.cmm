@@ -1,0 +1,8 @@
+/* Test: Read statements */
+void main() {
+    x:int;
+    y:float;
+    
+    read(x);
+    read(y);
+}

@@ -1,0 +1,5 @@
+/* Error: Invalid operator sequence */
+void main() {
+    x:int;
+    x = 1 ++ 2;
+}

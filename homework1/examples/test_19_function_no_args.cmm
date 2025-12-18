@@ -1,0 +1,8 @@
+/* Test: Function calls with no arguments */
+void helper() {
+    write("Helper called");
+}
+
+void main() {
+    helper();
+}

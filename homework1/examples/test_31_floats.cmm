@@ -1,0 +1,9 @@
+/* Test: Float literals */
+void main() {
+    f:float;
+    
+    f = 0.0;
+    f = 3.14;
+    f = 123.456;
+    f = 0.001;
+}

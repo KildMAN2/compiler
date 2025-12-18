@@ -1,0 +1,9 @@
+/* Test: Type casting */
+void main() {
+    i:int;
+    f:float;
+    
+    i = (int)3.14;
+    f = (float)42;
+    i = (int)((float)i + (float)10);
+}

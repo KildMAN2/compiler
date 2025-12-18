@@ -1,0 +1,5 @@
+/* Error: Missing do keyword in while loop */
+void main() {
+    x:int;
+    while x < 10 x = x + 1;
+}

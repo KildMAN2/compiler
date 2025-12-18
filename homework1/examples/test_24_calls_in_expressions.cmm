@@ -1,0 +1,12 @@
+/* Test: Function calls within expressions */
+int getValue() {
+    return 10;
+}
+
+void main() {
+    x:int;
+    
+    x = getValue() + 5;
+    x = getValue() * getValue();
+    x = (int)((float)getValue() / 2.0);
+}

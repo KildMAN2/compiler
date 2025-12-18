@@ -1,0 +1,13 @@
+/* Test: While loops */
+void main() {
+    i:int;
+    
+    i = 0;
+    while i < 10 do
+        i = i + 1;
+    
+    while i > 0 do {
+        write(i);
+        i = i - 1;
+    }
+}

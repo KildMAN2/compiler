@@ -1,0 +1,9 @@
+/* Test: Write statements */
+void main() {
+    x:int;
+    
+    write("Hello World");
+    write(x);
+    write("Value: ");
+    write(x + 10);
+}

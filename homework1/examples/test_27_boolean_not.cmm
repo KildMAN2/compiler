@@ -1,0 +1,10 @@
+/* Test: Boolean NOT operations */
+void main() {
+    x:int;
+    
+    if not x > 0 then
+        write("Not positive");
+        
+    if not (x > 0 and x < 10) then
+        write("Out of range");
+}

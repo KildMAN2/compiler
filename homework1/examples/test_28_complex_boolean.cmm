@@ -1,0 +1,12 @@
+/* Test: Complex boolean expressions */
+void main() {
+    a:int;
+    b:int;
+    c:int;
+    
+    if (a > 0 and b > 0) or (c < 0) then
+        write("Complex condition 1");
+        
+    if not (a == b) and (b <> c or a <= c) then
+        write("Complex condition 2");
+}

@@ -1,0 +1,9 @@
+/* Test: Parenthesized boolean expressions */
+void main() {
+    x:int;
+    y:int;
+    
+    if (x > 0) then write("Yes");
+    if ((x > 0)) then write("Yes");
+    if (((x > 0) and (y > 0))) then write("Both");
+}

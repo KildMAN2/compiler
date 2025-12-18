@@ -1,0 +1,9 @@
+/* Test: Function calls with named arguments only */
+int subtract(a:int, b:int) {
+    return a - b;
+}
+
+void main() {
+    result:int;
+    result = subtract(b:5, a:10);
+}

@@ -1,0 +1,7 @@
+/* Test: String literals */
+void main() {
+    write("");
+    write("Hello");
+    write("Hello World!");
+    write("Special chars: \n\t\"\\");
+}

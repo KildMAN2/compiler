@@ -1,0 +1,6 @@
+/* Error: Extra comma in parameter list */
+void foo(x:int, , y:int) {
+}
+
+void main() {
+}

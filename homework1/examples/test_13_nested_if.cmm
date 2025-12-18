@@ -1,0 +1,17 @@
+/* Test: Nested if statements */
+void main() {
+    x:int;
+    y:int;
+    z:int;
+    
+    if x > 0 then
+        if y > 0 then
+            if z > 0 then
+                x = 1;
+            else
+                x = 2;
+        else
+            x = 3;
+    else
+        x = 4;
+}

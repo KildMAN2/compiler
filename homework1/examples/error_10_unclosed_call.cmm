@@ -1,0 +1,5 @@
+/* Error: Unclosed function call */
+void main() {
+    x:int;
+    x = foo(1, 2;
+}

@@ -1,0 +1,7 @@
+/* Error: Missing expression in return */
+int foo() {
+    return ;
+}
+
+void main() {
+}

@@ -1,0 +1,7 @@
+/* Test: Complex nested expressions */
+void main() {
+    x:int;
+    
+    x = ((1 + 2) * (3 - 4)) / ((5 + 6) - (7 * 8));
+    x = (int)((float)x + 1.5);
+}

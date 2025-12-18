@@ -1,0 +1,6 @@
+/* Error: Missing parameter type */
+void foo(x) {
+}
+
+void main() {
+}

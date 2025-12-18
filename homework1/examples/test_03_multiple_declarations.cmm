@@ -1,0 +1,4 @@
+/* Test: Multiple function declarations */
+int add(a:int, b:int);
+float multiply(x:float, y:float);
+void print();

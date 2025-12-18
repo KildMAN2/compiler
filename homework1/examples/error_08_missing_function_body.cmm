@@ -1,0 +1,5 @@
+/* Error: Missing function body */
+void test() 
+
+void main() {
+}

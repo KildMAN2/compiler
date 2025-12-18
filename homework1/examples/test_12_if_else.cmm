@@ -1,0 +1,16 @@
+/* Test: If-then-else */
+void main() {
+    x:int;
+    y:int;
+    
+    if x > y then 
+        x = 1;
+    else
+        y = 1;
+        
+    if x == 0 then {
+        x = 10;
+    } else {
+        x = 20;
+    }
+}

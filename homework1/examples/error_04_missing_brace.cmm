@@ -1,0 +1,4 @@
+/* Error: Missing closing brace */
+void main() {
+    x:int;
+    x = 1;

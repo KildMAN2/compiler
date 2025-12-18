@@ -1,0 +1,10 @@
+/* Test: Deeply nested blocks */
+void main() {
+    {
+        {
+            {
+                x:int;
+            }
+        }
+    }
+}

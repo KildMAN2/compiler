@@ -1,0 +1,13 @@
+/* Test: Mix of declarations and definitions */
+int helper(x:int);
+
+int compute(a:int, b:int) {
+    return a + b;
+}
+
+float process(f:float);
+
+void main() {
+    result:int;
+    result = compute(1, 2);
+}

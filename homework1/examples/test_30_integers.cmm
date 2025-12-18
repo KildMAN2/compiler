@@ -1,0 +1,8 @@
+/* Test: Integer literals */
+void main() {
+    x:int;
+    
+    x = 0;
+    x = 123;
+    x = 999999;
+}

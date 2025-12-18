@@ -1,0 +1,9 @@
+/* Test: Operator precedence */
+void main() {
+    result:int;
+    
+    result = 2 + 3 * 4;
+    result = (2 + 3) * 4;
+    result = 10 / 2 - 3;
+    result = 10 / (2 - 3);
+}

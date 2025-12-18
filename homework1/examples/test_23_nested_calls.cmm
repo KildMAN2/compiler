@@ -1,0 +1,14 @@
+/* Test: Nested function calls */
+int double(x:int) {
+    return x * 2;
+}
+
+int triple(x:int) {
+    return x * 3;
+}
+
+void main() {
+    result:int;
+    result = double(triple(5));
+    result = double(double(double(2)));
+}
