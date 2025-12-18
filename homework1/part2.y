@@ -346,11 +346,9 @@ BEXP:
     }
     | EXP RELOP EXP
     {
-        ParserNode *exp1 = makeNode("EXP", NULL, $1);
-        ParserNode *exp2 = makeNode("EXP", NULL, $3);
-        $$ = makeNode("BEXP", NULL, exp1);
-        exp1->sibling = $2;
-        $2->sibling = exp2;
+        $$ = makeNode("BEXP", NULL, $1);
+        $1->sibling = $2;
+        $2->sibling = $3;
     }
     | LPAREN BEXP RPAREN
     {
@@ -363,19 +361,15 @@ BEXP:
 EXP:
     EXP ADDOP EXP
     {
-        ParserNode *exp1 = makeNode("EXP", NULL, $1);
-        ParserNode *exp2 = makeNode("EXP", NULL, $3);
-        $$ = makeNode("EXP", NULL, exp1);
-        exp1->sibling = $2;
-        $2->sibling = exp2;
+        $$ = makeNode("EXP", NULL, $1);
+        $1->sibling = $2;
+        $2->sibling = $3;
     }
     | EXP MULOP EXP
     {
-        ParserNode *exp1 = makeNode("EXP", NULL, $1);
-        ParserNode *exp2 = makeNode("EXP", NULL, $3);
-        $$ = makeNode("EXP", NULL, exp1);
-        exp1->sibling = $2;
-        $2->sibling = exp2;
+        $$ = makeNode("EXP", NULL, $1);
+        $1->sibling = $2;
+        $2->sibling = $3;
     }
     | LPAREN EXP RPAREN
     {
