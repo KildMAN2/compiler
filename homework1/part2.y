@@ -96,11 +96,12 @@ FUNC_DEC_API:
     | TYPE ID LPAREN FUNC_ARGLIST RPAREN SEMICOLON
     {
         ParserNode *type = makeNode("TYPE", NULL, $1);
+        ParserNode *arglist = makeNode("FUNC_ARGLIST", NULL, $4);
         $$ = type;
         type->sibling = $2;
         $2->sibling = $3;
-        $3->sibling = $4;
-        $4->sibling = $5;
+        $3->sibling = arglist;
+        arglist->sibling = $5;
         $5->sibling = $6;
     }
     ;
@@ -117,20 +118,22 @@ FUNC_DEF_API:
     | TYPE ID LPAREN FUNC_ARGLIST RPAREN
     {
         ParserNode *type = makeNode("TYPE", NULL, $1);
+        ParserNode *arglist = makeNode("FUNC_ARGLIST", NULL, $4);
         $$ = type;
         type->sibling = $2;
         $2->sibling = $3;
-        $3->sibling = $4;
-        $4->sibling = $5;
+        $3->sibling = arglist;
+        arglist->sibling = $5;
     }
     ;
 
 FUNC_ARGLIST:
     FUNC_ARGLIST COMMA DCL
     {
-        ParserNode *arglist = makeNode("FUNC_ARGLIST", NULL, $1);
-        $$ = arglist;
-        $1->sibling = $2;
+        $$ = $1;
+        ParserNode *last = $1;
+        while (last->sibling != NULL) last = last->sibling;
+        last->sibling = $2;
         $2->sibling = $3;
     }
     | DCL
@@ -356,15 +359,19 @@ BEXP:
 EXP:
     EXP ADDOP EXP
     {
-        $$ = makeNode("EXP", NULL, $1);
-        $1->sibling = $2;
-        $2->sibling = $3;
+        ParserNode *exp1 = makeNode("EXP", NULL, $1);
+        ParserNode *exp2 = makeNode("EXP", NULL, $3);
+        $$ = makeNode("EXP", NULL, exp1);
+        exp1->sibling = $2;
+        $2->sibling = exp2;
     }
     | EXP MULOP EXP
     {
-        $$ = makeNode("EXP", NULL, $1);
-        $1->sibling = $2;
-        $2->sibling = $3;
+        ParserNode *exp1 = makeNode("EXP", NULL, $1);
+        ParserNode *exp2 = makeNode("EXP", NULL, $3);
+        $$ = makeNode("EXP", NULL, exp1);
+        exp1->sibling = $2;
+        $2->sibling = exp2;
     }
     | LPAREN EXP RPAREN
     {
