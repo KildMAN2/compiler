@@ -1,0 +1,11 @@
+int ex_func(a,b:int) {
+      write(a);
+      return b;
+}
+
+void main()
+{
+	c,d:int;
+	c=5;
+	d = c+ ex_func(a:c, c);
+}
