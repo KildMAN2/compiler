@@ -1,0 +1,8 @@
+<write> <str,simple>;
+<write> <str,tab\there>;
+<write> <str,newline\nhere>;
+<write> <str,quote\"inside>;
+<write> <str,backslash here>;
+<write> <str,all\t\n\" \together>;
+<write> <str,#not a comment>;
+<write> <str,>;

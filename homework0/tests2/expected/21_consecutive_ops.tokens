@@ -1,0 +1,11 @@
+<id,a><assign,=><id,b><assign,=><id,c><assign,=><id,d>;
+<id,a><relop,==><id,b><relop,==><id,c>;
+<id,a><relop,<>><id,b><relop,<>><id,c>;
+<id,a><addop,+><id,b><addop,+><id,c><addop,+><id,d><addop,+><id,e>;
+<id,a><mulop,*><id,b><mulop,*><id,c><mulop,*><id,d>;
+<id,a><and,&&><id,b><and,&&><id,c><and,&&><id,d>;
+<id,a><or,||><id,b><or,||><id,c><or,||><id,d>;
+<not,!><not,!><id,a>;
+<id,a><addop,+><addop,-><id,b>;
+<id,a><mulop,*><addop,-><id,b>;
+<id,a><assign,=><addop,-><id,b>;

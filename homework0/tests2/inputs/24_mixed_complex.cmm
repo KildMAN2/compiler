@@ -1,0 +1,17 @@
+int main(){
+float x=3.14;
+float y=2.71;
+if(x>y){
+write "x is greater\n";
+}else{
+write "y is greater\n";
+}
+int i=0;
+while(i<10){
+if(i==5){
+write "halfway\n";
+}
+i=i+1;
+}
+return;
+}

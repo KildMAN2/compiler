@@ -1,0 +1,3 @@
+write "abc#def"; # comment with hash in string above
+# full line comment
+write "#notcomment";

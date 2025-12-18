@@ -1,0 +1,5 @@
+<int> <id,x>;
+<float> <id,y>;
+<write> <str,valid string>;
+
+Lexical error: '"' in line number 4

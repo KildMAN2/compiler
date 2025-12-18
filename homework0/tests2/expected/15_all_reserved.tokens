@@ -1,0 +1,6 @@
+<int> <float> <void> <write> <read> <while> <do> <if> <then> <else> <return>
+<int> <float> <void>
+<write> <read>
+<while> <do>
+<if> <then> <else>
+<return>

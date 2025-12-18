@@ -1,0 +1,9 @@
+void function() {
+    int x;
+    float y;
+    x = 10;
+    if (x == 10) then
+        write "before\rerror";
+    else
+        write "else";
+}

@@ -1,0 +1,11 @@
+# This is a comment
+int main() {
+    # Another comment
+    write "tab\ttab";
+    write "quote\"test";
+    # Inline comment
+    int result;
+    result = 100 + 200;
+    write "null\0char";
+    return 0;
+}

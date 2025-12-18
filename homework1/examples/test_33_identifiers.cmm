@@ -4,6 +4,6 @@ void main() {
     abc:int;
     var_name:int;
     Variable123:int;
-    _underscore:int;
+    varUnderscore:int;
     CamelCase:int;
 }

@@ -1,0 +1,6 @@
+write "hello";
+write "world\n";
+int counter;
+counter = 5;
+write "invalid\qescape";
+write "never reached";

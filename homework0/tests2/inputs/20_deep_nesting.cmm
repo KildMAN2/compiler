@@ -1,0 +1,3 @@
+{{{{{{{{{{a=1;}}}}}}}}}}
+if(a){if(b){if(c){if(d){if(e){write "deep";}}}}}
+while(x){while(y){while(z){a=a+1;}}}

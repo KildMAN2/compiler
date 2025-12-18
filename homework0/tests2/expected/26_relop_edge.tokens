@@ -1,0 +1,20 @@
+<id,a><relop,<><id,b>
+<id,a><relop,<> <id,b>
+<id,a> <relop,<><id,b>
+<id,a> <relop,<> <id,b>
+<id,a><relop,<=><id,b>
+<id,a><relop,<=> <id,b>
+<id,a> <relop,<=><id,b>
+<id,a> <relop,<> <assign,=><id,b>
+<id,a><relop,<><relop,<><id,b>
+<id,a><relop,<><relop,<><relop,<><id,b>
+<id,a><relop,<>><id,b>
+<id,a><relop,<>> <id,b>
+<id,a> <relop,<>><id,b>
+<id,a> <relop,<> <relop,>><id,b>
+<id,a><relop,==><id,b>
+<id,a><relop,==> <id,b>
+<id,a> <relop,==><id,b>
+<id,a> <assign,=> <assign,=><id,b>
+<id,a><relop,>><id,b>
+<id,a><relop,>=><id,b>

@@ -1,0 +1,6 @@
+<write> <str,hello>;
+<write> <str,world\n>;
+<int> <id,counter>;
+<id,counter> <assign,=> <integernum,5>;
+
+Lexical error: '"' in line number 5

@@ -1,0 +1,16 @@
+<str,>
+<str, >
+<str,  >
+<str,\t>
+<str,\n>
+<str,\">
+<str,a>
+<str,ab>
+<str,abc>
+<str,#>
+<str,##>
+<str,#comment inside string>
+<str,(){},:;>
+<str,<>=+-*/>
+<str,int float void>
+<str,mixed 123 abc !@#>

@@ -1,0 +1,3 @@
+{{{{{{{{{{<id,a><assign,=><integernum,1>;}}}}}}}}}}
+<if>(<id,a>){<if>(<id,b>){<if>(<id,c>){<if>(<id,d>){<if>(<id,e>){<write> <str,deep>;}}}}}
+<while>(<id,x>){<while>(<id,y>){<while>(<id,z>){<id,a><assign,=><id,a><addop,+><integernum,1>;}}}

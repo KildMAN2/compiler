@@ -1,0 +1,10 @@
+
+<int> <id,main>( ) {
+    
+    <write> <str,tab\ttab>;
+    <write> <str,quote\"test>;
+    
+    <int> <id,result>;
+    <id,result> <assign,=> <integernum,100> <addop,+> <integernum,200>;
+    <write> 
+Lexical error: '"' in line number 9

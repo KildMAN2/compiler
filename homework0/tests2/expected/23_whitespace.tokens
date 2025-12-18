@@ -1,0 +1,15 @@
+<int> <id,a>;
+<int>  <id,a>;
+<int>   <id,a>;
+<int>	<id,a>;
+<int>		<id,a>;
+<int> 	 <id,a>;
+
+
+<int> <id,b>;
+
+
+
+<int> <id,c>;
+     <int> <id,d>;
+			<int> <id,e>;
