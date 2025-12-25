@@ -1,7 +1,13 @@
-int fact(n:int) {
-    if (n == 1) then return 1;
-    return n * fact(n - 1);
+float average(a, b, c: float) {
+    return (a + b + c) / (float)3;
 }
+
 void main() {
-    write(fact(4));
+    x, y, z: float;
+    result: float;
+    read(x);
+    read(y);
+    read(z);
+    result = average(x, y, z);
+    write(result);
 }

@@ -1,6 +1,9 @@
 void main() {
-    x, y: float;
+    x: int;
+    y: float;
+    z: float;
     read(x);
     read(y);
-    write(x * y);
+    z = (float)x + y;
+    write(z);
 }

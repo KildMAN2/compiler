@@ -1,8 +1,10 @@
 void main() {
-    i: int;
-    i = 3;
-    while (i > 0) do {
-        write(i);
-        i = i - 1;
+    i, sum: int;
+    sum = 0;
+    i = 1;
+    while (i < 6) do {
+        sum = sum + i;
+        i = i + 1;
     }
+    write(sum);
 }

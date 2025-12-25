@@ -1,6 +1,11 @@
-int sub(a:int, b:int) {
-    return a - b;
+int compute(a, b: int) {
+    return a * b + b / 2;
 }
+
 void main() {
-    write(sub(a:10, b:4));
+    x, y, z: int;
+    read(x);
+    read(y);
+    z = compute(b: y, a: x);
+    write(z);
 }

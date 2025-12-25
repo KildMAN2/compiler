@@ -1,4 +1,4 @@
 void main() {
-    x: int
-    x = 5;
+    x: int;
+    read(x + 5);
 }
