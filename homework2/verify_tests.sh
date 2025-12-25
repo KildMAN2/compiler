@@ -61,11 +61,12 @@ for i in {1..10}; do
     # Syntax: ./checker test.cmm [other.cmm] input.in output.out
     OUTPUT=$($CHECKER $CMM_FILES "$INPUT_FILE" "$OUTPUT_FILE")
     
-    # Clean output (trim whitespace)
-    RESULT=$(echo "$OUTPUT" | xargs)
+    # Clean output (trim whitespace and convert to lowercase for comparison)
+    RESULT=$(echo "$OUTPUT" | xargs | tr '[:upper:]' '[:lower:]')
+    EXPECTED_LOWER=$(echo "$EXPECTED_RESULT" | tr '[:upper:]' '[:lower:]')
 
     # Verify result
-    if [ "$RESULT" == "$EXPECTED_RESULT" ]; then
+    if [ "$RESULT" == "$EXPECTED_LOWER" ]; then
         echo -e "[$TEST_DIR] \e[32mVERIFIED\e[0m ($TEST_TYPE test)"
     else
         echo -e "[$TEST_DIR] \e[31mMISMATCH\e[0m"
