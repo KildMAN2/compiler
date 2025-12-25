@@ -1,14 +1,14 @@
 void main() {
-    x, y: int;
+    x, y, result: int;
     read(x);
     read(y);
-    if ((x > 0) and (y > 0)) then {
-        write(x + y);
+    if (x > 5) then {
+        result = 1;
     } else {
-        if ((x > 0) or (y > 0)) then {
-            write(x - y);
-        } else {
-            write(0);
-        }
+        result = 0;
     }
+    if (y > 3) then {
+        result = result + 10;
+    }
+    write(result);
 }
