@@ -1,0 +1,4 @@
+void main() {
+    if (1) then {
+        write(1);
+}

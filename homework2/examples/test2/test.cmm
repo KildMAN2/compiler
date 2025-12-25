@@ -1,0 +1,7 @@
+void main() {
+	write("Welcome to Ido and Hay tests.");
+	write(" Should be on the first line.");
+	write("\nShould be on second line.\n");
+	write("\tShould be on third line with tab.\n");
+	write("Should contain quotation here: \". "); 
+}

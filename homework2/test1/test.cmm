@@ -1,0 +1,6 @@
+void main() {
+    x, y: int;
+    read(x);
+    read(y);
+    write(x + y);
+}

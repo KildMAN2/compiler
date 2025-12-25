@@ -1,0 +1,6 @@
+int sub(a:int, b:int) {
+    return a - b;
+}
+void main() {
+    write(sub(a:10, b:4));
+}

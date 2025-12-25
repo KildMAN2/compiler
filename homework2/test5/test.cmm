@@ -1,0 +1,6 @@
+int add(a:int, b:int) {
+    return a + b;
+}
+void main() {
+    write(add(3, 4));
+}

@@ -1,0 +1,4 @@
+int a();
+void main() {
+	write(a()*2);
+}

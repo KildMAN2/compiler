@@ -1,0 +1,5 @@
+void main() {
+    x: int;
+    read(x);
+    if (x > 5) then write(1); else write(0);
+}
