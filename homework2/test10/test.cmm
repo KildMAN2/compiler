@@ -1,5 +1,5 @@
 void main() {
     x: int;
-    if x > 5 then
-        write(x);
+    read(x);
+    write(x
 }

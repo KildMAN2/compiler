@@ -2,10 +2,10 @@ void main() {
     x, y: int;
     read(x);
     read(y);
-    if (x > 0 and y > 0) then {
+    if ((x > 0) and (y > 0)) then {
         write(x + y);
     } else {
-        if (x > 0 or y > 0) then {
+        if ((x > 0) or (y > 0)) then {
             write(x - y);
         } else {
             write(0);
