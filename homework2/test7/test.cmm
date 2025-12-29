@@ -1,7 +1,3 @@
-float average(a, b, c: float) {
-    return (a + b + c) / (float)3;
-}
-
 void main() {
     x, y, z: float;
     result: float;

@@ -1,7 +1,3 @@
-int test(a, b, c: int) {
-    return (a + b) + b * c + (b + 10) / 2;
-}
-
 void main() {
     a, b, c, res: int;
     read(a);
