@@ -33,9 +33,23 @@ for i in {1..10}; do
         continue
     fi
 
-    # Identify input/output files
+    # Identify input/output files (support both spec naming and course example naming)
     INPUT_FILE="$TEST_DIR/input.in"
+    if [ ! -f "$INPUT_FILE" ]; then
+        INPUT_FILE="$TEST_DIR/input.input"
+    fi
+
     OUTPUT_FILE="$TEST_DIR/output.out"
+
+    if [ ! -f "$INPUT_FILE" ]; then
+        echo -e "[$TEST_DIR] \e[33mSkipping\e[0m (Missing input file: expected input.in or input.input)"
+        continue
+    fi
+
+    if [ ! -f "$OUTPUT_FILE" ]; then
+        echo -e "[$TEST_DIR] \e[33mSkipping\e[0m (Missing output file: expected output.out)"
+        continue
+    fi
     
     # Identify all .cmm files in the directory
     CMM_FILES=$(ls $TEST_DIR/*.cmm 2>/dev/null)
