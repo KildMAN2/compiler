@@ -90,21 +90,22 @@ echo "STRUCTURE CHECK: OK"
 
 echo "== (4) Optional: run checker on extracted archive =="
 if [[ -x "./checker" && -f "./rx-runtime.rsk" ]]; then
+  BASE_DIR="$(pwd)"
+  CHECKER_PATH="${BASE_DIR}/checker"
   TMP="$(mktemp -d)"
   trap 'rm -rf "${TMP}"' EXIT
 
   tar -xjf "${ARCHIVE}" -C "${TMP}"
-  pushd "${TMP}" >/dev/null
 
   ALL_OK=1
   for i in {1..10}; do
     T="test$i"
-    CMM=( "${T}"/*.cmm )
-    INPUT_FILE="${T}/input.in"
+    CMM=( "${TMP}/${T}"/*.cmm )
+    INPUT_FILE="${TMP}/${T}/input.in"
     if [[ ! -f "${INPUT_FILE}" ]]; then
-      INPUT_FILE="${T}/input.input"
+      INPUT_FILE="${TMP}/${T}/input.input"
     fi
-    RES="$(./checker "${CMM[@]}" "${INPUT_FILE}" "${T}/output.out" | xargs)"
+    RES="$(cd "${BASE_DIR}" && "${CHECKER_PATH}" "${CMM[@]}" "${INPUT_FILE}" "${TMP}/${T}/output.out" | xargs)"
     if [[ -f "${T}/pass" ]]; then
       [[ "${RES}" == "True" ]] || { echo "MISMATCH: ${T} expected True, got ${RES}"; ALL_OK=0; }
     else
@@ -112,7 +113,6 @@ if [[ -x "./checker" && -f "./rx-runtime.rsk" ]]; then
     fi
   done
 
-  popd >/dev/null
 
   if [[ "${ALL_OK}" -ne 1 ]]; then
     echo "CHECKER RUN: FAILED"
