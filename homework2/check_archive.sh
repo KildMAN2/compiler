@@ -53,6 +53,8 @@ for i in {1..10}; do
   HAS_PASS=0
   HAS_FAIL=0
   HAS_CMM=0
+  HAS_INPUT_IN=0
+  HAS_INPUT_INPUT=0
 
   while IFS= read -r p; do
     [[ "${p}" == "${T}/"* ]] || continue
@@ -61,6 +63,7 @@ for i in {1..10}; do
 
     case "${f}" in
       input.in)   HAS_INPUT=1 ;;
+      input.input) HAS_INPUT=1 ;;
       output.out) HAS_OUTPUT=1 ;;
       pass)       HAS_PASS=1 ;;
       fail)       HAS_FAIL=1 ;;
@@ -69,7 +72,8 @@ for i in {1..10}; do
     esac
   done < <(printf '%s\n' "${RAW[@]}")
 
-  if [[ "${HAS_INPUT}" -ne 1 ]]; then echo "ERROR: ${T} missing input.in"; FAIL=1; fi
+  # Accept either input.in (spec) or input.input (course examples)
+  if [[ "${HAS_INPUT}" -ne 1 ]]; then echo "ERROR: ${T} missing input file (expected input.in or input.input)"; FAIL=1; fi
   if [[ "${HAS_OUTPUT}" -ne 1 ]]; then echo "ERROR: ${T} missing output.out"; FAIL=1; fi
   if [[ "${HAS_CMM}" -ne 1 ]]; then echo "ERROR: ${T} missing at least one .cmm file"; FAIL=1; fi
   if [[ $((HAS_PASS + HAS_FAIL)) -ne 1 ]]; then
@@ -96,7 +100,11 @@ if [[ -x "./checker" && -f "./rx-runtime.rsk" ]]; then
   for i in {1..10}; do
     T="test$i"
     CMM=( "${T}"/*.cmm )
-    RES="$(./checker "${CMM[@]}" "${T}/input.in" "${T}/output.out" | xargs)"
+    INPUT_FILE="${T}/input.in"
+    if [[ ! -f "${INPUT_FILE}" ]]; then
+      INPUT_FILE="${T}/input.input"
+    fi
+    RES="$(./checker "${CMM[@]}" "${INPUT_FILE}" "${T}/output.out" | xargs)"
     if [[ -f "${T}/pass" ]]; then
       [[ "${RES}" == "True" ]] || { echo "MISMATCH: ${T} expected True, got ${RES}"; ALL_OK=0; }
     else
