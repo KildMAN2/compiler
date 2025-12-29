@@ -101,6 +101,15 @@ if [[ -x "./checker" && -f "./rx-runtime.rsk" ]]; then
   for i in {1..10}; do
     T="test$i"
     CMM=( "${TMP}/${T}"/*.cmm )
+    MAIN_CMM="${TMP}/${T}/test.cmm"
+    if [[ -f "${MAIN_CMM}" ]]; then
+      ORDERED_CMM=("${MAIN_CMM}")
+      for f in "${CMM[@]}"; do
+        [[ "$f" == "${MAIN_CMM}" ]] && continue
+        ORDERED_CMM+=("$f")
+      done
+      CMM=("${ORDERED_CMM[@]}")
+    fi
     INPUT_FILE="${TMP}/${T}/input.in"
     if [[ ! -f "${INPUT_FILE}" ]]; then
       INPUT_FILE="${TMP}/${T}/input.input"

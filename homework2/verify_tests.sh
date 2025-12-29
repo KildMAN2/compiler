@@ -63,6 +63,18 @@ run_one_test_dir() {
         return
     fi
 
+    # IMPORTANT: pass test.cmm first (checker expects ./checker test.cmm [more.cmm] ...)
+    local MAIN_FILE="$TEST_DIR/test.cmm"
+    if [ -f "$MAIN_FILE" ]; then
+        local ORDERED_CMM_FILES=("$MAIN_FILE")
+        local f
+        for f in "${CMM_FILES[@]}"; do
+            [ "$f" = "$MAIN_FILE" ] && continue
+            ORDERED_CMM_FILES+=("$f")
+        done
+        CMM_FILES=("${ORDERED_CMM_FILES[@]}")
+    fi
+
     # Determine expected behavior based on pass/fail file
     local EXPECTED_RESULT=""
     local TEST_TYPE=""
