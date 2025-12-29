@@ -106,10 +106,11 @@ if [[ -x "./checker" && -f "./rx-runtime.rsk" ]]; then
       INPUT_FILE="${TMP}/${T}/input.input"
     fi
     RES="$(cd "${BASE_DIR}" && "${CHECKER_PATH}" "${CMM[@]}" "${INPUT_FILE}" "${TMP}/${T}/output.out" | xargs)"
+    RES_NORM="$(echo "${RES}" | tr '[:upper:]' '[:lower:]')"
     if [[ -f "${T}/pass" ]]; then
-      [[ "${RES}" == "True" ]] || { echo "MISMATCH: ${T} expected True, got ${RES}"; ALL_OK=0; }
+      [[ "${RES_NORM}" == "true" ]] || { echo "MISMATCH: ${T} expected True, got ${RES}"; ALL_OK=0; }
     else
-      [[ "${RES}" == "Failed" ]] || { echo "MISMATCH: ${T} expected Failed, got ${RES}"; ALL_OK=0; }
+      [[ "${RES_NORM}" == "failed" ]] || { echo "MISMATCH: ${T} expected Failed, got ${RES}"; ALL_OK=0; }
     fi
   done
 
