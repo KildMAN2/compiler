@@ -23,10 +23,11 @@ echo "== (2) Checking structure inside archive =="
 mapfile -t RAW < <(tar -tjf "${ARCHIVE}" | sed 's#^\./##' | sed '/^$/d')
 
 # Collect top-level dirs (before first '/')
-TOPS="$(printf '%s\n' "${RAW[@]}" | awk -F/ '{print $1}' | sort -u)"
+# Use version sort so test10 comes after test9
+TOPS="$(printf '%s\n' "${RAW[@]}" | awk -F/ '{print $1}' | sort -u -V)"
 
 # Expect exactly test1..test10 and nothing else
-EXPECTED="$(printf 'test%d\n' {1..10})"
+EXPECTED="$(printf 'test%d\n' {1..10} | sort -V)"
 if ! diff -u <(echo "${EXPECTED}") <(echo "${TOPS}") >/dev/null; then
   echo "ERROR: Top-level entries must be exactly test1..test10"
   echo "Found:"
