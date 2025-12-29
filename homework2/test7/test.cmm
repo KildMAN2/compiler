@@ -1,4 +1,4 @@
-float average();
+float average(a, b, c: float);
 
 void main() {
     x, y, z: float;

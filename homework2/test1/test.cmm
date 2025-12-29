@@ -1,4 +1,4 @@
-int test();
+int test(a, b, c: int);
 
 void main() {
     a, b, c, res: int;
