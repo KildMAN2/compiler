@@ -1,3 +1,5 @@
+float average();
+
 void main() {
     x, y, z: float;
     result: float;
