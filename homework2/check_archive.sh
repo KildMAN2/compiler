@@ -105,12 +105,28 @@ if [[ -x "./checker" && -f "./rx-runtime.rsk" ]]; then
     if [[ ! -f "${INPUT_FILE}" ]]; then
       INPUT_FILE="${TMP}/${T}/input.input"
     fi
-    RES="$(cd "${BASE_DIR}" && "${CHECKER_PATH}" "${CMM[@]}" "${INPUT_FILE}" "${TMP}/${T}/output.out" | xargs)"
-    RES_NORM="$(echo "${RES}" | tr '[:upper:]' '[:lower:]')"
-    if [[ -f "${T}/pass" ]]; then
-      [[ "${RES_NORM}" == "true" ]] || { echo "MISMATCH: ${T} expected True, got ${RES}"; ALL_OK=0; }
+
+    # checker may return non-zero for compilation failures; don't let set -e abort the script
+    set +e
+    CHECKER_OUT="$(cd "${BASE_DIR}" && "${CHECKER_PATH}" "${CMM[@]}" "${INPUT_FILE}" "${TMP}/${T}/output.out" 2>&1)"
+    CHECKER_STATUS=$?
+    set -e
+
+    # Normalize to first token only (True/False/Failed) in lowercase
+    RES_NORM="$(echo "${CHECKER_OUT}" | tr -d '\r' | tr '\n' ' ' | xargs | awk '{print tolower($1)}')"
+
+    # Determine expected behavior based on extracted pass/fail marker
+    if [[ -f "${TMP}/${T}/pass" ]]; then
+      [[ "${RES_NORM}" == "true" ]] || { echo "MISMATCH: ${T} expected True, got ${RES_NORM:-<empty>} (exit ${CHECKER_STATUS})"; ALL_OK=0; }
+    elif [[ -f "${TMP}/${T}/fail" ]]; then
+      # Accept either explicit 'failed' or a non-zero exit with no/other output
+      if [[ "${RES_NORM}" != "failed" && "${CHECKER_STATUS}" -eq 0 ]]; then
+        echo "MISMATCH: ${T} expected Failed, got ${RES_NORM:-<empty>} (exit ${CHECKER_STATUS})"
+        ALL_OK=0
+      fi
     else
-      [[ "${RES_NORM}" == "failed" ]] || { echo "MISMATCH: ${T} expected Failed, got ${RES}"; ALL_OK=0; }
+      echo "MISMATCH: ${T} missing pass/fail marker inside archive"
+      ALL_OK=0
     fi
   done
 
