@@ -24,6 +24,8 @@ echo "========================================"
 echo "Verifying 10 Tests using ./checker"
 echo "========================================"
 
+MISMATCH_COUNT=0
+
 for i in {1..10}; do
     TEST_DIR="test$i"
     
@@ -52,9 +54,11 @@ for i in {1..10}; do
     fi
     
     # Identify all .cmm files in the directory
-    CMM_FILES=$(ls $TEST_DIR/*.cmm 2>/dev/null)
-    
-    if [ -z "$CMM_FILES" ]; then
+    shopt -s nullglob
+    CMM_FILES=("$TEST_DIR"/*.cmm)
+    shopt -u nullglob
+
+    if [ ${#CMM_FILES[@]} -eq 0 ]; then
         echo -e "[$TEST_DIR] \e[33mSkipping\e[0m (No .cmm files found)"
         continue
     fi
@@ -73,26 +77,27 @@ for i in {1..10}; do
 
     # Run the checker
     # Syntax: ./checker test.cmm [other.cmm] input.in output.out
-    OUTPUT=$($CHECKER $CMM_FILES "$INPUT_FILE" "$OUTPUT_FILE")
-    
-    # Clean output (trim whitespace and convert to lowercase for comparison)
-    RESULT=$(echo "$OUTPUT" | xargs | tr '[:upper:]' '[:lower:]')
+    OUTPUT="$($CHECKER "${CMM_FILES[@]}" "$INPUT_FILE" "$OUTPUT_FILE" 2>&1)"
+
+    # Normalize output: take first token only (true/false/failed)
+    RESULT=$(echo "$OUTPUT" | tr -d '\r' | tr '\n' ' ' | xargs | awk '{print tolower($1)}')
     EXPECTED_LOWER=$(echo "$EXPECTED_RESULT" | tr '[:upper:]' '[:lower:]')
 
     # Verify result
     if [ "$RESULT" == "$EXPECTED_LOWER" ]; then
         echo -e "[$TEST_DIR] \e[32mVERIFIED\e[0m ($TEST_TYPE test)"
     else
+        MISMATCH_COUNT=$((MISMATCH_COUNT + 1))
         echo -e "[$TEST_DIR] \e[31mMISMATCH\e[0m"
         echo "  Test Type: $TEST_TYPE"
         echo "  Expected:  $EXPECTED_RESULT"
         echo "  Got:       $RESULT"
-        
-        if [ "$RESULT" == "False" ]; then
+
+        if [ "$RESULT" == "false" ]; then
             echo "  Hint: 'False' means the test compiled/ran, but output.out didn't match the actual output."
-        elif [ "$RESULT" == "Failed" ] && [ "$TEST_TYPE" == "PASS" ]; then
+        elif [ "$RESULT" == "failed" ] && [ "$TEST_TYPE" == "PASS" ]; then
             echo "  Hint: 'Failed' means the test failed to compile, but it was expected to pass."
-        elif [ "$RESULT" == "True" ] && [ "$TEST_TYPE" == "FAIL" ]; then
+        elif [ "$RESULT" == "true" ] && [ "$TEST_TYPE" == "FAIL" ]; then
             echo "  Hint: 'True' means the test passed successfully, but it was expected to fail compilation."
         fi
     fi
@@ -100,3 +105,8 @@ done
 
 echo "========================================"
 echo "Done."
+
+if [ "$MISMATCH_COUNT" -ne 0 ]; then
+    echo "Mismatches: $MISMATCH_COUNT"
+    exit 1
+fi
