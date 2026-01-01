@@ -58,17 +58,11 @@ bool inFunctionBody = false;
 
 %}
 
-/* Token declarations with semantic values */
+/* Token declarations */
 %token INT FLOAT VOID WRITE READ WHILE DO IF THEN ELSE RETURN
 %token ID INTEGERNUM REALNUM STR
 %token RELOP ADDOP MULOP ASSIGN AND OR NOT
 %token LPAREN RPAREN LBRACE RBRACE COMMA SEMICOLON COLON
-
-/* Non-terminal types */
-%type PROGRAM FDEFS FUNC_DEC_API FUNC_DEF_API FUNC_ARGLIST BLK DCL TYPE
-%type STLIST STMT RETURN_STMT WRITE_STMT READ_STMT ASSN LVAL CNTRL
-%type BEXP EXP NUM CALL CALL_ARGS POS_ARGLIST NAMED_ARGLIST NAMED_ARG
-%type M
 
 /* Operator precedence and associativity (lowest to highest) */
 %right ASSIGN
