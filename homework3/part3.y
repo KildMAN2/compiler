@@ -29,6 +29,7 @@ void semanticError(const string& msg);
 /* Helper functions for semantic analysis */
 void checkTypesMatch(Type t1, Type t2, const string& operation);
 void declareVariable(const string& id, Type type);
+void clearFunctionScope();
 void declareFunction(const string& id, Type returnType, vector<Type>& paramTypes, vector<string>& paramIds, vector<string>& paramLabels);
 void defineFunction(const string& id);
 Type getVariableType(const string& id);
@@ -151,6 +152,7 @@ FUNC_DEF_API:
         }
         
         // Start function implementation
+        clearFunctionScope();  // Clear previous function's variables
         currentFunction = $2.name;
         currentFunctionReturnType = $1.type;
         inFunctionBody = true;
@@ -171,6 +173,7 @@ FUNC_DEF_API:
         }
         
         // Start function implementation
+        clearFunctionScope();  // Clear previous function's variables
         currentFunction = $2.name;
         currentFunctionReturnType = $1.type;
         inFunctionBody = true;
@@ -816,6 +819,30 @@ void semanticError(const string& msg) {
 void checkTypesMatch(Type t1, Type t2, const string& operation) {
     if (t1 != t2) {
         semanticError("Type mismatch in " + operation);
+    }
+}
+
+void clearFunctionScope() {
+    // Remove all function-local variables (depth >= 1) from symbol table
+    for (auto it = symbolTable.begin(); it != symbolTable.end(); ) {
+        Symbol& sym = it->second;
+        
+        // Remove all function-scope entries (depth > 0)
+        for (auto depthIt = sym.type.begin(); depthIt != sym.type.end(); ) {
+            if (depthIt->first > 0) {
+                sym.offset.erase(depthIt->first);
+                depthIt = sym.type.erase(depthIt);
+            } else {
+                ++depthIt;
+            }
+        }
+        
+        // If symbol has no entries left, remove it entirely
+        if (sym.type.empty()) {
+            it = symbolTable.erase(it);
+        } else {
+            ++it;
+        }
     }
 }
 
