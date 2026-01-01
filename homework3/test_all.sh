@@ -46,13 +46,15 @@ for file in $cmm_files; do
     
     echo -e "${YELLOW}Test $total: $file${NC}"
     
+    # Set output file path
+    rsk_file="${file%.cmm}.rsk"
+    
     # Run compiler
-    ./rx-cc "$file" 2>&1
+    ./rx-cc "$file" "$rsk_file" 2>&1
     
     # Check if compilation succeeded
     if [ $? -eq 0 ]; then
         # Check if .rsk file was created
-        rsk_file="${file%.cmm}.rsk"
         if [ -f "$rsk_file" ]; then
             echo -e "${GREEN}✓ PASSED${NC} - Generated $rsk_file"
             passed=$((passed + 1))
