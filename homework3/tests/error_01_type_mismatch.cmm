@@ -1,0 +1,10 @@
+// Error: Type mismatch in assignment
+void main() {
+    a:int;
+    b:float;
+    
+    a = 5;
+    b = 3.14;
+    
+    a = b;  // Should error - no implicit conversion
+}

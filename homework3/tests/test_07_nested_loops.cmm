@@ -1,0 +1,19 @@
+// Test nested loops
+void main() {
+    i:int;
+    j:int;
+    product:int;
+    
+    i = 1;
+    while i <= 3 do {
+        j = 1;
+        while j <= 3 do {
+            product = i * j;
+            write(product);
+            write(" ");
+            j = j + 1;
+        }
+        write("\n");
+        i = i + 1;
+    }
+}

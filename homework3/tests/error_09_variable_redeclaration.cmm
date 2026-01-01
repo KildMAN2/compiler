@@ -1,0 +1,7 @@
+// Error: Variable redeclaration
+void main() {
+    a:int;
+    a:int;  // Error: already declared
+    
+    a = 5;
+}

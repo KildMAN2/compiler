@@ -1,0 +1,7 @@
+// Error: Undeclared variable
+void main() {
+    a:int;
+    
+    a = 5;
+    b = 10;  // Error: b not declared
+}

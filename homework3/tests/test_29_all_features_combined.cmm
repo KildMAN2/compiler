@@ -1,0 +1,65 @@
+// Comprehensive test combining all features
+int power(base:int, exp:int) {
+    result:int;
+    i:int;
+    
+    result = 1;
+    i = 0;
+    
+    while i < exp do {
+        result = result * base;
+        i = i + 1;
+    }
+    
+    return result;
+}
+
+float area_circle(radius:float) {
+    pi:float;
+    pi = 3.14159;
+    return pi * radius * radius;
+}
+
+void print_range(start:int, end:int) {
+    i:int;
+    i = start;
+    
+    while i <= end do {
+        write(i);
+        write(" ");
+        i = i + 1;
+    }
+    write("\n");
+}
+
+void main() {
+    x:int;
+    y:int;
+    z:int;
+    r:float;
+    area:float;
+    
+    write("=== Testing All Features ===\n");
+    
+    x = 2;
+    y = 8;
+    z = power(base:x, exp:y);
+    write("2^8 = ");
+    write(z);
+    write("\n");
+    
+    r = 5.0;
+    area = area_circle(radius:r);
+    write("Area of circle (r=5): ");
+    write(area);
+    write("\n");
+    
+    write("Range 1 to 10: ");
+    print_range(start:1, end:10);
+    
+    if z > 200 and area > 50.0 then {
+        write("Both conditions met!\n");
+    } else {
+        write("Conditions not met\n");
+    }
+}

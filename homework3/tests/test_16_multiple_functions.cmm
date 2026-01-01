@@ -1,0 +1,33 @@
+// Test multiple function definitions
+int add(a:int, b:int) {
+    return a + b;
+}
+
+int sub(a:int, b:int) {
+    return a - b;
+}
+
+int mul(a:int, b:int) {
+    return a * b;
+}
+
+int div(a:int, b:int) {
+    return a / b;
+}
+
+void main() {
+    x:int;
+    y:int;
+    
+    x = 20;
+    y = 4;
+    
+    write(add(x, y));
+    write("\n");
+    write(sub(x, y));
+    write("\n");
+    write(mul(x, y));
+    write("\n");
+    write(div(x, y));
+    write("\n");
+}

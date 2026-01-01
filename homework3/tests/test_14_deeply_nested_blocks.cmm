@@ -1,0 +1,24 @@
+// Test deeply nested blocks
+void main() {
+    a:int;
+    
+    a = 5;
+    
+    if a > 0 then {
+        b:int;
+        b = 10;
+        if b > 5 then {
+            c:int;
+            c = 15;
+            if c > 10 then {
+                d:int;
+                d = 20;
+                if d > 15 then {
+                    e:int;
+                    e = 25;
+                    write(e);
+                }
+            }
+        }
+    }
+}

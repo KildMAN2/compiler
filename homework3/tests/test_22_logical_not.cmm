@@ -1,0 +1,14 @@
+// Test logical NOT
+void main() {
+    a:int;
+    
+    a = 5;
+    
+    if not a < 0 then {
+        write("a is non-negative\n");
+    }
+    
+    if not a == 10 then {
+        write("a is not 10\n");
+    }
+}

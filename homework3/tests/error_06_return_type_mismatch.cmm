@@ -1,0 +1,11 @@
+// Error: Return type mismatch
+int get_value() {
+    x:float;
+    x = 3.14;
+    return x;  // Error: returning float from int function
+}
+
+void main() {
+    a:int;
+    a = get_value();
+}

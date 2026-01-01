@@ -1,0 +1,17 @@
+// Test nested function calls
+int square(n:int) {
+    return n * n;
+}
+
+int sum_of_squares(a:int, b:int) {
+    return square(n:a) + square(n:b);
+}
+
+void main() {
+    result:int;
+    
+    result = sum_of_squares(a:3, b:4);
+    write("3^2 + 4^2 = ");
+    write(result);
+    write("\n");
+}

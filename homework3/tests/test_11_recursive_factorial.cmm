@@ -1,0 +1,22 @@
+// Test recursion - factorial
+int factorial(n:int) {
+    result:int;
+    
+    if n <= 1 then {
+        return 1;
+    } else {
+        result = factorial(n:n-1);
+        return n * result;
+    }
+}
+
+void main() {
+    num:int;
+    fact:int;
+    
+    num = 5;
+    fact = factorial(n:num);
+    write("Factorial of 5 = ");
+    write(fact);
+    write("\n");
+}

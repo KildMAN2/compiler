@@ -1,0 +1,21 @@
+// Test float arithmetic
+void main() {
+    x:float;
+    y:float;
+    z:float;
+    
+    x = 3.14;
+    y = 2.71;
+    
+    z = x + y;
+    write(z);
+    
+    z = x - y;
+    write(z);
+    
+    z = x * y;
+    write(z);
+    
+    z = x / y;
+    write(z);
+}

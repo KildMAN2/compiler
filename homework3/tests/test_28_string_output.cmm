@@ -1,0 +1,11 @@
+// Test various string outputs
+void main() {
+    write("Testing strings!\n");
+    write("Special chars: \n\t\"\n");
+    write("Numbers: ");
+    write(123);
+    write("\n");
+    write("Floats: ");
+    write(3.14);
+    write("\n");
+}

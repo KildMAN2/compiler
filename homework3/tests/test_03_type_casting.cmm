@@ -1,0 +1,19 @@
+// Test type casting
+void main() {
+    a:int;
+    b:float;
+    c:float;
+    d:int;
+    
+    a = 5;
+    b = (float)a;
+    write(b);
+    
+    c = 7.89;
+    d = (int)c;
+    write(d);
+    
+    // Mixed type with casting
+    b = (float)a + c;
+    write(b);
+}

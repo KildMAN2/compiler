@@ -1,0 +1,22 @@
+// Test function calls with named parameters
+int subtract(a:int, b:int) {
+    return a - b;
+}
+
+int divide(numerator:int, denominator:int) {
+    return numerator / denominator;
+}
+
+void main() {
+    result:int;
+    
+    result = subtract(b:3, a:10);
+    write("10 - 3 = ");
+    write(result);
+    write("\n");
+    
+    result = divide(denominator:4, numerator:20);
+    write("20 / 4 = ");
+    write(result);
+    write("\n");
+}

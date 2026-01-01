@@ -1,0 +1,20 @@
+// Test logical AND
+void main() {
+    a:int;
+    b:int;
+    
+    a = 5;
+    b = 10;
+    
+    if a > 0 and b > 5 then {
+        write("Both conditions true\n");
+    } else {
+        write("At least one false\n");
+    }
+    
+    if a > 10 and b > 5 then {
+        write("Both true\n");
+    } else {
+        write("First is false\n");
+    }
+}

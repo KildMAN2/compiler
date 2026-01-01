@@ -1,0 +1,24 @@
+// Test function calls with positional parameters
+int add(a:int, b:int) {
+    c:int;
+    c = a + b;
+    return c;
+}
+
+int multiply(x:int, y:int) {
+    return x * y;
+}
+
+void main() {
+    result:int;
+    
+    result = add(5, 3);
+    write("5 + 3 = ");
+    write(result);
+    write("\n");
+    
+    result = multiply(4, 7);
+    write("4 * 7 = ");
+    write(result);
+    write("\n");
+}

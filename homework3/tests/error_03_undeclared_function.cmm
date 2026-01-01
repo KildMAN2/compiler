@@ -1,0 +1,5 @@
+// Error: Undeclared function
+void main() {
+    a:int;
+    a = undefined_func(5);  // Error: function not declared
+}

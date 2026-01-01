@@ -1,0 +1,38 @@
+// Test all comparison operators
+void main() {
+    a:int;
+    b:int;
+    
+    a = 10;
+    b = 20;
+    
+    // Test ==
+    if a == 10 then {
+        write("a equals 10\n");
+    }
+    
+    // Test <>
+    if a <> b then {
+        write("a not equal b\n");
+    }
+    
+    // Test <
+    if a < b then {
+        write("a less than b\n");
+    }
+    
+    // Test <=
+    if a <= b then {
+        write("a less or equal b\n");
+    }
+    
+    // Test >
+    if b > a then {
+        write("b greater than a\n");
+    }
+    
+    // Test >=
+    if b >= a then {
+        write("b greater or equal a\n");
+    }
+}

@@ -1,0 +1,26 @@
+// Test recursion - fibonacci
+int fib(n:int) {
+    if n <= 1 then {
+        return n;
+    } else {
+        a:int;
+        b:int;
+        a = fib(n:n-1);
+        b = fib(n:n-2);
+        return a + b;
+    }
+}
+
+void main() {
+    i:int;
+    result:int;
+    
+    i = 0;
+    while i <= 10 do {
+        result = fib(n:i);
+        write(result);
+        write(" ");
+        i = i + 1;
+    }
+    write("\n");
+}

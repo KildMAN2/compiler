@@ -1,0 +1,19 @@
+// Test very long expression chains
+void main() {
+    a:int;
+    b:int;
+    c:int;
+    d:int;
+    e:int;
+    result:int;
+    
+    a = 1;
+    b = 2;
+    c = 3;
+    d = 4;
+    e = 5;
+    
+    result = ((((a + b) * c) - d) / e) + ((a * b) + (c * d) - e);
+    write(result);
+    write("\n");
+}

@@ -1,0 +1,11 @@
+// Error: Missing return in non-void function
+int get_value() {
+    a:int;
+    a = 5;
+    // Error: no return statement
+}
+
+void main() {
+    x:int;
+    x = get_value();
+}

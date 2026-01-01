@@ -1,0 +1,13 @@
+// Error: Function redeclaration
+int foo() {
+    return 1;
+}
+
+int foo() {  // Error: already declared
+    return 2;
+}
+
+void main() {
+    a:int;
+    a = foo();
+}

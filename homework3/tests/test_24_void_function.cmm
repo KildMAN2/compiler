@@ -1,0 +1,16 @@
+// Test void functions
+void print_message() {
+    write("Hello from void function\n");
+}
+
+void print_number(n:int) {
+    write("Number: ");
+    write(n);
+    write("\n");
+}
+
+void main() {
+    print_message();
+    print_number(n:42);
+    print_message();
+}

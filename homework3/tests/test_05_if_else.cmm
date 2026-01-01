@@ -1,0 +1,22 @@
+// Test if-then-else
+void main() {
+    a:int;
+    
+    read(a);
+    
+    if a > 0 then {
+        write("Positive\n");
+    } else {
+        write("Non-positive\n");
+    }
+    
+    if a == 0 then {
+        write("Zero\n");
+    } else {
+        if a < 0 then {
+            write("Negative\n");
+        } else {
+            write("Positive\n");
+        }
+    }
+}

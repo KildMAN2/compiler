@@ -1,0 +1,10 @@
+// Error: Return value in void function
+void do_something() {
+    a:int;
+    a = 5;
+    return a;  // Error: void function returning value
+}
+
+void main() {
+    do_something();
+}

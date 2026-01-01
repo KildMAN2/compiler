@@ -1,0 +1,26 @@
+// Extreme nesting stress test
+void main() {
+    a:int;
+    
+    a = 100;
+    
+    while a > 0 do {
+        if a > 50 then {
+            b:int;
+            b = a;
+            while b > 40 do {
+                if b > 45 then {
+                    c:int;
+                    c = b;
+                    if c > 43 then {
+                        write("Deep nest: ");
+                        write(c);
+                        write("\n");
+                    }
+                }
+                b = b - 1;
+            }
+        }
+        a = a - 10;
+    }
+}

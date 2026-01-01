@@ -1,0 +1,12 @@
+// Error: Wrong argument type
+int add(a:int, b:int) {
+    return a + b;
+}
+
+void main() {
+    x:float;
+    result:int;
+    
+    x = 3.14;
+    result = add(5, x);  // Error: float instead of int
+}

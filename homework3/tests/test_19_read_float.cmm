@@ -1,0 +1,18 @@
+// Test float read operations
+void main() {
+    x:float;
+    y:float;
+    product:float;
+    
+    write("Enter first float: ");
+    read(x);
+    
+    write("Enter second float: ");
+    read(y);
+    
+    product = x * y;
+    
+    write("Product = ");
+    write(product);
+    write("\n");
+}

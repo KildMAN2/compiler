@@ -1,0 +1,15 @@
+// Test mixed positional and named parameters
+int calc(a:int, b:int, c:int) {
+    temp:int;
+    temp = a + b;
+    return temp * c;
+}
+
+void main() {
+    result:int;
+    
+    result = calc(2, 3, c:4);
+    write("(2 + 3) * 4 = ");
+    write(result);
+    write("\n");
+}

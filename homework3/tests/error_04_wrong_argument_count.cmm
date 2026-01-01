@@ -1,0 +1,9 @@
+// Error: Wrong number of arguments
+int add(a:int, b:int) {
+    return a + b;
+}
+
+void main() {
+    result:int;
+    result = add(5);  // Error: missing argument
+}
