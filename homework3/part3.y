@@ -70,7 +70,7 @@ bool inFunctionBody = false;
 %type <node> PROGRAM FDEFS FUNC_DEC_API FUNC_DEF_API FUNC_ARGLIST BLK DCL TYPE
 %type <node> STLIST STMT RETURN_STMT WRITE_STMT READ_STMT ASSN LVAL CNTRL
 %type <node> BEXP EXP NUM CALL CALL_ARGS POS_ARGLIST NAMED_ARGLIST NAMED_ARG
-%type <node> M N
+%type <node> M
 
 /* Operator precedence and associativity (lowest to highest) */
 %right ASSIGN
@@ -282,14 +282,6 @@ M:
     /* empty - marker for backpatching */
     {
         $$.quad = buffer->nextQuad();
-    }
-    ;
-
-N:
-    /* empty - marker for unconditional jump */
-    {
-        $$.nextList.push_back(buffer->nextQuad());
-        buffer->emit("JMP ");  // Address filled later by backpatch
     }
     ;
 

@@ -1,0 +1,9 @@
+float foo(a: float) {
+
+	return a + (float)5;
+}
+
+void main() {
+
+	write(foo(3.5));
+}
