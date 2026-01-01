@@ -1,5 +1,5 @@
 // Test named parameters in different orders
-int compute(int a, int b, int c) {
+compute(a:int, b:int, c:int):int {
     return a * 100 + b * 10 + c;
 }
 

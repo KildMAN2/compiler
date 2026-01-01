@@ -4,9 +4,9 @@ void main() {
     b:int;
     c:float;
     
-    a = -5;
-    b = -10;
-    c = -3.14;
+    a = 0 - 5;
+    b = 0 - 10;
+    c = 0.0 - 3.14;
     
     write(a + b);
     write(a - b);
