@@ -36,6 +36,9 @@ str         \"([^\n\r\"\\]|\\[nt\"])*\"
 "then"      { yylval.name = "then"; return THEN; }
 "else"      { yylval.name = "else"; return ELSE; }
 "return"    { yylval.name = "return"; return RETURN; }
+"and"       { yylval.name = "and"; return AND; }
+"or"        { yylval.name = "or"; return OR; }
+"not"       { yylval.name = "not"; return NOT; }
 
     /* Symbols */
 "("         { yylval.name = "("; return LPAREN; }
@@ -71,11 +74,6 @@ str         \"([^\n\r\"\\]|\\[nt\"])*\"
 "-"         { yylval.name = "-"; return ADDOP; }
 "*"         { yylval.name = "*"; return MULOP; }
 "/"         { yylval.name = "/"; return MULOP; }
-
-    /* Logical operators */
-"and"       { yylval.name = "and"; return AND; }
-"or"        { yylval.name = "or"; return OR; }
-"not"       { yylval.name = "not"; return NOT; }
 
     /* Assignment operator */
 "="         { yylval.name = "="; return ASSIGN; }
