@@ -139,9 +139,9 @@ class Buffer {
 };
 
 /*******************************************GLOBALS*******************************************/
-static Buffer* buffer;                          // CodeGen buffer
-static map<string, Symbol> symbolTable;			// Table that contains all symbols defined in prog
-static map<string, Function> functionTable;		// Table that contains all functions - each function with it's members
+extern Buffer* buffer;                          // CodeGen buffer
+extern map<string, Symbol> symbolTable;			// Table that contains all symbols defined in prog
+extern map<string, Function> functionTable;		// Table that contains all functions - each function with it's members
 /**********************************************************************************************/
 
 #endif

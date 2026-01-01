@@ -14,7 +14,7 @@ extern int yyparse(void);
 extern FILE* yyin;
 extern int line_number;
 
-// Global variables
+// Global variables - defined here
 Buffer* buffer = NULL;
 map<string, Symbol> symbolTable;
 map<string, Function> functionTable;
