@@ -53,24 +53,22 @@ string currentFunction = "";
 Type currentFunctionReturnType = void_t;
 bool inFunctionBody = false;
 
+/* Define YYSTYPE directly as yystype */
+#define YYSTYPE yystype
+
 %}
 
-/* Union to hold semantic values */
-%union {
-    yystype node;
-}
-
 /* Token declarations with semantic values */
-%token <node> INT FLOAT VOID WRITE READ WHILE DO IF THEN ELSE RETURN
-%token <node> ID INTEGERNUM REALNUM STR
-%token <node> RELOP ADDOP MULOP ASSIGN AND OR NOT
-%token <node> LPAREN RPAREN LBRACE RBRACE COMMA SEMICOLON COLON
+%token INT FLOAT VOID WRITE READ WHILE DO IF THEN ELSE RETURN
+%token ID INTEGERNUM REALNUM STR
+%token RELOP ADDOP MULOP ASSIGN AND OR NOT
+%token LPAREN RPAREN LBRACE RBRACE COMMA SEMICOLON COLON
 
 /* Non-terminal types */
-%type <node> PROGRAM FDEFS FUNC_DEC_API FUNC_DEF_API FUNC_ARGLIST BLK DCL TYPE
-%type <node> STLIST STMT RETURN_STMT WRITE_STMT READ_STMT ASSN LVAL CNTRL
-%type <node> BEXP EXP NUM CALL CALL_ARGS POS_ARGLIST NAMED_ARGLIST NAMED_ARG
-%type <node> M
+%type PROGRAM FDEFS FUNC_DEC_API FUNC_DEF_API FUNC_ARGLIST BLK DCL TYPE
+%type STLIST STMT RETURN_STMT WRITE_STMT READ_STMT ASSN LVAL CNTRL
+%type BEXP EXP NUM CALL CALL_ARGS POS_ARGLIST NAMED_ARGLIST NAMED_ARG
+%type M
 
 /* Operator precedence and associativity (lowest to highest) */
 %right ASSIGN

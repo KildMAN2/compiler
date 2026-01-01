@@ -25,60 +25,60 @@ str         \"([^\n\r\"\\]|\\[nt\"])*\"
 %%
 
     /* Reserved words */
-"int"       { yylval.node.name = "int"; yylval.node.type = int_; return INT; }
-"float"     { yylval.node.name = "float"; yylval.node.type = float_; return FLOAT; }
-"void"      { yylval.node.name = "void"; yylval.node.type = void_t; return VOID; }
-"write"     { yylval.node.name = "write"; return WRITE; }
-"read"      { yylval.node.name = "read"; return READ; }
-"while"     { yylval.node.name = "while"; return WHILE; }
-"do"        { yylval.node.name = "do"; return DO; }
-"if"        { yylval.node.name = "if"; return IF; }
-"then"      { yylval.node.name = "then"; return THEN; }
-"else"      { yylval.node.name = "else"; return ELSE; }
-"return"    { yylval.node.name = "return"; return RETURN; }
+"int"       { yylval.name = "int"; yylval.type = int_; return INT; }
+"float"     { yylval.name = "float"; yylval.type = float_; return FLOAT; }
+"void"      { yylval.name = "void"; yylval.type = void_t; return VOID; }
+"write"     { yylval.name = "write"; return WRITE; }
+"read"      { yylval.name = "read"; return READ; }
+"while"     { yylval.name = "while"; return WHILE; }
+"do"        { yylval.name = "do"; return DO; }
+"if"        { yylval.name = "if"; return IF; }
+"then"      { yylval.name = "then"; return THEN; }
+"else"      { yylval.name = "else"; return ELSE; }
+"return"    { yylval.name = "return"; return RETURN; }
 
     /* Symbols */
-"("         { yylval.node.name = "("; return LPAREN; }
-")"         { yylval.node.name = ")"; return RPAREN; }
-"{"         { yylval.node.name = "{"; return LBRACE; }
-"}"         { yylval.node.name = "}"; return RBRACE; }
-","         { yylval.node.name = ","; return COMMA; }
-";"         { yylval.node.name = ";"; return SEMICOLON; }
-":"         { yylval.node.name = ":"; return COLON; }
+"("         { yylval.name = "("; return LPAREN; }
+")"         { yylval.name = ")"; return RPAREN; }
+"{"         { yylval.name = "{"; return LBRACE; }
+"}"         { yylval.name = "}"; return RBRACE; }
+","         { yylval.name = ","; return COMMA; }
+";"         { yylval.name = ";"; return SEMICOLON; }
+":"         { yylval.name = ":"; return COLON; }
 
     /* Complex tokens */
-{id}        { yylval.node.name = yytext; return ID; }
-{integernum} { yylval.node.name = yytext; yylval.node.type = int_; return INTEGERNUM; }
-{realnum}   { yylval.node.name = yytext; yylval.node.type = float_; return REALNUM; }
+{id}        { yylval.name = yytext; return ID; }
+{integernum} { yylval.name = yytext; yylval.type = int_; return INTEGERNUM; }
+{realnum}   { yylval.name = yytext; yylval.type = float_; return REALNUM; }
 {str}       { 
               /* Extract string content without quotes and process escapes */
               int len = strlen(yytext);
               string str_val = string(yytext + 1, len - 2);
-              yylval.node.name = str_val;
+              yylval.name = str_val;
               return STR;
             }
 
     /* Relational operators */
-"=="        { yylval.node.name = "=="; return RELOP; }
-"<>"        { yylval.node.name = "<>"; return RELOP; }
-"<="        { yylval.node.name = "<="; return RELOP; }
-">="        { yylval.node.name = ">="; return RELOP; }
-"<"         { yylval.node.name = "<"; return RELOP; }
-">"         { yylval.node.name = ">"; return RELOP; }
+"=="        { yylval.name = "=="; return RELOP; }
+"<>"        { yylval.name = "<>"; return RELOP; }
+"<="        { yylval.name = "<="; return RELOP; }
+">="        { yylval.name = ">="; return RELOP; }
+"<"         { yylval.name = "<"; return RELOP; }
+">"         { yylval.name = ">"; return RELOP; }
 
     /* Arithmetic operators */
-"+"         { yylval.node.name = "+"; return ADDOP; }
-"-"         { yylval.node.name = "-"; return ADDOP; }
-"*"         { yylval.node.name = "*"; return MULOP; }
-"/"         { yylval.node.name = "/"; return MULOP; }
+"+"         { yylval.name = "+"; return ADDOP; }
+"-"         { yylval.name = "-"; return ADDOP; }
+"*"         { yylval.name = "*"; return MULOP; }
+"/"         { yylval.name = "/"; return MULOP; }
 
     /* Logical operators */
-"and"       { yylval.node.name = "and"; return AND; }
-"or"        { yylval.node.name = "or"; return OR; }
-"not"       { yylval.node.name = "not"; return NOT; }
+"and"       { yylval.name = "and"; return AND; }
+"or"        { yylval.name = "or"; return OR; }
+"not"       { yylval.name = "not"; return NOT; }
 
     /* Assignment operator */
-"="         { yylval.node.name = "="; return ASSIGN; }
+"="         { yylval.name = "="; return ASSIGN; }
 
     /* Whitespace (except newlines) */
 [ \t\r]+    { /* ignore whitespace */ }
