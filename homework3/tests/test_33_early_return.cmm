@@ -1,5 +1,5 @@
 // Test early return in function
-check(x:int):int {
+int check(x:int) {
     result:int;
     
     if (x < 0) then {

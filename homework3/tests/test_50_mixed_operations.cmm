@@ -1,5 +1,5 @@
 // Test mixed arithmetic, logical, and control flow
-calculate(x:int, y:int):int {
+int calculate(x:int, y:int) {
     result:int;
     
     if ((x > 0) and (y > 0)) then {

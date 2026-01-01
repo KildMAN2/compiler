@@ -1,5 +1,5 @@
 // Test multiple return paths in function
-max(a:int, b:int):int {
+int max(a:int, b:int) {
     if (a > b) then {
         return a;
     } else {
