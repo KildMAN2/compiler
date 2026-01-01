@@ -11,6 +11,9 @@ int check(x:int) {
 }
 
 void main() {
+    neg3:int;
+    neg3 = 0 - 3;
+    
     write(check(x:5));
-    write(check(x:-3));
+    write(check(x:neg3));
 }

@@ -16,7 +16,13 @@ int calculate(x:int, y:int) {
 }
 
 void main() {
+    neg5:int;
+    neg10:int;
+    
+    neg5 = 0 - 5;
+    neg10 = 0 - 10;
+    
     write(calculate(x:5, y:10));
-    write(calculate(x:-5, y:-10));
-    write(calculate(x:5, y:-10));
+    write(calculate(x:neg5, y:neg10));
+    write(calculate(x:5, y:neg10));
 }
