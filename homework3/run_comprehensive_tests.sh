@@ -48,8 +48,8 @@ run_test() {
     
     echo -e "${CYAN}Test $test_num [$category]: $basename${NC}"
     
-    # Run compiler and capture output
-    output=$(./rx-cc "$file" "$rsk_file" 2>&1)
+    # Run compiler with single parameter and capture output
+    output=$(./rx-cc "$file" 2>&1)
     exit_code=$?
     
     if [ "$should_pass" == "pass" ]; then
