@@ -43,15 +43,15 @@ string getRegName(int regNum);
 void emitArithmetic(int result, int op1, int op2, const string& operation, Type type);
 void emitRelational(int result, int op1, int op2, const string& operation, Type type);
 
-/* Global variables */
-int currentDepth = 0;
-int currentOffset = 0;
-int tempCounter = 0;
-int labelCounter = 0;
-map<int, Type> registerTypes;  // Track type of each register
-string currentFunction = "";
-Type currentFunctionReturnType = void_t;
-bool inFunctionBody = false;
+/* Global variables - declared as extern, defined in rx-cc.cpp */
+extern int currentDepth;
+extern int currentOffset;
+extern int tempCounter;
+extern int labelCounter;
+extern map<int, Type> registerTypes;
+extern string currentFunction;
+extern Type currentFunctionReturnType;
+extern bool inFunctionBody;
 
 /* Define YYSTYPE directly as yystype */
 #define YYSTYPE yystype
@@ -325,8 +325,14 @@ RETURN_STMT:
         }
         checkTypesMatch($2.type, currentFunctionReturnType, "return");
         
-        buffer->emit("RETVAL I" + intToString($2.RegNum));
-        buffer->emit("RET");
+        // Store return value in I1 (by convention)
+        string srcReg = "I" + intToString($2.RegNum);
+        if ($2.type == int_) {
+            buffer->emit("COPYI I1 " + srcReg);
+        } else {
+            buffer->emit("COPYF I1 " + srcReg);
+        }
+        buffer->emit("RETRN");
         
         $$.nextList = vector<int>();
     }
@@ -336,7 +342,7 @@ RETURN_STMT:
             semanticError("Must return value from non-void function");
         }
         
-        buffer->emit("RET");
+        buffer->emit("RETRN");
         $$.nextList = vector<int>();
     }
     ;
@@ -347,9 +353,9 @@ WRITE_STMT:
         // Generate write instruction
         string regName = "I" + intToString($3.RegNum);
         if ($3.type == int_) {
-            buffer->emit("WRITEI " + regName);
+            buffer->emit("PRNTI " + regName);
         } else if ($3.type == float_) {
-            buffer->emit("WRITEF " + regName);
+            buffer->emit("PRNTF " + regName);
         } else {
             semanticError("Cannot write expression of type void");
         }
@@ -358,8 +364,12 @@ WRITE_STMT:
     }
     | WRITE LPAREN STR RPAREN SEMICOLON
     {
-        // Write string literal
-        buffer->emit("WRITES \"" + $3.name + "\"");
+        // Write string literal - emit PRNTC for each character
+        string str = $3.name;
+        for (size_t i = 0; i < str.length(); i++) {
+            int asciiValue = (int)str[i];
+            buffer->emit("PRNTC " + intToString(asciiValue));
+        }
         $$.nextList = vector<int>();
     }
     ;
@@ -382,7 +392,8 @@ READ_STMT:
         
         // Store to variable
         Symbol& sym = symbolTable[$3.name];
-        buffer->emit("STOREI " + regName + " " + intToString(sym.offset[currentDepth]));
+        string instruction = (varType == int_) ? "STORI" : "STORF";
+        buffer->emit(instruction + " " + regName + " I0 " + intToString(sym.offset[currentDepth]));
         
         $$.nextList = vector<int>();
     }
@@ -397,7 +408,8 @@ ASSN:
         // Generate store instruction
         Symbol& sym = symbolTable[$1.name];
         string regName = "I" + intToString($3.RegNum);
-        buffer->emit("STOREI " + regName + " " + intToString(sym.offset[currentDepth]));
+        string instruction = (varType == int_) ? "STORI" : "STORF";
+        buffer->emit(instruction + " " + regName + " I0 " + intToString(sym.offset[currentDepth]));
         
         $$.nextList = vector<int>();
     }
@@ -439,7 +451,7 @@ CNTRL:
         // Backpatch STMT nextList back to M1 (loop start)
         buffer->backpatch($6.nextList, $2.quad);
         // Jump back to loop start
-        buffer->emit("JMP " + intToString($2.quad));
+        buffer->emit("UJUMP " + intToString($2.quad));
         // False list becomes nextList
         $$.nextList = $3.falseList;
     }
@@ -472,25 +484,50 @@ BEXP:
     {
         checkTypesMatch($1.type, $3.type, "relational operation");
         
-        // Generate conditional jump
+        // Generate comparison + branch
         string reg1 = "I" + intToString($1.RegNum);
         string reg2 = "I" + intToString($3.RegNum);
         string op = $2.name;
         
-        // Convert operation
-        string jmpOp;
-        if (op == "==") jmpOp = "JEQ";
-        else if (op == "<>") jmpOp = "JNE";
-        else if (op == "<") jmpOp = "JLT";
-        else if (op == "<=") jmpOp = "JLE";
-        else if (op == ">") jmpOp = "JGT";
-        else if (op == ">=") jmpOp = "JGE";
+        // Create temp register for comparison result
+        int tempReg = newTemp(int_);
+        string regTemp = "I" + intToString(tempReg);
         
+        // Generate comparison instruction based on operator
+        if (op == "==") {
+            if ($1.type == int_) buffer->emit("SEQUI " + regTemp + " " + reg1 + " " + reg2);
+            else buffer->emit("SEQUF " + regTemp + " " + reg1 + " " + reg2);
+        }
+        else if (op == "<>") {
+            if ($1.type == int_) buffer->emit("SNEQI " + regTemp + " " + reg1 + " " + reg2);
+            else buffer->emit("SNEQF " + regTemp + " " + reg1 + " " + reg2);
+        }
+        else if (op == "<") {
+            // For a < b, use SGRT with swapped operands: b > a
+            if ($1.type == int_) buffer->emit("SGRTI " + regTemp + " " + reg2 + " " + reg1);
+            else buffer->emit("SGRTF " + regTemp + " " + reg2 + " " + reg1);
+        }
+        else if (op == "<=") {
+            if ($1.type == int_) buffer->emit("SLETI " + regTemp + " " + reg1 + " " + reg2);
+            else buffer->emit("SLETF " + regTemp + " " + reg1 + " " + reg2);
+        }
+        else if (op == ">") {
+            if ($1.type == int_) buffer->emit("SGRTI " + regTemp + " " + reg1 + " " + reg2);
+            else buffer->emit("SGRTF " + regTemp + " " + reg1 + " " + reg2);
+        }
+        else if (op == ">=") {
+            // For a >= b, use SLET with swapped operands: b <= a
+            if ($1.type == int_) buffer->emit("SLETI " + regTemp + " " + reg2 + " " + reg1);
+            else buffer->emit("SLETF " + regTemp + " " + reg2 + " " + reg1);
+        }
+        
+        // Branch if not equal to zero (comparison was true)
         $$.trueList.push_back(buffer->nextQuad());
-        buffer->emit(jmpOp + " " + reg1 + " " + reg2 + " ");
+        buffer->emit("BNEQZ " + regTemp + " ");
         
+        // Unconditional jump for false case
         $$.falseList.push_back(buffer->nextQuad());
-        buffer->emit("JMP ");
+        buffer->emit("UJUMP ");
     }
     | LPAREN BEXP RPAREN
     {
@@ -510,15 +547,15 @@ EXP:
         
         if ($2.name == "+") {
             if ($1.type == int_) {
-                buffer->emit("ADDI " + result + " " + reg1 + " " + reg2);
+                buffer->emit("ADD2I " + result + " " + reg1 + " " + reg2);
             } else {
-                buffer->emit("ADDF " + result + " " + reg1 + " " + reg2);
+                buffer->emit("ADD2F " + result + " " + reg1 + " " + reg2);
             }
         } else if ($2.name == "-") {
             if ($1.type == int_) {
-                buffer->emit("SUBI " + result + " " + reg1 + " " + reg2);
+                buffer->emit("SUBTI " + result + " " + reg1 + " " + reg2);
             } else {
-                buffer->emit("SUBF " + result + " " + reg1 + " " + reg2);
+                buffer->emit("SUBTF " + result + " " + reg1 + " " + reg2);
             }
         }
         
@@ -536,15 +573,15 @@ EXP:
         
         if ($2.name == "*") {
             if ($1.type == int_) {
-                buffer->emit("MULI " + result + " " + reg1 + " " + reg2);
+                buffer->emit("MULTI " + result + " " + reg1 + " " + reg2);
             } else {
-                buffer->emit("MULF " + result + " " + reg1 + " " + reg2);
+                buffer->emit("MULTF " + result + " " + reg1 + " " + reg2);
             }
         } else if ($2.name == "/") {
             if ($1.type == int_) {
-                buffer->emit("DIVI " + result + " " + reg1 + " " + reg2);
+                buffer->emit("DIVDI " + result + " " + reg1 + " " + reg2);
             } else {
-                buffer->emit("DIVF " + result + " " + reg1 + " " + reg2);
+                buffer->emit("DIVDF " + result + " " + reg1 + " " + reg2);
             }
         }
         
@@ -573,7 +610,7 @@ EXP:
             int resultReg = newTemp(float_);
             string source = "I" + intToString($4.RegNum);
             string result = "I" + intToString(resultReg);
-            buffer->emit("ITOR " + result + " " + source);
+            buffer->emit("CITOF " + result + " " + source);
             
             $$.RegNum = resultReg;
             $$.type = float_;
@@ -582,7 +619,7 @@ EXP:
             int resultReg = newTemp(int_);
             string source = "I" + intToString($4.RegNum);
             string result = "I" + intToString(resultReg);
-            buffer->emit("RTOI " + result + " " + source);
+            buffer->emit("CFTOI " + result + " " + source);
             
             $$.RegNum = resultReg;
             $$.type = int_;
@@ -603,7 +640,8 @@ EXP:
         
         Symbol& sym = symbolTable[$1.name];
         string regName = "I" + intToString(tempReg);
-        buffer->emit("LOADI " + regName + " " + intToString(sym.offset[currentDepth]));
+        string instruction = (varType == int_) ? "LOADI" : "LOADF";
+        buffer->emit(instruction + " " + regName + " I0 " + intToString(sym.offset[currentDepth]));
         
         $$.RegNum = tempReg;
         $$.type = varType;
@@ -624,7 +662,8 @@ NUM:
     { 
         int tempReg = newTemp(int_);
         string regName = "I" + intToString(tempReg);
-        buffer->emit("LOADI " + regName + " #" + $1.name);
+        // Load immediate value using COPYI
+        buffer->emit("COPYI " + regName + " " + $1.name);
         
         $$.RegNum = tempReg;
         $$.type = int_;
@@ -634,7 +673,8 @@ NUM:
     { 
         int tempReg = newTemp(float_);
         string regName = "I" + intToString(tempReg);
-        buffer->emit("LOADF " + regName + " #" + $1.name);
+        // Load immediate value using COPYF
+        buffer->emit("COPYF " + regName + " " + $1.name);
         
         $$.RegNum = tempReg;
         $$.type = float_;
@@ -651,23 +691,37 @@ CALL:
         
         checkFunctionCall($1.name, $3.paramTypes, $3.paramLabels, $3.paramRegs);
         
-        // Push arguments onto stack in reverse order
-        for (int i = $3.paramRegs.size() - 1; i >= 0; i--) {
-            string regName = "I" + intToString($3.paramRegs[i]);
-            buffer->emit("PUSH " + regName);
+        // Copy arguments to parameter registers (I2, I3, I4, ...)
+        for (size_t i = 0; i < $3.paramRegs.size(); i++) {
+            string srcReg = "I" + intToString($3.paramRegs[i]);
+            string destReg = "I" + intToString(i + 2);  // Parameters start at I2
+            
+            if ($3.paramTypes[i] == int_) {
+                buffer->emit("COPYI " + destReg + " " + srcReg);
+            } else {
+                buffer->emit("COPYF " + destReg + " " + srcReg);
+            }
         }
         
-        // Call function
+        // Call function using JLINK (stores return address in I0)
         Function& func = functionTable[$1.name];
-        buffer->emit("CALL " + $1.name);
+        buffer->emit("JLINK " + $1.name);
         
-        // Get return value
+        // Get return value from I1
         Type returnType = func.returnType;
-        int resultReg = newTemp(returnType);
-        string regName = "I" + intToString(resultReg);
-        buffer->emit("POP " + regName);
+        if (returnType != void_t) {
+            int resultReg = newTemp(returnType);
+            string regName = "I" + intToString(resultReg);
+            if (returnType == int_) {
+                buffer->emit("COPYI " + regName + " I1");
+            } else {
+                buffer->emit("COPYF " + regName + " I1");
+            }
+            $$.RegNum = resultReg;
+        } else {
+            $$.RegNum = -1;  // No return value for void functions
+        }
         
-        $$.RegNum = resultReg;
         $$.type = returnType;
         $$.name = $1.name;
     }
