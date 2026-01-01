@@ -379,10 +379,25 @@ WRITE_STMT:
     }
     | WRITE LPAREN STR RPAREN SEMICOLON
     {
-        // Write string literal - emit PRNTC for each character
+        // Write string literal - emit PRNTC for each character with escape sequence processing
         string str = $3.name;
         for (size_t i = 0; i < str.length(); i++) {
-            int asciiValue = (int)str[i];
+            int asciiValue;
+            if (str[i] == '\\' && i + 1 < str.length()) {
+                // Process escape sequences
+                i++;  // Move to next character
+                switch (str[i]) {
+                    case 'n':  asciiValue = 10; break;  // newline
+                    case 't':  asciiValue = 9;  break;  // tab
+                    case '"':  asciiValue = 34; break;  // quote
+                    case '\\': asciiValue = 92; break;  // backslash
+                    default:
+                        semanticError("Invalid escape sequence");
+                        asciiValue = str[i];
+                }
+            } else {
+                asciiValue = (int)str[i];
+            }
             buffer->emit("PRNTC " + intToString(asciiValue));
         }
         $$.nextList = vector<int>();
