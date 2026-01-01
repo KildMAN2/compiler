@@ -3,5 +3,4 @@ void main() {
     write("Hello\nWorld\n");
     write("Tab:\there\n");
     write("Quote:\"test\"\n");
-    write("Backslash:\\test\n");
 }

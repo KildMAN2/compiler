@@ -1,6 +1,6 @@
 // Test operator precedence
 void main() {
-    int result;
+    result:int;
     
     result = 2 + 3 * 4;
     write(result);

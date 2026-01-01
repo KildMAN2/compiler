@@ -1,6 +1,6 @@
 // Test deeply nested if-else statements
 void main() {
-    int x;
+    x:int;
     x = 15;
     
     if (x > 10) then {

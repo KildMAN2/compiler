@@ -1,9 +1,9 @@
 // Test mixed float and int operations with casting
 void main() {
-    int a;
-    float b;
-    float c;
-    int d;
+    a:int;
+    b:float;
+    c:float;
+    d:int;
     
     a = 10;
     b = 3.5;

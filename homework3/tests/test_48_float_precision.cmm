@@ -1,8 +1,8 @@
 // Test float operations and precision
 void main() {
-    float a;
-    float b;
-    float c;
+    a:float;
+    b:float;
+    c:float;
     
     a = 1.5;
     b = 2.5;

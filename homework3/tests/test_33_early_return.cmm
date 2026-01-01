@@ -1,10 +1,11 @@
 // Test early return in function
 int check(int x) {
+    result:int;
+    
     if (x < 0) then {
         return 0;
     }
     
-    int result;
     result = x * 2;
     return result;
 }

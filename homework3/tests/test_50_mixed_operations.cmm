@@ -1,6 +1,6 @@
 // Test mixed arithmetic, logical, and control flow
 int calculate(int x, int y) {
-    int result;
+    result:int;
     
     if ((x > 0) and (y > 0)) then {
         result = x + y;

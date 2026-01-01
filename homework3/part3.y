@@ -390,7 +390,6 @@ WRITE_STMT:
                     case 'n':  asciiValue = 10; break;  // newline
                     case 't':  asciiValue = 9;  break;  // tab
                     case '"':  asciiValue = 34; break;  // quote
-                    case '\\': asciiValue = 92; break;  // backslash
                     default:
                         semanticError("Invalid escape sequence");
                         asciiValue = str[i];

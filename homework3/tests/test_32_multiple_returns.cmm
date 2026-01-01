@@ -8,9 +8,9 @@ int max(int a, int b) {
 }
 
 void main() {
-    int x;
-    int y;
-    int result;
+    x:int;
+    y:int;
+    result:int;
     
     x = 10;
     y = 20;

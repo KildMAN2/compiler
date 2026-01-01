@@ -1,7 +1,7 @@
 // Test while loop with complex break condition
 void main() {
-    int i;
-    int sum;
+    i:int;
+    sum:int;
     
     i = 1;
     sum = 0;

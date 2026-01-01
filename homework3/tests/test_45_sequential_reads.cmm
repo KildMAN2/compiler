@@ -1,8 +1,8 @@
 // Test multiple sequential read operations
 void main() {
-    int a;
-    int b;
-    float c;
+    a:int;
+    b:int;
+    c:float;
     
     read(a);
     read(b);

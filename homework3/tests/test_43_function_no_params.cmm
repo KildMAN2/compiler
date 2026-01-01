@@ -4,7 +4,7 @@ int getConstant() {
 }
 
 void main() {
-    int x;
+    x:int;
     x = getConstant();
     write(x);
 }
