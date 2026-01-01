@@ -28,6 +28,7 @@ map<int, Type> registerTypes;
 string currentFunction = "";
 Type currentFunctionReturnType = void_t;
 bool inFunctionBody = false;
+bool currentFunctionHasReturn = false;
 
 int main(int argc, char* argv[]) {
     // Check command line arguments

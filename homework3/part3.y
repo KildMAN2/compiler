@@ -53,6 +53,7 @@ extern map<int, Type> registerTypes;
 extern string currentFunction;
 extern Type currentFunctionReturnType;
 extern bool inFunctionBody;
+extern bool currentFunctionHasReturn;
 
 /* Define YYSTYPE directly as yystype */
 #define YYSTYPE yystype
@@ -98,9 +99,14 @@ PROGRAM:
 FDEFS:
     FDEFS FUNC_DEF_API BLK
     {
+        // Check if non-void function has return statement
+        if ($2.type != void_t && !currentFunctionHasReturn) {
+            semanticError("Non-void function must have a return statement");
+        }
+        
         // Complete function definition
         defineFunction($2.name);
-        buffer->emit("RET");  // Add return at end if not present
+        buffer->emit("RETRN");  // Add return at end if not present
         
         inFunctionBody = false;
         currentFunction = "";
@@ -156,6 +162,7 @@ FUNC_DEF_API:
         currentFunction = $2.name;
         currentFunctionReturnType = $1.type;
         inFunctionBody = true;
+        currentFunctionHasReturn = false;  // Reset return flag
         currentDepth = 1;
         currentOffset = 0;
         
@@ -177,6 +184,7 @@ FUNC_DEF_API:
         currentFunction = $2.name;
         currentFunctionReturnType = $1.type;
         inFunctionBody = true;
+        currentFunctionHasReturn = false;  // Reset return flag
         currentDepth = 1;
         currentOffset = 0;
         
@@ -328,6 +336,8 @@ RETURN_STMT:
         }
         checkTypesMatch($2.type, currentFunctionReturnType, "return");
         
+        currentFunctionHasReturn = true;  // Mark that we've seen a return
+        
         // Store return value in I1 (by convention)
         string srcReg = "I" + intToString($2.RegNum);
         if ($2.type == int_) {
@@ -344,6 +354,8 @@ RETURN_STMT:
         if (currentFunctionReturnType != void_t) {
             semanticError("Must return value from non-void function");
         }
+        
+        currentFunctionHasReturn = true;  // Mark that we've seen a return
         
         buffer->emit("RETRN");
         $$.nextList = vector<int>();
