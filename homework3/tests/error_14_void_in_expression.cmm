@@ -1,0 +1,9 @@
+// ERROR: Cannot use void function in expression
+void helper() {
+    write(1);
+}
+
+void main() {
+    int x;
+    x = helper();  // ERROR: void function cannot return value
+}

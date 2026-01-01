@@ -1,0 +1,14 @@
+// Test negative numbers and operations
+void main() {
+    int a;
+    int b;
+    float c;
+    
+    a = -5;
+    b = -10;
+    c = -3.14;
+    
+    write(a + b);
+    write(a - b);
+    write(c);
+}

@@ -1,0 +1,19 @@
+// Test multiple return paths in function
+int max(int a, int b) {
+    if (a > b) then {
+        return a;
+    } else {
+        return b;
+    }
+}
+
+void main() {
+    int x;
+    int y;
+    int result;
+    
+    x = 10;
+    y = 20;
+    result = max(a:x, b:y);
+    write(result);
+}

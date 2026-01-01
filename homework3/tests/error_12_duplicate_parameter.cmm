@@ -1,0 +1,8 @@
+// ERROR: Duplicate named parameter
+int test(int a, int b) {
+    return a + b;
+}
+
+void main() {
+    write(test(a:10, a:20));  // ERROR: duplicate parameter 'a'
+}

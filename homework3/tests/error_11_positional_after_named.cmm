@@ -1,0 +1,8 @@
+// ERROR: Named parameter after positional must maintain order
+int test(int a, int b, int c) {
+    return a + b + c;
+}
+
+void main() {
+    write(test(10, b:20, 30));  // ERROR: positional after named
+}

@@ -1,0 +1,8 @@
+// ERROR: Function parameter count mismatch (too many)
+int add(int a, int b) {
+    return a + b;
+}
+
+void main() {
+    write(add(1, 2, 3));  // ERROR: too many arguments
+}

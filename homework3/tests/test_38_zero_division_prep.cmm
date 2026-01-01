@@ -1,0 +1,16 @@
+// Test division operations (zero check would be runtime)
+void main() {
+    int a;
+    int b;
+    int c;
+    
+    a = 10;
+    b = 2;
+    c = a / b;
+    write(c);
+    
+    a = 15;
+    b = 3;
+    c = a / b;
+    write(c);
+}

@@ -1,0 +1,22 @@
+// Test mixed arithmetic, logical, and control flow
+int calculate(int x, int y) {
+    int result;
+    
+    if ((x > 0) and (y > 0)) then {
+        result = x + y;
+    } else {
+        if ((x < 0) and (y < 0)) then {
+            result = x * y;
+        } else {
+            result = 0;
+        }
+    }
+    
+    return result;
+}
+
+void main() {
+    write(calculate(x:5, y:10));
+    write(calculate(x:-5, y:-10));
+    write(calculate(x:5, y:-10));
+}

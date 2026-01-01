@@ -1,0 +1,5 @@
+// ERROR: Cannot cast to void
+void main() {
+    int a;
+    a = (void)10;  // ERROR: cannot cast to void
+}

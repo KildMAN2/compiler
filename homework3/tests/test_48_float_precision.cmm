@@ -1,0 +1,17 @@
+// Test float operations and precision
+void main() {
+    float a;
+    float b;
+    float c;
+    
+    a = 1.5;
+    b = 2.5;
+    c = a + b;
+    write(c);
+    
+    c = a * b;
+    write(c);
+    
+    c = b / a;
+    write(c);
+}

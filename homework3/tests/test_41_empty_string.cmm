@@ -1,0 +1,6 @@
+// Test empty string output
+void main() {
+    write("");
+    write("test");
+    write("");
+}

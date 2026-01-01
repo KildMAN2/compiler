@@ -1,0 +1,14 @@
+// Test void function calls
+void helper1() {
+    write("Helper 1\n");
+}
+
+void helper2() {
+    write("Helper 2\n");
+}
+
+void main() {
+    helper1();
+    helper2();
+    helper1();
+}

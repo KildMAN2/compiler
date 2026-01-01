@@ -1,0 +1,18 @@
+// Test multiple comparisons
+void main() {
+    int a;
+    int b;
+    
+    a = 5;
+    b = 10;
+    
+    if (a < b) then {
+        if (b > a) then {
+            if (a == 5) then {
+                if (b <> 5) then {
+                    write(1);
+                }
+            }
+        }
+    }
+}

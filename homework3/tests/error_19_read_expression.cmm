@@ -1,0 +1,6 @@
+// ERROR: Cannot read into expression
+void main() {
+    int a;
+    a = 5;
+    read(a + 1);  // ERROR: read requires lvalue
+}

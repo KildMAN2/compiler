@@ -1,0 +1,8 @@
+// ERROR: Invalid named parameter
+int test(int a, int b) {
+    return a + b;
+}
+
+void main() {
+    write(test(a:10, c:20));  // ERROR: 'c' is not a parameter
+}

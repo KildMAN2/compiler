@@ -1,0 +1,8 @@
+// ERROR: Missing required cast between types
+void main() {
+    int a;
+    float b;
+    
+    a = 10;
+    b = a;  // ERROR: cannot assign int to float without cast
+}

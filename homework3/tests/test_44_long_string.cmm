@@ -1,0 +1,4 @@
+// Test long string output
+void main() {
+    write("This is a very long string that contains many characters to test the compiler's ability to handle long strings properly.\n");
+}

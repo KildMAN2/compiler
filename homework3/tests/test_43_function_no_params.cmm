@@ -1,0 +1,10 @@
+// Test function with no parameters
+int getConstant() {
+    return 42;
+}
+
+void main() {
+    int x;
+    x = getConstant();
+    write(x);
+}

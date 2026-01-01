@@ -1,0 +1,16 @@
+// Test operator precedence
+void main() {
+    int result;
+    
+    result = 2 + 3 * 4;
+    write(result);
+    
+    result = (2 + 3) * 4;
+    write(result);
+    
+    result = 10 - 2 - 3;
+    write(result);
+    
+    result = 20 / 4 / 2;
+    write(result);
+}

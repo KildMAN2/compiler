@@ -1,0 +1,7 @@
+// ERROR: Cannot use uninitialized variable
+void main() {
+    int a;
+    int b;
+    b = a + 5;  // Note: This might not be caught at compile time
+    write(b);
+}

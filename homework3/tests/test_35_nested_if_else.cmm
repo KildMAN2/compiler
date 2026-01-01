@@ -1,0 +1,19 @@
+// Test deeply nested if-else statements
+void main() {
+    int x;
+    x = 15;
+    
+    if (x > 10) then {
+        if (x > 20) then {
+            write(1);
+        } else {
+            if (x > 15) then {
+                write(2);
+            } else {
+                write(3);
+            }
+        }
+    } else {
+        write(4);
+    }
+}
