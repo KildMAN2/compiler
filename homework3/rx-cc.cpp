@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <map>
 #include "part3_helpers.hpp"
@@ -71,6 +72,25 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     
+    // Get the buffer output first to calculate line numbers
+    string bufferOutput = buffer->printBuffer();
+    
+    // Calculate line numbers for each function label in the buffer
+    map<string, int> functionLineNumbers;
+    istringstream bufferStream(bufferOutput);
+    string line;
+    int lineNum = 5; // Header takes lines 1-4: <header>, <unimplemented>..., <implemented>..., </header>
+    while (getline(bufferStream, line)) {
+        // Check if this line is a LABEL directive
+        if (line.find("LABEL ") == 0) {
+            string funcName = line.substr(6); // Extract function name after "LABEL "
+            // Remove any trailing whitespace
+            funcName.erase(funcName.find_last_not_of(" \t\n\r") + 1);
+            functionLineNumbers[funcName] = lineNum;
+        }
+        lineNum++;
+    }
+    
     // Generate header for linker
     outFile << "<header>" << endl;
     
@@ -86,13 +106,13 @@ int main(int argc, char* argv[]) {
     }
     outFile << endl;
     
-    // Implemented functions (defined in this file) with their start line
+    // Implemented functions (defined in this file) with their actual line number in output
     outFile << "<implemented>";
     bool firstImp = true;
     for (auto& func : functionTable) {
         if (func.second.isDefined) {
             if (!firstImp) outFile << " ";
-            outFile << func.first << "," << (func.second.startLineImplementation + 1); // +1 because lines after header
+            outFile << func.first << "," << functionLineNumbers[func.first];
             firstImp = false;
         }
     }
@@ -101,7 +121,7 @@ int main(int argc, char* argv[]) {
     outFile << "</header>" << endl;
     
     // Print the generated code
-    outFile << buffer->printBuffer();
+    outFile << bufferOutput;
     outFile.close();
     
     cout << "Compilation successful. Output written to: " << outputFile << endl;
