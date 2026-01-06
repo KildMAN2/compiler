@@ -89,7 +89,7 @@ str         \"([^\n\r\"\\]|\\[nt\"])*\"
 
     /* Unrecognized characters */
 .           { 
-              fprintf(stderr, "Lexical error: unrecognized character '%s' in line %d\n", yytext, line_number);
+              printf("Lexical error: unrecognized character '%s' in line %d\n", yytext, line_number);
               exit(LEXICAL_ERROR);
             }
 

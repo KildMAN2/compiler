@@ -831,12 +831,12 @@ NAMED_ARG:
 
 /* Error handling function */
 void yyerror(const char *s) {
-    fprintf(stderr, "Syntax error: '%s' in line %d\n", yytext, line_number);
+    printf("Syntax error: '%s' in line %d\n", yytext, line_number);
     exit(SYNTAX_ERROR);
 }
 
 void semanticError(const string& msg) {
-    fprintf(stderr, "Semantic error in line %d: %s\n", line_number, msg.c_str());
+    printf("Semantic error in line %d: %s\n", line_number, msg.c_str());
     exit(SEMANTIC_ERROR);
 }
 
