@@ -13,8 +13,8 @@ if [ ! -f homework3/rx-runtime.rsk ]; then
         echo "Creating minimal rx-runtime.rsk..."
         cat > homework3/rx-runtime.rsk << 'EOF'
 <header>
-<unimplemented>write read
-<implemented>
+<unimplemented>
+<implemented>write,5 read,8
 </header>
 LABEL write
 PRNTI I2
