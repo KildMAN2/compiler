@@ -84,11 +84,9 @@ extern bool currentFunctionHasReturn;
 PROGRAM:
     FDEFS
     { 
-        // Check that main function exists and is defined
-        if (!isFunctionDeclared("main")) {
-            semanticError("Program must have a main function");
-        }
-        if (!functionTable["main"].isDefined) {
+        // Check that if main exists, it must be defined (not just declared)
+        // main() is optional to allow library modules without main
+        if (isFunctionDeclared("main") && !functionTable["main"].isDefined) {
             semanticError("main function must be defined");
         }
         
