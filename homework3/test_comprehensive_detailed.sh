@@ -656,6 +656,12 @@ echo ""
 total_tests=$((total_tests + 1))
 echo -e "${CYAN}Test 7.1: Multi-module compilation${NC}"
 
+# Ensure runtime file exists for the linker (course staff provides rx-runtime.rsk).
+# If missing, try to create it using setup_runtime.sh (works even if not executable).
+if [ ! -f "rx-runtime.rsk" ] && [ -f "./setup_runtime.sh" ]; then
+    bash ./setup_runtime.sh > /dev/null 2>&1
+fi
+
 # Module 1: helper functions (no main)
 cat > test_helper_module.cmm << 'EOF'
 int add(a : int, b : int) {
@@ -691,9 +697,17 @@ if [ $helper_result -eq 0 ] && [ $main_result -eq 0 ] && \
     # Test 7.2: Linking
     total_tests=$((total_tests + 1))
     echo -e "${CYAN}Test 7.2: Linking modules${NC}"
-    
-    ./rx-linker test_main_module.rsk test_helper_module.rsk > /dev/null 2>&1
-    if [ $? -eq 0 ] && [ -f "test_main_module.e" ]; then
+
+    if [ ! -f "rx-runtime.rsk" ]; then
+        echo -e "${RED}✗ FAIL${NC} - Linking failed (missing rx-runtime.rsk in current directory)"
+        failed_tests=$((failed_tests + 1))
+        critical_failures=$((critical_failures + 1))
+        total_tests=$((total_tests + 1))  # Count skipped VM test
+        failed_tests=$((failed_tests + 1))
+    else
+        link_out=$(./rx-linker test_main_module.rsk test_helper_module.rsk 2>&1)
+        link_rc=$?
+        if [ $link_rc -eq 0 ] && [ -f "test_main_module.e" ]; then
         echo -e "${GREEN}✓ PASS${NC} - Modules linked successfully"
         passed_tests=$((passed_tests + 1))
         
@@ -710,12 +724,15 @@ if [ $helper_result -eq 0 ] && [ $main_result -eq 0 ] && \
             echo -e "${YELLOW}⚠ PARTIAL${NC} - VM had issues"
             passed_tests=$((passed_tests + 1))
         fi
-    else
-        echo -e "${RED}✗ FAIL${NC} - Linking failed"
-        failed_tests=$((failed_tests + 1))
-        critical_failures=$((critical_failures + 1))
-        total_tests=$((total_tests + 1))  # Count skipped VM test
-        failed_tests=$((failed_tests + 1))
+        else
+            echo -e "${RED}✗ FAIL${NC} - Linking failed"
+            echo "  Linker output:"
+            echo "$link_out" | head -10 | sed 's/^/  /'
+            failed_tests=$((failed_tests + 1))
+            critical_failures=$((critical_failures + 1))
+            total_tests=$((total_tests + 1))  # Count skipped VM test
+            failed_tests=$((failed_tests + 1))
+        fi
     fi
 else
     echo -e "${RED}✗ FAIL${NC} - Multi-module compilation failed"
