@@ -172,7 +172,19 @@ for file in $cmm_files; do
             cp ./rx-runtime.rsk "$tmpdir/rx-runtime.rsk"
         fi
 
-        (cd "$tmpdir" && "$OLDPWD"/rx-linker "$rsk_file" $extra_rsk >"$tmpdir/link.log" 2>&1)
+        # Run linker from inside tmpdir using relative paths
+        link_cmd="$OLDPWD/rx-linker"
+        rel_main_rsk="$basename.rsk"
+        rel_extra_rsk=""
+        if [ -n "$extra_rsk" ]; then
+            rel_extra_rsk="$(basename "$extra_rsk")"
+        fi
+
+        if [ -n "$rel_extra_rsk" ]; then
+            (cd "$tmpdir" && "$link_cmd" "$rel_main_rsk" "$rel_extra_rsk" >"$tmpdir/link.log" 2>&1)
+        else
+            (cd "$tmpdir" && "$link_cmd" "$rel_main_rsk" >"$tmpdir/link.log" 2>&1)
+        fi
         link_rc=$?
 
         out_e="$tmpdir/$basename.e"
