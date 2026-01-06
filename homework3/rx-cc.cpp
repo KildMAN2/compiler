@@ -74,6 +74,18 @@ int main(int argc, char* argv[]) {
     
     // Get the buffer output first to calculate line numbers
     string bufferOutput = buffer->printBuffer();
+
+    // Split buffer output into individual lines for validation/mapping
+    vector<string> bufferLines;
+    {
+        istringstream bufferLinesStream(bufferOutput);
+        string bufLine;
+        while (getline(bufferLinesStream, bufLine)) {
+            // buffer->printBuffer() always ends lines with '\n', so getline strips it.
+            // Keep empty lines if they ever appear.
+            bufferLines.push_back(bufLine);
+        }
+    }
     
     // Calculate line numbers for each function label in the buffer
     map<string, int> functionLineNumbers;
@@ -94,18 +106,32 @@ int main(int argc, char* argv[]) {
     // Generate header for linker
     outFile << "<header>" << endl;
     
-    // Unimplemented functions (declared but not defined - external) with call locations
+    // Call sites to be resolved by the linker.
+    // The linker patches the JLINK placeholder at the given line number to the final target.
     outFile << "<unimplemented> ";  // Space after tag is required
     bool firstUnimp = true;
     for (auto& func : functionTable) {
-        if (!func.second.isDefined) {
-            // Output each call location: funcName,line1 funcName,line2 ...
-            for (int callLine : func.second.callingLines) {
-                if (!firstUnimp) outFile << " ";
-                // Adjust line number to account for header (4 lines)
-                outFile << func.first << "," << (callLine + 4);
-                firstUnimp = false;
+        // Output each call location: funcName,line1 funcName,line2 ...
+        for (int callLine : func.second.callingLines) {
+            int adjustedCallLine = callLine;
+
+            // Validate the recorded line points to a JLINK instruction in the buffer.
+            // callingLines are 1-based indices into the emitted buffer.
+            const int idx = adjustedCallLine - 1;
+            auto startsWithJlink = [&](int i) -> bool {
+                if (i < 0 || i >= (int)bufferLines.size()) return false;
+                return bufferLines[i].rfind("JLINK", 0) == 0;
+            };
+
+            if (!startsWithJlink(idx) && startsWithJlink(idx + 1)) {
+                // Defensive fix for off-by-one recording: move to the actual JLINK line.
+                adjustedCallLine++;
             }
+
+            if (!firstUnimp) outFile << " ";
+            // Adjust line number to account for header (4 lines)
+            outFile << func.first << "," << (adjustedCallLine + 4);
+            firstUnimp = false;
         }
     }
     outFile << endl;
