@@ -13,6 +13,9 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
+# Resolve absolute path to this script's directory (so we can run tools from temp dirs)
+BASEDIR="$(cd "$(dirname "$0")" && pwd -P)"
+
 run_vm() {
     # Usage: run_vm <e_file> <stdin_file_or_empty> <stdout_file>
     local e_file="$1"
@@ -27,16 +30,16 @@ run_vm() {
     if command -v timeout >/dev/null 2>&1; then
         # Avoid hanging forever on programs that wait for input
         if [ -n "$stdin_redir" ]; then
-            eval "timeout 3s ./rx-vm \"$e_file\" $stdin_redir >\"$out_file\" 2>&1"
+            eval "timeout 3s \"$BASEDIR/rx-vm\" \"$e_file\" $stdin_redir >\"$out_file\" 2>&1"
         else
-            timeout 3s ./rx-vm "$e_file" >"$out_file" 2>&1
+            timeout 3s "$BASEDIR/rx-vm" "$e_file" >"$out_file" 2>&1
         fi
         return $?
     else
         if [ -n "$stdin_redir" ]; then
-            eval "./rx-vm \"$e_file\" $stdin_redir >\"$out_file\" 2>&1"
+            eval "\"$BASEDIR/rx-vm\" \"$e_file\" $stdin_redir >\"$out_file\" 2>&1"
         else
-            ./rx-vm "$e_file" >"$out_file" 2>&1
+            "$BASEDIR/rx-vm" "$e_file" >"$out_file" 2>&1
         fi
         return $?
     fi
@@ -49,22 +52,22 @@ failed=0
 checked=0
 
 # Check if compiler exists
-if [ ! -f "./rx-cc" ]; then
+if [ ! -f "$BASEDIR/rx-cc" ]; then
     echo -e "${RED}Error: rx-cc compiler not found. Run 'make' first.${NC}"
     exit 1
 fi
 
-if [ ! -f "./rx-linker" ]; then
+if [ ! -f "$BASEDIR/rx-linker" ]; then
     echo -e "${RED}Error: rx-linker not found.${NC}"
     exit 1
 fi
 
-if [ ! -f "./rx-vm" ]; then
+if [ ! -f "$BASEDIR/rx-vm" ]; then
     echo -e "${RED}Error: rx-vm not found.${NC}"
     exit 1
 fi
 
-if [ ! -f "./rx-runtime.rsk" ]; then
+if [ ! -f "$BASEDIR/rx-runtime.rsk" ]; then
     echo -e "${YELLOW}Warning: rx-runtime.rsk not found; linking tests may fail.${NC}"
 fi
 
@@ -106,13 +109,13 @@ for file in $cmm_files; do
         funcs_src="$dirname/${basename%-main}-funcs.cmm"
         if [ -f "$funcs_src" ]; then
             cp "$funcs_src" "$tmpdir/${basename%-main}-funcs.cmm"
-            ./rx-cc "$tmpdir/${basename%-main}-funcs.cmm" >"$tmpdir/compile_funcs.log" 2>&1
+            "$BASEDIR/rx-cc" "$tmpdir/${basename%-main}-funcs.cmm" >"$tmpdir/compile_funcs.log" 2>&1
             extra_rsk="$tmpdir/${basename%-main}-funcs.rsk"
         fi
     fi
 
     # Compile
-    ./rx-cc "$tmpdir/$basename.cmm" >"$tmpdir/compile.log" 2>&1
+    "$BASEDIR/rx-cc" "$tmpdir/$basename.cmm" >"$tmpdir/compile.log" 2>&1
     cc_rc=$?
     rsk_file="$tmpdir/$basename.rsk"
 
@@ -168,12 +171,12 @@ for file in $cmm_files; do
         fi
 
         # Link our output in temp dir (copy runtime if exists)
-        if [ -f "./rx-runtime.rsk" ]; then
-            cp ./rx-runtime.rsk "$tmpdir/rx-runtime.rsk"
+        if [ -f "$BASEDIR/rx-runtime.rsk" ]; then
+            cp "$BASEDIR/rx-runtime.rsk" "$tmpdir/rx-runtime.rsk"
         fi
 
         # Run linker from inside tmpdir using relative paths
-        link_cmd="$OLDPWD/rx-linker"
+        link_cmd="$BASEDIR/rx-linker"
         rel_main_rsk="$basename.rsk"
         rel_extra_rsk=""
         if [ -n "$extra_rsk" ]; then
