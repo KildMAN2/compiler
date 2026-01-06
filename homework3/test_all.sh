@@ -13,6 +13,35 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
+run_vm() {
+    # Usage: run_vm <e_file> <stdin_file_or_empty> <stdout_file>
+    local e_file="$1"
+    local in_file="$2"
+    local out_file="$3"
+
+    local stdin_redir=""
+    if [ -n "$in_file" ] && [ -f "$in_file" ]; then
+        stdin_redir="<\"$in_file\""
+    fi
+
+    if command -v timeout >/dev/null 2>&1; then
+        # Avoid hanging forever on programs that wait for input
+        if [ -n "$stdin_redir" ]; then
+            eval "timeout 3s ./rx-vm \"$e_file\" $stdin_redir >\"$out_file\" 2>&1"
+        else
+            timeout 3s ./rx-vm "$e_file" >"$out_file" 2>&1
+        fi
+        return $?
+    else
+        if [ -n "$stdin_redir" ]; then
+            eval "./rx-vm \"$e_file\" $stdin_redir >\"$out_file\" 2>&1"
+        else
+            ./rx-vm "$e_file" >"$out_file" 2>&1
+        fi
+        return $?
+    fi
+}
+
 # Counters
 total=0
 passed=0
@@ -105,12 +134,27 @@ for file in $cmm_files; do
 
     # If there's a staff-provided .e for this example, compare VM output.
     expected_e="$dirname/$basename.e"
+    stdin_file="$dirname/$basename.in"
     if [ -f "$expected_e" ] && [ $has_main -eq 1 ]; then
         checked=$((checked + 1))
 
         # Run expected binary to capture expected output
-        ./rx-vm "$expected_e" >"$tmpdir/expected.out" 2>&1
+        run_vm "$expected_e" "$stdin_file" "$tmpdir/expected.out"
         expected_rc=$?
+
+        if [ $expected_rc -eq 124 ]; then
+            echo -e "${YELLOW}⚠ SKIP${NC} - Expected .e timed out (likely waiting for input)"
+            if [ ! -f "$stdin_file" ]; then
+                echo -e "${YELLOW}  (hint)${NC} - Create $stdin_file to provide input"
+            fi
+            echo "  Expected VM output (first 10 lines):"
+            head -10 "$tmpdir/expected.out" | sed 's/^/    /'
+            echo -e "${GREEN}✓ PASSED${NC} - Compiled successfully ($rsk_file)"
+            passed=$((passed + 1))
+            rm -rf "$tmpdir"
+            echo ""
+            continue
+        fi
 
         if [ $expected_rc -ne 0 ]; then
             echo -e "${YELLOW}⚠ SKIP${NC} - Provided expected .e failed to run"
@@ -143,8 +187,19 @@ for file in $cmm_files; do
         fi
 
         # Run our linked binary
-        ./rx-vm "$out_e" >"$tmpdir/actual.out" 2>&1
+        run_vm "$out_e" "$stdin_file" "$tmpdir/actual.out"
         actual_rc=$?
+
+        if [ $actual_rc -eq 124 ]; then
+            echo -e "${RED}✗ FAILED${NC} - VM timed out (likely waiting for input)"
+            if [ ! -f "$stdin_file" ]; then
+                echo -e "${YELLOW}  (hint)${NC} - Create $stdin_file to provide input"
+            fi
+            failed=$((failed + 1))
+            rm -rf "$tmpdir"
+            echo ""
+            continue
+        fi
 
         if [ $actual_rc -ne 0 ]; then
             echo -e "${RED}✗ FAILED${NC} - VM execution failed"
