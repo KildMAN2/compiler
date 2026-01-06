@@ -94,14 +94,18 @@ int main(int argc, char* argv[]) {
     // Generate header for linker
     outFile << "<header>" << endl;
     
-    // Unimplemented functions (declared but not defined - external)
+    // Unimplemented functions (declared but not defined - external) with call locations
     outFile << "<unimplemented>";
     bool firstUnimp = true;
     for (auto& func : functionTable) {
         if (!func.second.isDefined) {
-            if (!firstUnimp) outFile << " ";
-            outFile << func.first;
-            firstUnimp = false;
+            // Output each call location: funcName,line1 funcName,line2 ...
+            for (int callLine : func.second.callingLines) {
+                if (!firstUnimp) outFile << " ";
+                // Adjust line number to account for header (4 lines)
+                outFile << func.first << "," << (callLine + 4);
+                firstUnimp = false;
+            }
         }
     }
     outFile << endl;

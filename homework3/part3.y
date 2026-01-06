@@ -732,7 +732,10 @@ CALL:
         
         // Call function using JLINK (stores return address in I0)
         Function& func = functionTable[$1.name];
+        int jlinkLine = buffer->nextQuad(); // Track the line where JLINK is emitted
         buffer->emit("JLINK " + $1.name);
+        // Record this call location for linker
+        functionTable[$1.name].callingLines.push_back(jlinkLine);
         
         // Get return value from I1
         Type returnType = func.returnType;
