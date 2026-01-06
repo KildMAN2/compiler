@@ -52,8 +52,18 @@ echo "=== Main module header ==="
 head -20 test_main_module.rsk
 
 echo ""
-echo "=== Attempting linker ==="
-./rx-linker test_main_module.rsk test_helper_module.rsk
+echo "=== Attempting linker (without rx-runtime.rsk) ==="
+./rx-linker test_main_module.rsk test_helper_module.rsk 2>&1
+echo "Exit code: $?"
+
+echo ""
+echo "=== Attempting linker (with rx-runtime.rsk at end) ==="
+./rx-linker test_main_module.rsk test_helper_module.rsk rx-runtime.rsk 2>&1
+echo "Exit code: $?"
+
+echo ""
+echo "=== Attempting linker (with rx-runtime.rsk at start) ==="
+./rx-linker rx-runtime.rsk test_main_module.rsk test_helper_module.rsk 2>&1
 linker_exit=$?
 echo "Linker exit code: $linker_exit"
 
