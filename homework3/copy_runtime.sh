@@ -13,15 +13,18 @@ if [ ! -f homework3/rx-runtime.rsk ]; then
         echo "Creating minimal rx-runtime.rsk..."
         cat > homework3/rx-runtime.rsk << 'EOF'
 <header>
-<unimplemented>
-<implemented>write,5 read,8
+<unimplemented> main,12
+<implemented> 
 </header>
-LABEL write
-PRNTI I2
-RETRN
-LABEL read
-SCANI I1
-RETRN
+COPYI I1 0
+COPYI I2 0
+COPYI I3 0
+COPYI I4 0
+COPYI I5 0
+COPYI I6 0
+COPYI I7 0
+JLINK -1
+HALT
 EOF
         echo "✓ Created minimal rx-runtime.rsk"
     fi
