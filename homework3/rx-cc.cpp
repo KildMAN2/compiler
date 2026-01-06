@@ -87,11 +87,13 @@ int main(int argc, char* argv[]) {
         }
     }
     
-    // Calculate line numbers for each function label in the buffer
+    // Calculate line numbers for each function label in the buffer.
+    // IMPORTANT: The course staff linker uses instruction indices in the code section
+    // (i.e., Buffer quads starting from 1) and does NOT count the 4-line <header>.
     map<string, int> functionLineNumbers;
     istringstream bufferStream(bufferOutput);
     string line;
-    int lineNum = 5; // Header takes lines 1-4: <header>, <unimplemented>..., <implemented>..., </header>
+    int lineNum = 1;
     while (getline(bufferStream, line)) {
         // Check if this line is a LABEL directive
         if (line.find("LABEL ") == 0) {
@@ -129,8 +131,8 @@ int main(int argc, char* argv[]) {
             }
 
             if (!firstUnimp) outFile << " ";
-            // Adjust line number to account for header (4 lines)
-            outFile << func.first << "," << (adjustedCallLine + 4);
+            // Header line numbers are code-section indices (Buffer quads)
+            outFile << func.first << "," << adjustedCallLine;
             firstUnimp = false;
         }
     }
