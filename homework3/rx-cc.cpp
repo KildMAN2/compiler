@@ -95,7 +95,7 @@ int main(int argc, char* argv[]) {
     outFile << "<header>" << endl;
     
     // Unimplemented functions (declared but not defined - external) with call locations
-    outFile << "<unimplemented>";
+    outFile << "<unimplemented> ";  // Space after tag is required
     bool firstUnimp = true;
     for (auto& func : functionTable) {
         if (!func.second.isDefined) {
@@ -111,7 +111,7 @@ int main(int argc, char* argv[]) {
     outFile << endl;
     
     // Implemented functions (defined in this file) with their actual line number in output
-    outFile << "<implemented>";
+    outFile << "<implemented> ";  // Space after tag is required
     bool firstImp = true;
     for (auto& func : functionTable) {
         if (func.second.isDefined) {
