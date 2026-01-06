@@ -93,7 +93,7 @@ str         \"([^\n\r\"\\]|\\[nt\"])*\"
 
     /* Error handling */
 .           { 
-              fprintf(stderr, "Lexical error: '%s' in line number %d\n", yytext, line_number);
+              printf("Lexical error: '%s' in line number %d\n", yytext, line_number);
               exit(1);
             }
 

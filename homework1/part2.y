@@ -64,15 +64,13 @@ PROGRAM:
 FDEFS:
     FDEFS FUNC_DEF_API BLK
     {
-        ParserNode *fdefs_inner = makeNode("FDEFS", NULL, $1);
-        $$ = fdefs_inner;
+        $$ = makeNode("FDEFS", NULL, $1);
         $1->sibling = $2;
         $2->sibling = $3;
     }
     | FDEFS FUNC_DEC_API
     {
-        ParserNode *fdefs_inner = makeNode("FDEFS", NULL, $1);
-        $$ = fdefs_inner;
+        $$ = makeNode("FDEFS", NULL, $1);
         $1->sibling = $2;
     }
     | /* empty */
@@ -86,8 +84,7 @@ FUNC_DEC_API:
     TYPE ID LPAREN RPAREN SEMICOLON
     {
         ParserNode *type = makeNode("TYPE", NULL, $1);
-        ParserNode *funcDecApi = makeNode("FUNC_DEC_API", NULL, type);
-        $$ = funcDecApi;
+        $$ = makeNode("FUNC_DEC_API", NULL, type);
         type->sibling = $2;
         $2->sibling = $3;
         $3->sibling = $4;
@@ -97,8 +94,7 @@ FUNC_DEC_API:
     {
         ParserNode *type = makeNode("TYPE", NULL, $1);
         ParserNode *arglist = makeNode("FUNC_ARGLIST", NULL, $4);
-        ParserNode *funcDecApi = makeNode("FUNC_DEC_API", NULL, type);
-        $$ = funcDecApi;
+        $$ = makeNode("FUNC_DEC_API", NULL, type);
         type->sibling = $2;
         $2->sibling = $3;
         $3->sibling = arglist;
@@ -111,8 +107,7 @@ FUNC_DEF_API:
     TYPE ID LPAREN RPAREN
     {
         ParserNode *type = makeNode("TYPE", NULL, $1);
-        ParserNode *funcDefApi = makeNode("FUNC_DEF_API", NULL, type);
-        $$ = funcDefApi;
+        $$ = makeNode("FUNC_DEF_API", NULL, type);
         type->sibling = $2;
         $2->sibling = $3;
         $3->sibling = $4;
@@ -121,8 +116,7 @@ FUNC_DEF_API:
     {
         ParserNode *type = makeNode("TYPE", NULL, $1);
         ParserNode *arglist = makeNode("FUNC_ARGLIST", NULL, $4);
-        ParserNode *funcDefApi = makeNode("FUNC_DEF_API", NULL, type);
-        $$ = funcDefApi;
+        $$ = makeNode("FUNC_DEF_API", NULL, type);
         type->sibling = $2;
         $2->sibling = $3;
         $3->sibling = arglist;
@@ -179,8 +173,7 @@ TYPE:
 STLIST:
     STLIST STMT
     {
-        ParserNode *stlist_inner = makeNode("STLIST", NULL, $1);
-        $$ = stlist_inner;
+        $$ = makeNode("STLIST", NULL, $1);
         $1->sibling = $2;
     }
     | /* empty */
@@ -307,23 +300,31 @@ CNTRL:
     {
         $$ = makeNode("CNTRL", NULL, $1);
         $1->sibling = $2;
-        $2->sibling = $3;
+        ParserNode *last = $2;
+        while (last->sibling != NULL) last = last->sibling;
+        last->sibling = $3;
         $3->sibling = $4;
-        $4->sibling = $5;
+        last = $4;
+        while (last->sibling != NULL) last = last->sibling;
+        last->sibling = $5;
         $5->sibling = $6;
     }
     | IF BEXP THEN STMT
     {
         $$ = makeNode("CNTRL", NULL, $1);
         $1->sibling = $2;
-        $2->sibling = $3;
+        ParserNode *last = $2;
+        while (last->sibling != NULL) last = last->sibling;
+        last->sibling = $3;
         $3->sibling = $4;
     }
     | WHILE BEXP DO STMT
     {
         $$ = makeNode("CNTRL", NULL, $1);
         $1->sibling = $2;
-        $2->sibling = $3;
+        ParserNode *last = $2;
+        while (last->sibling != NULL) last = last->sibling;
+        last->sibling = $3;
         $3->sibling = $4;
     }
     ;
@@ -332,13 +333,17 @@ BEXP:
     BEXP OR BEXP
     {
         $$ = makeNode("BEXP", NULL, $1);
-        $1->sibling = $2;
+        ParserNode *last = $1;
+        while (last->sibling != NULL) last = last->sibling;
+        last->sibling = $2;
         $2->sibling = $3;
     }
     | BEXP AND BEXP
     {
         $$ = makeNode("BEXP", NULL, $1);
-        $1->sibling = $2;
+        ParserNode *last = $1;
+        while (last->sibling != NULL) last = last->sibling;
+        last->sibling = $2;
         $2->sibling = $3;
     }
     | NOT BEXP
@@ -349,7 +354,9 @@ BEXP:
     | EXP RELOP EXP
     {
         $$ = makeNode("BEXP", NULL, $1);
-        $1->sibling = $2;
+        ParserNode *last = $1;
+        while (last->sibling != NULL) last = last->sibling;
+        last->sibling = $2;
         $2->sibling = $3;
     }
     | LPAREN BEXP RPAREN
@@ -364,13 +371,17 @@ EXP:
     EXP ADDOP EXP
     {
         $$ = makeNode("EXP", NULL, $1);
-        $1->sibling = $2;
+        ParserNode *last = $1;
+        while (last->sibling != NULL) last = last->sibling;
+        last->sibling = $2;
         $2->sibling = $3;
     }
     | EXP MULOP EXP
     {
         $$ = makeNode("EXP", NULL, $1);
-        $1->sibling = $2;
+        ParserNode *last = $1;
+        while (last->sibling != NULL) last = last->sibling;
+        last->sibling = $2;
         $2->sibling = $3;
     }
     | LPAREN EXP RPAREN
@@ -385,7 +396,9 @@ EXP:
         $$ = makeNode("EXP", NULL, $1);
         $1->sibling = type;
         type->sibling = $3;
-        $3->sibling = $4;
+        ParserNode *last = $3;
+        while (last->sibling != NULL) last = last->sibling;
+        last->sibling = $4;
     }
     | ID    
     { 
@@ -441,7 +454,9 @@ CALL_ARGS:
     | POS_ARGLIST COMMA NAMED_ARGLIST
     {
         $$ = makeNode("CALL_ARGS", NULL, $1);
-        $1->sibling = $2;
+        ParserNode *last = $1;
+        while (last->sibling != NULL) last = last->sibling;
+        last->sibling = $2;
         $2->sibling = $3;
     }
     ;
@@ -454,10 +469,12 @@ POS_ARGLIST:
     | POS_ARGLIST COMMA EXP
     {
         $$ = $1;
-        ParserNode *last = $1;
+        ParserNode *last = $1->child;
         while (last->sibling != NULL) last = last->sibling;
         last->sibling = $2;
-        $2->sibling = $3;
+        ParserNode *last2 = $2;
+        while (last2->sibling != NULL) last2 = last2->sibling;
+        last2->sibling = $3;
     }
     ;
 
@@ -469,10 +486,12 @@ NAMED_ARGLIST:
     | NAMED_ARGLIST COMMA NAMED_ARG
     {
         $$ = $1;
-        ParserNode *last = $1;
+        ParserNode *last = $1->child;
         while (last->sibling != NULL) last = last->sibling;
         last->sibling = $2;
-        $2->sibling = $3;
+        ParserNode *last2 = $2;
+        while (last2->sibling != NULL) last2 = last2->sibling;
+        last2->sibling = $3;
     }
     ;
 
@@ -481,7 +500,9 @@ NAMED_ARG:
     {
         $$ = makeNode("NAMED_ARG", NULL, $1);
         $1->sibling = $2;
-        $2->sibling = $3;
+        ParserNode *last = $2;
+        while (last->sibling != NULL) last = last->sibling;
+        last->sibling = $3;
     }
     ;
 
@@ -489,6 +510,6 @@ NAMED_ARG:
 
 /* Error handling function */
 void yyerror(const char *s) {
-    fprintf(stderr, "Syntax error: '%s' in line number %d\n", yytext, line_number);
+    printf("Syntax error: '%s' in line number %d\n", yytext, line_number);
     exit(2);
 }
