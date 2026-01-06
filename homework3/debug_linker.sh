@@ -3,6 +3,14 @@
 
 cd ~/compiler/homework3
 
+echo "=== Current directory ==="
+pwd
+echo ""
+
+echo "=== Checking for rx-runtime.rsk ==="
+ls -la rx-runtime.rsk
+echo ""
+
 # Create test modules
 cat > test_helper_module.cmm << 'EOF'
 int add(a : int, b : int) {
