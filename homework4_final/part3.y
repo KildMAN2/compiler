@@ -10,6 +10,13 @@ extern int yylex();
 extern int yylineno;
 void yyerror(const char* s);
 
+// Initialize buffer in parser (to avoid static linkage issues)
+void initParser() {
+    if (!buffer) {
+        buffer = new Buffer();
+    }
+}
+
 // Global variables (using declarations from part3_helpers.hpp)
 int currentDepth = 0;
 int currentOffset = 0;
@@ -46,6 +53,7 @@ void generateHeader();
 %%
 
 program: 
+    { initParser(); }
     function_declarations {
         generateHeader();
     }
