@@ -800,3 +800,10 @@ void generateHeader() {
     buffer->frontEmit("<unimplemented>");
     buffer->frontEmit("<header>");
 }
+
+string getGeneratedCode() {
+    if (buffer) {
+        return buffer->printBuffer();
+    }
+    return "";
+}
