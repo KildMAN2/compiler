@@ -250,17 +250,20 @@ assignment_stmt:
 
 if_stmt:
     IF expression THEN statement {
-        buffer->backpatch($2.trueList, $2.quad + 1);
+        // Expression falls through when true, jumps when false
         buffer->backpatch($2.falseList, buffer->nextQuad());
     }
     | IF expression THEN statement ELSE {
-        buffer->backpatch($2.trueList, $2.quad + 1);
+        // Jump over else block at end of then block
         int jumpQuad = buffer->nextQuad();
         emitCode("UJUMP ");
-        $5.nextList.push_back(jumpQuad);
+        
+        // False condition jumps to else block
         buffer->backpatch($2.falseList, buffer->nextQuad());
+        $5.nextList.push_back(jumpQuad);
     }
     statement {
+        // Backpatch the jump at end of then block to after else
         buffer->backpatch($5.nextList, buffer->nextQuad());
     }
     ;
@@ -270,12 +273,12 @@ while_stmt:
         $1.quad = buffer->nextQuad();
     }
     expression DO statement {
-        buffer->backpatch($3.trueList, $3.quad + 1);
-        
+        // Jump back to condition
         stringstream ss;
         ss << "UJUMP " << $1.quad;
         emitCode(ss.str());
         
+        // Backpatch false jumps to after loop
         buffer->backpatch($3.falseList, buffer->nextQuad());
     }
     ;
@@ -457,14 +460,12 @@ expression:
         }
         emitCode(ss.str());
         
-        $$.quad = buffer->nextQuad();
-        $$.falseList.push_back($$.quad);
+        $$.falseList.push_back(buffer->nextQuad());
         ss.str("");
         ss << "BREQZ I" << $$.RegNum << " ";
         emitCode(ss.str());
         
-        $$.trueList.push_back(buffer->nextQuad());
-        emitCode("UJUMP ");
+        $$.quad = buffer->nextQuad();
     }
     | expression NOTEQ expression {
         if ($1.type != $3.type) {
@@ -482,14 +483,14 @@ expression:
         }
         emitCode(ss.str());
         
-        $$.quad = buffer->nextQuad();
-        $$.falseList.push_back($$.quad);
+        // Emit BREQZ - if result is 0 (false), jump to false target
+        $$.falseList.push_back(buffer->nextQuad());
         ss.str("");
         ss << "BREQZ I" << $$.RegNum << " ";
         emitCode(ss.str());
         
-        $$.trueList.push_back(buffer->nextQuad());
-        emitCode("UJUMP ");
+        // No UJUMP needed - execution falls through when true
+        $$.quad = buffer->nextQuad();
     }
     | expression LT expression {
         if ($1.type != $3.type) {
@@ -507,14 +508,12 @@ expression:
         }
         emitCode(ss.str());
         
-        $$.quad = buffer->nextQuad();
-        $$.falseList.push_back($$.quad);
+        $$.falseList.push_back(buffer->nextQuad());
         ss.str("");
         ss << "BREQZ I" << $$.RegNum << " ";
         emitCode(ss.str());
         
-        $$.trueList.push_back(buffer->nextQuad());
-        emitCode("UJUMP ");
+        $$.quad = buffer->nextQuad();
     }
     | expression GT expression {
         if ($1.type != $3.type) {
@@ -532,14 +531,12 @@ expression:
         }
         emitCode(ss.str());
         
-        $$.quad = buffer->nextQuad();
-        $$.falseList.push_back($$.quad);
+        $$.falseList.push_back(buffer->nextQuad());
         ss.str("");
         ss << "BREQZ I" << $$.RegNum << " ";
         emitCode(ss.str());
         
-        $$.trueList.push_back(buffer->nextQuad());
-        emitCode("UJUMP ");
+        $$.quad = buffer->nextQuad();
     }
     | expression LTEQ expression {
         if ($1.type != $3.type) {
@@ -557,14 +554,12 @@ expression:
         }
         emitCode(ss.str());
         
-        $$.quad = buffer->nextQuad();
-        $$.falseList.push_back($$.quad);
+        $$.falseList.push_back(buffer->nextQuad());
         ss.str("");
         ss << "BREQZ I" << $$.RegNum << " ";
         emitCode(ss.str());
         
-        $$.trueList.push_back(buffer->nextQuad());
-        emitCode("UJUMP ");
+        $$.quad = buffer->nextQuad();
     }
     | expression GTEQ expression {
         if ($1.type != $3.type) {
@@ -582,14 +577,12 @@ expression:
         }
         emitCode(ss.str());
         
-        $$.quad = buffer->nextQuad();
-        $$.falseList.push_back($$.quad);
+        $$.falseList.push_back(buffer->nextQuad());
         ss.str("");
         ss << "BREQZ I" << $$.RegNum << " ";
         emitCode(ss.str());
         
-        $$.trueList.push_back(buffer->nextQuad());
-        emitCode("UJUMP ");
+        $$.quad = buffer->nextQuad();
     }
     | LPAREN expression RPAREN {
         $$ = $2;
