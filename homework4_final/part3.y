@@ -10,13 +10,10 @@ extern int yylex();
 extern int yylineno;
 void yyerror(const char* s);
 
-// Global variables
+// Global variables (using declarations from part3_helpers.hpp)
 int currentDepth = 0;
 int currentOffset = 0;
 int regCounter = 3;
-map<string, Symbol> symbolTable;
-map<string, Function> functionTable;
-Buffer* buffer;
 string currentFunction = "";
 Type currentReturnType = void_t;
 vector<string> implementedFuncs;
@@ -117,7 +114,7 @@ function_definition:
         
         // Parameters at negative offsets from FP
         int paramOffset = -4 - (paramIds.size() * 4);
-        for (int i = 0; i < paramIds.size(); i++) {
+        for (size_t i = 0; i < paramIds.size(); i++) {
             Symbol& sym = symbolTable[paramIds[i]];
             sym.type[currentDepth] = paramTypes[i];
             sym.offset[currentDepth] = paramOffset + ((paramIds.size() - i - 1) * 4);
