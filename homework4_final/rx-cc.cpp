@@ -8,7 +8,6 @@
 
 extern int yyparse();
 extern FILE* yyin;
-extern Buffer* buffer;
 
 int main(int argc, char** argv) {
     if (argc < 2) {
@@ -24,10 +23,7 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    // Initialize the buffer
-    buffer = new Buffer();
-
-    // Parse the input
+    // Parse the input (buffer initialized in parser)
     int result = yyparse();
     
     fclose(yyin);
@@ -54,6 +50,8 @@ int main(int argc, char** argv) {
     outFile << buffer->printBuffer();
     outFile.close();
 
-    delete buffer;
+    if (buffer) {
+        delete buffer;
+    }
     return 0;
 }
