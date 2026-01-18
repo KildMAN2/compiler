@@ -784,12 +784,14 @@ void emitCode(const string& code) {
 }
 
 void generateHeader() {
-    buffer->frontEmit("</header>");
-    
-    for (int i = implementedFuncs.size() - 1; i >= 0; i--) {
-        buffer->frontEmit("<implemented> " + implementedFuncs[i]);
+    // Build implemented functions line
+    string implementedLine = "<implemented>";
+    for (size_t i = 0; i < implementedFuncs.size(); i++) {
+        implementedLine += " " + implementedFuncs[i];
     }
     
+    buffer->frontEmit("</header>");
+    buffer->frontEmit(implementedLine);
     buffer->frontEmit("<unimplemented>");
     buffer->frontEmit("<header>");
 }
