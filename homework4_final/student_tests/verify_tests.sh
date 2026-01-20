@@ -7,8 +7,8 @@ set -u
 
 CHECKER="./checker.sh"
 
-if [ ! -x "$CHECKER" ]; then
-  echo "Error: checker.sh not executable. Run: chmod +x checker.sh"
+if [ ! -f "$CHECKER" ]; then
+  echo "Error: checker.sh missing: $CHECKER"
   exit 1
 fi
 
@@ -65,14 +65,14 @@ run_dir() {
   fi
 
   local result
-  result=$($CHECKER "${ordered[@]}" "$input" "$output" 2>/dev/null | tr -d '\r' | head -n 1)
+  result=$(bash "$CHECKER" "${ordered[@]}" "$input" "$output" 2>/dev/null | tr -d '\r' | head -n 1)
 
   if [ "$result" = "$expected" ]; then
     echo "[$d] VERIFIED ($kind)"
   else
     echo "[$d] MISMATCH: expected $expected, got $result"
     if [ "$result" = "False" ]; then
-      $CHECKER --debug "${ordered[@]}" "$input" "$output" 2>/dev/null | tail -n +2
+      bash "$CHECKER" --debug "${ordered[@]}" "$input" "$output" 2>/dev/null | tail -n +2
     fi
     MISMATCH=$((MISMATCH+1))
   fi

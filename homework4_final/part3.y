@@ -30,6 +30,7 @@ vector<string> implementedFuncs;
 void declareVariable(const string& id, Type type);
 void declareFunction(const string& id, Type returnType, const vector<Type>& paramTypes, const vector<string>& paramIds);
 void defineFunction(const string& id, int startLine);
+void popScope(int newDepth);
 Symbol* lookup(const string& id);
 Function* lookupFunction(const string& id);
 int allocateRegister();
@@ -137,14 +138,8 @@ function_definition:
         
         currentDepth--;
         currentFunction = "";
-        
-        for (auto it = symbolTable.begin(); it != symbolTable.end(); ) {
-            if (it->second.depth > currentDepth) {
-                it = symbolTable.erase(it);
-            } else {
-                ++it;
-            }
-        }
+
+        popScope(currentDepth);
         
         currentOffset = 0;
     }
@@ -234,14 +229,8 @@ block_stmt:
     }
     statement_list RBRACE {
         currentDepth--;
-        
-        for (auto it = symbolTable.begin(); it != symbolTable.end(); ) {
-            if (it->second.depth > currentDepth) {
-                it = symbolTable.erase(it);
-            } else {
-                ++it;
-            }
-        }
+
+        popScope(currentDepth);
     }
     ;
 
@@ -1030,6 +1019,36 @@ void yyerror(const char* s) {
 void semanticError(const string& msg) {
     cerr << "Semantic error: " << msg << " in line number " << yylineno << endl;
     exit(SEMANTIC_ERROR);
+}
+
+// Remove symbols declared in scopes deeper than newDepth.
+// If an identifier was shadowed, restore its previous (outer) declaration.
+void popScope(int newDepth) {
+    for (auto it = symbolTable.begin(); it != symbolTable.end(); ) {
+        Symbol& sym = it->second;
+
+        if (sym.depth <= newDepth) {
+            ++it;
+            continue;
+        }
+
+        while (sym.depth > newDepth) {
+            sym.type.erase(sym.depth);
+            sym.offset.erase(sym.depth);
+
+            if (sym.type.empty()) {
+                break;
+            }
+
+            sym.depth = sym.type.rbegin()->first;
+        }
+
+        if (sym.type.empty()) {
+            it = symbolTable.erase(it);
+        } else {
+            ++it;
+        }
+    }
 }
 
 void declareVariable(const string& id, Type type) {
