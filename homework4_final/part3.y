@@ -150,9 +150,18 @@ function_definition:
     ;
 
 param_list:
-    param_list_non_empty {
+    param_group_list {
         $$.paramTypes = $1.paramTypes;
         $$.paramIds = $1.paramIds;
+
+        // Disallow duplicate parameter names
+        for (size_t i = 0; i < $$.paramIds.size(); i++) {
+            for (size_t j = i + 1; j < $$.paramIds.size(); j++) {
+                if ($$.paramIds[i] == $$.paramIds[j]) {
+                    semanticError("Duplicate parameter name");
+                }
+            }
+        }
     }
     | /* empty */ {
         $$.paramTypes.clear();
@@ -160,23 +169,39 @@ param_list:
     }
     ;
 
-param_list_non_empty:
-    param {
-        $$.paramTypes.push_back($1.type);
-        $$.paramIds.push_back($1.name);
+// Function parameters can be grouped: a,b:int
+param_group_list:
+    param_group {
+        $$ = $1;
     }
-    | param_list_non_empty COMMA param {
-        $$.paramTypes = $1.paramTypes;
-        $$.paramIds = $1.paramIds;
-        $$.paramTypes.push_back($3.type);
-        $$.paramIds.push_back($3.name);
+    | param_group_list COMMA param_group {
+        $$ = $1;
+        for (size_t i = 0; i < $3.paramTypes.size(); i++) {
+            $$.paramTypes.push_back($3.paramTypes[i]);
+            $$.paramIds.push_back($3.paramIds[i]);
+        }
     }
     ;
 
-param:
-    ID COLON type_specifier {
-        $$.name = $1.name;
-        $$.type = $3.type;
+param_group:
+    id_list COLON type_specifier {
+        $$.paramTypes.clear();
+        $$.paramIds.clear();
+        for (size_t i = 0; i < $1.paramIds.size(); i++) {
+            $$.paramIds.push_back($1.paramIds[i]);
+            $$.paramTypes.push_back($3.type);
+        }
+    }
+    ;
+
+id_list:
+    ID {
+        $$.paramIds.clear();
+        $$.paramIds.push_back($1.name);
+    }
+    | id_list COMMA ID {
+        $$ = $1;
+        $$.paramIds.push_back($3.name);
     }
     ;
 
