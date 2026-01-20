@@ -662,9 +662,52 @@ expression:
         if ($3.paramTypes.size() != func->paramTypes.size()) {
             semanticError("Wrong number of arguments");
         }
-        
+
+        // Map actual args -> formal params (supports named arguments: label:expr)
+        size_t formalCount = func->paramTypes.size();
+        vector<int> passedRegs(formalCount, -1);
+        vector<Type> passedTypes(formalCount, void_t);
+        vector<int> provided(formalCount, 0);
+
+        size_t nextPositional = 0;
         for (size_t i = 0; i < $3.paramTypes.size(); i++) {
-            if ($3.paramTypes[i] != func->paramTypes[i]) {
+            const string& label = (i < $3.paramLabels.size()) ? $3.paramLabels[i] : string("");
+            if (label.empty()) {
+                if (nextPositional >= formalCount) {
+                    semanticError("Too many positional arguments");
+                }
+                if (provided[nextPositional]) {
+                    semanticError("Parameter passed twice");
+                }
+                passedRegs[nextPositional] = $3.paramRegs[i];
+                passedTypes[nextPositional] = $3.paramTypes[i];
+                provided[nextPositional] = 1;
+                nextPositional++;
+            } else {
+                int foundIdx = -1;
+                for (size_t j = 0; j < func->paramIds.size(); j++) {
+                    if (func->paramIds[j] == label) {
+                        foundIdx = (int)j;
+                        break;
+                    }
+                }
+                if (foundIdx < 0) {
+                    semanticError("Unknown named parameter");
+                }
+                if (provided[foundIdx]) {
+                    semanticError("Parameter passed twice");
+                }
+                passedRegs[foundIdx] = $3.paramRegs[i];
+                passedTypes[foundIdx] = $3.paramTypes[i];
+                provided[foundIdx] = 1;
+            }
+        }
+
+        for (size_t j = 0; j < formalCount; j++) {
+            if (!provided[j]) {
+                semanticError("Missing argument for parameter");
+            }
+            if (passedTypes[j] != func->paramTypes[j]) {
                 semanticError("Argument type mismatch");
             }
         }
@@ -703,14 +746,14 @@ expression:
         emitCode("COPYI I1 I2");
         emitCode("CITOF F1 I1");
 
-        // Store parameters into their fixed slots
-        for (size_t i = 0; i < $3.paramRegs.size(); i++) {
+        // Store parameters into their fixed slots (by formal index)
+        for (size_t i = 0; i < formalCount; i++) {
             int offset = -8 - ((int)i * 4);
             stringstream ss;
-            if ($3.paramTypes[i] == float_) {
-                ss << "STORF F" << $3.paramRegs[i] << " F1 " << offset;
+            if (func->paramTypes[i] == float_) {
+                ss << "STORF F" << passedRegs[i] << " F1 " << offset;
             } else {
-                ss << "STORI I" << $3.paramRegs[i] << " I1 " << offset;
+                ss << "STORI I" << passedRegs[i] << " I1 " << offset;
             }
             emitCode(ss.str());
         }
@@ -779,24 +822,76 @@ expression:
     ;
 
 argument_list:
-    argument_list_non_empty {
-        $$ = $1;
-    }
-    | /* empty */ {
+    /* empty */ {
         $$.paramTypes.clear();
         $$.paramRegs.clear();
+        $$.paramLabels.clear();
+    }
+    | positional_arg_list named_arg_list_tail_opt {
+        $$ = $1;
+        // append named tail (if any)
+        for (size_t i = 0; i < $2.paramTypes.size(); i++) {
+            $$.paramTypes.push_back($2.paramTypes[i]);
+            $$.paramRegs.push_back($2.paramRegs[i]);
+            $$.paramLabels.push_back($2.paramLabels[i]);
+        }
+    }
+    | named_arg_list {
+        $$ = $1;
     }
     ;
 
-argument_list_non_empty:
+// Positional arguments only (expressions).
+positional_arg_list:
     expression {
+        $$.paramTypes.clear();
+        $$.paramRegs.clear();
+        $$.paramLabels.clear();
         $$.paramTypes.push_back($1.type);
         $$.paramRegs.push_back($1.RegNum);
+        $$.paramLabels.push_back("");
     }
-    | argument_list_non_empty COMMA expression {
+    | positional_arg_list COMMA expression {
         $$ = $1;
         $$.paramTypes.push_back($3.type);
         $$.paramRegs.push_back($3.RegNum);
+        $$.paramLabels.push_back("");
+    }
+    ;
+
+// If there are named args after some positionals, they must start after a comma.
+named_arg_list_tail_opt:
+    /* empty */ {
+        $$.paramTypes.clear();
+        $$.paramRegs.clear();
+        $$.paramLabels.clear();
+    }
+    | COMMA named_arg_list {
+        $$ = $2;
+    }
+    ;
+
+// Named arguments list: label:expression
+named_arg_list:
+    named_arg {
+        $$ = $1;
+    }
+    | named_arg_list COMMA named_arg {
+        $$ = $1;
+        $$.paramTypes.push_back($3.paramTypes[0]);
+        $$.paramRegs.push_back($3.paramRegs[0]);
+        $$.paramLabels.push_back($3.paramLabels[0]);
+    }
+    ;
+
+named_arg:
+    ID COLON expression {
+        $$.paramTypes.clear();
+        $$.paramRegs.clear();
+        $$.paramLabels.clear();
+        $$.paramTypes.push_back($3.type);
+        $$.paramRegs.push_back($3.RegNum);
+        $$.paramLabels.push_back($1.name);
     }
     ;
 
