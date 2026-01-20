@@ -61,8 +61,33 @@ test_example() {
         fi
     fi
     
+    # Special handling for multi-module example3.
+    # - example3-funcs is a library module (compile-only)
+    # - example3-main must be linked with example3-funcs
+    if [ "$base_name" = "example3-funcs" ]; then
+        echo -e "${GREEN}PASS${NC} (compile-only module)"
+        PASSED=$((PASSED + 1))
+        return 0
+    fi
+
+    # Build linker args
+    linker_args=("$rsk_file")
+    if [ "$base_name" = "example3-main" ]; then
+        local funcs_cmm="$EXAMPLES_DIR/example3-funcs.cmm"
+        local funcs_rsk="$EXAMPLES_DIR/example3-funcs.rsk"
+
+        # Ensure funcs module is compiled so linking works when running only example3-main.
+        if [ -f "$funcs_cmm" ] && [ ! -f "$funcs_rsk" ]; then
+            $COMPILER "$funcs_cmm" 2>/dev/null
+        fi
+
+        if [ -f "$funcs_rsk" ]; then
+            linker_args=("$rsk_file" "$funcs_rsk")
+        fi
+    fi
+
     # Link
-    $LINKER "$rsk_file" 2>/dev/null
+    $LINKER "${linker_args[@]}" 2>/dev/null
     if [ $? -ne 0 ]; then
         echo -e "${RED}FAIL${NC} (linking error)"
         FAILED=$((FAILED + 1))
