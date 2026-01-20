@@ -822,20 +822,30 @@ void emitCode(const string& code) {
 
 void generateHeader() {
     // Build unimplemented functions line (external calls)
+    // Header line numbers are absolute (include 4-line header offset)
     string unimplementedLine = "<unimplemented>";
     for (map<string, Function>::iterator it = functionTable.begin(); it != functionTable.end(); ++it) {
         if (!it->second.isDefined) {
             // List all call sites for this external function
             for (size_t i = 0; i < it->second.callingLines.size(); i++) {
-                unimplementedLine += " " + it->first + "," + intToString(it->second.callingLines[i]);
+                int absoluteLine = it->second.callingLines[i] + 4;
+                unimplementedLine += " " + it->first + "," + intToString(absoluteLine);
             }
         }
     }
     
     // Build implemented functions line
+    // Header line numbers are absolute (include 4-line header offset)
     string implementedLine = "<implemented>";
     for (size_t i = 0; i < implementedFuncs.size(); i++) {
-        implementedLine += " " + implementedFuncs[i];
+        size_t commaPos = implementedFuncs[i].find(',');
+        if (commaPos != string::npos) {
+            string funcName = implementedFuncs[i].substr(0, commaPos);
+            string lineNumStr = implementedFuncs[i].substr(commaPos + 1);
+            int lineNum = atoi(lineNumStr.c_str());
+            int absoluteLine = lineNum + 4;
+            implementedLine += " " + funcName + "," + intToString(absoluteLine);
+        }
     }
     
     buffer->frontEmit("</header>");
