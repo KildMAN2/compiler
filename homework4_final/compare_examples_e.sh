@@ -76,7 +76,8 @@ build_generated_e() {
   local tmp="$1"
   local main="$2"
   shift 2
-  local libs=("$@")
+  local -a libs=()
+  libs=("$@")
 
   cp "$EX_DIR/$main" "$tmp/"
   for l in "${libs[@]}"; do
@@ -101,7 +102,8 @@ compare_one() {
   local main_cmm="$2"
   local ref_main_e="$3"
   shift 3
-  local libs=("$@")
+  local -a libs=()
+  libs=("$@")
 
   local input="$EX_DIR/${name}.in"
   if [ ! -f "$input" ]; then
