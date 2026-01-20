@@ -76,18 +76,16 @@ build_generated_e() {
   local tmp="$1"
   local main="$2"
   shift 2
-  local -a libs=()
-  libs=("$@")
 
   cp "$EX_DIR/$main" "$tmp/"
-  for l in "${libs[@]}"; do
+  for l in "$@"; do
     cp "$EX_DIR/$l" "$tmp/"
   done
 
   (cd "$tmp" && "$COMPILER" "$tmp/$main" >/dev/null 2>/dev/null) || return 1
   local rsk_files=("$tmp/${main%.cmm}.rsk")
 
-  for l in "${libs[@]}"; do
+  for l in "$@"; do
     (cd "$tmp" && "$COMPILER" "$tmp/$l" >/dev/null 2>/dev/null) || return 1
     rsk_files+=("$tmp/${l%.cmm}.rsk")
   done
@@ -102,8 +100,6 @@ compare_one() {
   local main_cmm="$2"
   local ref_main_e="$3"
   shift 3
-  local -a libs=()
-  libs=("$@")
 
   local input="$EX_DIR/${name}.in"
   if [ ! -f "$input" ]; then
@@ -119,7 +115,7 @@ compare_one() {
   local tmp
   tmp="$(mktemp -d)"
 
-  if ! build_generated_e "$tmp" "$main_cmm" "${libs[@]}"; then
+  if ! build_generated_e "$tmp" "$main_cmm" "$@"; then
     echo "[$name] Failed"  # compile/link failed
     rm -rf "$tmp"
     return 0
