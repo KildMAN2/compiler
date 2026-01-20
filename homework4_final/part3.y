@@ -669,22 +669,35 @@ expression:
             }
         }
         
-        // Push arguments
-        for (int i = $3.paramRegs.size() - 1; i >= 0; i--) {
-            emitCode("ADD2I I2 I2 4");
+        // Call frame layout (relative to FP=I1):
+        //   [I1 + 0]  : saved old FP
+        //   [I1 - 4]  : return value slot
+        //   [I1 - 8]  : param 0
+        //   [I1 - 12] : param 1
+        //   ...
+        // Allocate: saved FP + return slot + params
+        int frameSizeBytes = (int)(($3.paramRegs.size() + 2) * 4);
+        
+        // Allocate frame and save old FP at the new top
+        {
+            stringstream ss;
+            ss << "ADD2I I2 I2 " << frameSizeBytes;
+            emitCode(ss.str());
+        }
+        emitCode("STORI I1 I2 0");
+        emitCode("COPYI I1 I2");
+        
+        // Store parameters into their fixed slots
+        for (size_t i = 0; i < $3.paramRegs.size(); i++) {
+            int offset = -8 - ((int)i * 4);
             stringstream ss;
             if ($3.paramTypes[i] == float_) {
-                ss << "STORF F" << $3.paramRegs[i] << " I2 0";
+                ss << "STORF F" << $3.paramRegs[i] << " I1 " << offset;
             } else {
-                ss << "STORI I" << $3.paramRegs[i] << " I2 0";
+                ss << "STORI I" << $3.paramRegs[i] << " I1 " << offset;
             }
             emitCode(ss.str());
         }
-        
-        // Push FP
-        emitCode("ADD2I I2 I2 4");
-        emitCode("STORI I1 I2 0");
-        emitCode("COPYI I1 I2");
         
         // Call
         if (func->isDefined) {
@@ -697,26 +710,27 @@ expression:
             emitCode("JLINK ");
         }
         
-        // Restore FP
-        emitCode("COPYI I2 I1");
-        emitCode("LOADI I1 I1 0");
-        
-        // Pop stack
-        stringstream ss;
-        ss << "SUBTI I2 I2 " << (($3.paramRegs.size() + 1) * 4);
-        emitCode(ss.str());
-        
-        // Get return value
+        // Get return value (from current FP frame)
         $$.type = func->returnType;
         $$.RegNum = allocateRegister();
-        
-        ss.str("");
-        if (func->returnType == float_) {
-            ss << "LOADF F" << $$.RegNum << " I2 4";
-        } else {
-            ss << "LOADI I" << $$.RegNum << " I2 4";
+        emitCode("COPYI I2 I1");
+        {
+            stringstream ss;
+            if (func->returnType == float_) {
+                ss << "LOADF F" << $$.RegNum << " I1 -4";
+            } else {
+                ss << "LOADI I" << $$.RegNum << " I1 -4";
+            }
+            emitCode(ss.str());
         }
-        emitCode(ss.str());
+        
+        // Restore FP and pop the call frame
+        emitCode("LOADI I1 I1 0");
+        {
+            stringstream ss;
+            ss << "SUBTI I2 I2 " << frameSizeBytes;
+            emitCode(ss.str());
+        }
         
         $$.quad = buffer->nextQuad() - 1;
     }
@@ -825,9 +839,15 @@ void generateHeader() {
     string unimplementedLine = "<unimplemented>";
     for (map<string, Function>::iterator it = functionTable.begin(); it != functionTable.end(); ++it) {
         if (!it->second.isDefined) {
-            // List all call sites for this external function
-            for (size_t i = 0; i < it->second.callingLines.size(); i++) {
-                unimplementedLine += " " + it->first + "," + intToString(it->second.callingLines[i]);
+            // If there are no recorded call sites, still list the function name.
+            // (Some reference outputs include externals declared but not called.)
+            if (it->second.callingLines.empty()) {
+                unimplementedLine += " " + it->first;
+            } else {
+                // List all call sites for this external function
+                for (size_t i = 0; i < it->second.callingLines.size(); i++) {
+                    unimplementedLine += " " + it->first + "," + intToString(it->second.callingLines[i]);
+                }
             }
         }
     }
