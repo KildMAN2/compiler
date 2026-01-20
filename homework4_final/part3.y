@@ -809,6 +809,17 @@ void emitCode(const string& code) {
 }
 
 void generateHeader() {
+    // Build unimplemented functions line (external calls)
+    string unimplementedLine = "<unimplemented>";
+    for (map<string, Function>::iterator it = functionTable.begin(); it != functionTable.end(); ++it) {
+        if (!it->second.isDefined) {
+            // List all call sites for this external function
+            for (size_t i = 0; i < it->second.callingLines.size(); i++) {
+                unimplementedLine += " " + it->first + "," + intToString(it->second.callingLines[i]);
+            }
+        }
+    }
+    
     // Build implemented functions line
     string implementedLine = "<implemented>";
     for (size_t i = 0; i < implementedFuncs.size(); i++) {
@@ -817,7 +828,7 @@ void generateHeader() {
     
     buffer->frontEmit("</header>");
     buffer->frontEmit(implementedLine);
-    buffer->frontEmit("<unimplemented>");
+    buffer->frontEmit(unimplementedLine);
     buffer->frontEmit("<header>");
 }
 
