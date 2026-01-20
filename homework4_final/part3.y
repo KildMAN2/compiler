@@ -293,7 +293,11 @@ return_stmt:
         }
         
         stringstream ss;
-        ss << "STORI I" << $2.RegNum << " I1 -4";
+        if ($2.type == float_) {
+            ss << "STORF F" << $2.RegNum << " I1 -4";
+        } else {
+            ss << "STORI I" << $2.RegNum << " I1 -4";
+        }
         emitCode(ss.str());
         emitCode("RETRN");
     }
@@ -669,7 +673,11 @@ expression:
         for (int i = $3.paramRegs.size() - 1; i >= 0; i--) {
             emitCode("ADD2I I2 I2 4");
             stringstream ss;
-            ss << "STORI I" << $3.paramRegs[i] << " I2 0";
+            if ($3.paramTypes[i] == float_) {
+                ss << "STORF F" << $3.paramRegs[i] << " I2 0";
+            } else {
+                ss << "STORI I" << $3.paramRegs[i] << " I2 0";
+            }
             emitCode(ss.str());
         }
         
@@ -703,7 +711,11 @@ expression:
         $$.RegNum = allocateRegister();
         
         ss.str("");
-        ss << "LOADI I" << $$.RegNum << " I2 4";
+        if (func->returnType == float_) {
+            ss << "LOADF F" << $$.RegNum << " I2 4";
+        } else {
+            ss << "LOADI I" << $$.RegNum << " I2 4";
+        }
         emitCode(ss.str());
         
         $$.quad = buffer->nextQuad() - 1;
