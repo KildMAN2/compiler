@@ -7,6 +7,7 @@ COMPILER="./rx-cc"
 LINKER="./rx-linker"
 VM="./rx-vm"
 EXAMPLES_DIR="examples"
+EXPECTED_DIR="expected_outputs"
 
 # Colors for output
 RED='\033[0;31m'
@@ -48,6 +49,16 @@ test_example() {
         echo -e "${RED}FAIL${NC} (.rsk file not created)"
         FAILED=$((FAILED + 1))
         return 1
+    fi
+    
+    # Compare with expected output if it exists
+    local expected_rsk="$EXPECTED_DIR/$base_name.rsk"
+    if [ -f "$expected_rsk" ]; then
+        if ! diff -q "$rsk_file" "$expected_rsk" > /dev/null 2>&1; then
+            echo -e "${YELLOW}WARNING${NC} (assembly differs from expected)"
+            echo "  Differences:"
+            diff -u "$expected_rsk" "$rsk_file" | head -20
+        fi
     fi
     
     # Link
