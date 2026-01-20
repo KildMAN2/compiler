@@ -129,7 +129,7 @@ function_definition:
             sym.depth = currentDepth;
         }
         
-        implementedFuncs.push_back(funcName + "," + intToString(paramIds.size()));
+        implementedFuncs.push_back(funcName + "," + intToString(startLine));
     }
     LBRACE statement_list RBRACE {
         emitCode("RETRN");
