@@ -587,6 +587,31 @@ expression:
     | LPAREN expression RPAREN {
         $$ = $2;
     }
+    | LPAREN type_specifier RPAREN expression {
+        $$.type = $2.type;
+        $$.RegNum = allocateRegister();
+        
+        stringstream ss;
+        if ($4.type == int_ && $2.type == float_) {
+            // int to float
+            ss << "CITOF F" << $$.RegNum << " I" << $4.RegNum;
+            emitCode(ss.str());
+        } else if ($4.type == float_ && $2.type == int_) {
+            // float to int
+            ss << "CFTOI I" << $$.RegNum << " F" << $4.RegNum;
+            emitCode(ss.str());
+        } else {
+            // Same type, just copy
+            if ($2.type == int_) {
+                ss << "COPYI I" << $$.RegNum << " I" << $4.RegNum;
+            } else {
+                ss << "COPYF F" << $$.RegNum << " F" << $4.RegNum;
+            }
+            emitCode(ss.str());
+        }
+        
+        $$.quad = buffer->nextQuad() - 1;
+    }
     | ID {
         Symbol* sym = lookup($1.name);
         
