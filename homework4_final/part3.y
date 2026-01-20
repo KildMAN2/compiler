@@ -669,30 +669,46 @@ expression:
             }
         }
         
-        // Call frame layout (relative to FP=I1):
-        //   [I1 + 0]  : saved old FP
-        //   [I1 - 4]  : return value slot
-        //   [I1 - 8]  : param 0
-        //   [I1 - 12] : param 1
-        //   ...
-        // Allocate: saved FP + return slot + params
-        int frameSizeBytes = (int)(($3.paramRegs.size() + 2) * 4);
-        
-        // Allocate frame and save old FP at the new top
+        // Calling convention (matches provided reference outputs):
+        // - Save I0..I15 and F0..F15 below current SP
+        // - Allocate a call frame of: saved-regs + (return slot + params)
+        // - Set FP=SP
+        // - Params live at [FP-8], [FP-12], ... and return at [FP-4]
+        const int savedIntCount = 16;   // I0..I15
+        const int savedFloatCount = 16; // F0..F15
+        const int savedBytes = (savedIntCount + savedFloatCount) * 4; // 128
+        int extraBytes = (int)(($3.paramRegs.size() + 1) * 4); // return slot + params
+        int frameSizeBytes = savedBytes + extraBytes;
+
+        // Save integer registers at [SP + 0..60]
+        for (int r = 0; r < savedIntCount; r++) {
+            stringstream ss;
+            ss << "STORI I" << r << " I2 " << (r * 4);
+            emitCode(ss.str());
+        }
+        // Save float registers at [SP + 64..124]
+        emitCode("CITOF F2 I2");
+        for (int r = 0; r < savedFloatCount; r++) {
+            stringstream ss;
+            ss << "STORF F" << r << " F2 " << (64 + (r * 4));
+            emitCode(ss.str());
+        }
+
+        // Allocate frame and set FP
         {
             stringstream ss;
             ss << "ADD2I I2 I2 " << frameSizeBytes;
             emitCode(ss.str());
         }
-        emitCode("STORI I1 I2 0");
         emitCode("COPYI I1 I2");
-        
+        emitCode("CITOF F1 I1");
+
         // Store parameters into their fixed slots
         for (size_t i = 0; i < $3.paramRegs.size(); i++) {
             int offset = -8 - ((int)i * 4);
             stringstream ss;
             if ($3.paramTypes[i] == float_) {
-                ss << "STORF F" << $3.paramRegs[i] << " I1 " << offset;
+                ss << "STORF F" << $3.paramRegs[i] << " F1 " << offset;
             } else {
                 ss << "STORI I" << $3.paramRegs[i] << " I1 " << offset;
             }
@@ -710,27 +726,53 @@ expression:
             emitCode("JLINK ");
         }
         
-        // Get return value (from current FP frame)
+        // Get return value (from current FP frame) into a reg >= 16
+        // so it won't be overwritten by restoring I0..I15 / F0..F15.
         $$.type = func->returnType;
-        $$.RegNum = allocateRegister();
-        emitCode("COPYI I2 I1");
+        do {
+            $$.RegNum = allocateRegister();
+        } while ($$.RegNum < 16);
+        emitCode("CITOF F1 I1");
         {
             stringstream ss;
             if (func->returnType == float_) {
-                ss << "LOADF F" << $$.RegNum << " I1 -4";
+                ss << "LOADF F" << $$.RegNum << " F1 -4";
             } else {
                 ss << "LOADI I" << $$.RegNum << " I1 -4";
             }
             emitCode(ss.str());
         }
-        
-        // Restore FP and pop the call frame
-        emitCode("LOADI I1 I1 0");
+
+        // Restore SP to old SP (base of saved regs)
+        emitCode("COPYI I2 I1");
         {
             stringstream ss;
             ss << "SUBTI I2 I2 " << frameSizeBytes;
             emitCode(ss.str());
         }
+
+        // Restore integer registers (restore I2 last since it's our base)
+        for (int r = 0; r < savedIntCount; r++) {
+            if (r == 2) {
+                continue;
+            }
+            stringstream ss;
+            ss << "LOADI I" << r << " I2 " << (r * 4);
+            emitCode(ss.str());
+        }
+        // Restore float registers (restore F2 last since it's our base)
+        emitCode("CITOF F2 I2");
+        for (int r = 0; r < savedFloatCount; r++) {
+            if (r == 2) {
+                continue;
+            }
+            stringstream ss;
+            ss << "LOADF F" << r << " F2 " << (64 + (r * 4));
+            emitCode(ss.str());
+        }
+        // Restore base registers last
+        emitCode("LOADI I2 I2 8");
+        emitCode("LOADF F2 F2 72");
         
         $$.quad = buffer->nextQuad() - 1;
     }
@@ -852,10 +894,22 @@ void generateHeader() {
         }
     }
     
-    // Build implemented functions line
-    string implementedLine = "<implemented>";
+    // Build implemented functions line (sorted by name for stable output)
+    vector<pair<string, int> > impl;
+    impl.reserve(implementedFuncs.size());
     for (size_t i = 0; i < implementedFuncs.size(); i++) {
-        implementedLine += " " + implementedFuncs[i];
+        size_t commaPos = implementedFuncs[i].find(',');
+        if (commaPos == string::npos) {
+            continue;
+        }
+        string name = implementedFuncs[i].substr(0, commaPos);
+        int line = atoi(implementedFuncs[i].substr(commaPos + 1).c_str());
+        impl.push_back(make_pair(name, line));
+    }
+    sort(impl.begin(), impl.end());
+    string implementedLine = "<implemented>";
+    for (size_t i = 0; i < impl.size(); i++) {
+        implementedLine += " " + impl[i].first + "," + intToString(impl[i].second);
     }
     
     buffer->frontEmit("</header>");
