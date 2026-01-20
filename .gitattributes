@@ -1,0 +1,2 @@
+# Keep shell scripts with LF endings (prevents ^M issues on Linux)
+*.sh text eol=lf
