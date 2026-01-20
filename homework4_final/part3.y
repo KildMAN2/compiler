@@ -689,7 +689,7 @@ expression:
         // Call
         if (func->isDefined) {
             stringstream ss;
-            ss << "JLINK " << (func->startLineImplementation + 4);  // +4 for header offset
+            ss << "JLINK " << func->startLineImplementation;
             emitCode(ss.str());
         } else {
             int callLine = buffer->nextQuad();
@@ -822,30 +822,20 @@ void emitCode(const string& code) {
 
 void generateHeader() {
     // Build unimplemented functions line (external calls)
-    // Note: call line numbers need +4 offset for header
     string unimplementedLine = "<unimplemented>";
     for (map<string, Function>::iterator it = functionTable.begin(); it != functionTable.end(); ++it) {
         if (!it->second.isDefined) {
             // List all call sites for this external function
             for (size_t i = 0; i < it->second.callingLines.size(); i++) {
-                int adjustedLine = it->second.callingLines[i] + 4;
-                unimplementedLine += " " + it->first + "," + intToString(adjustedLine);
+                unimplementedLine += " " + it->first + "," + intToString(it->second.callingLines[i]);
             }
         }
     }
     
     // Build implemented functions line
-    // Note: start line numbers need +4 offset for header
     string implementedLine = "<implemented>";
     for (size_t i = 0; i < implementedFuncs.size(); i++) {
-        size_t commaPos = implementedFuncs[i].find(',');
-        if (commaPos != string::npos) {
-            string funcName = implementedFuncs[i].substr(0, commaPos);
-            string lineNumStr = implementedFuncs[i].substr(commaPos + 1);
-            int lineNum = atoi(lineNumStr.c_str());
-            int adjustedLine = lineNum + 4;
-            implementedLine += " " + funcName + "," + intToString(adjustedLine);
-        }
+        implementedLine += " " + implementedFuncs[i];
     }
     
     buffer->frontEmit("</header>");
