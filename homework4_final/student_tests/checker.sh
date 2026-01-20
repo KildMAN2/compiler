@@ -79,9 +79,10 @@ else
   timeout 2 "$VM" "$E_FILE" >"$ACTUAL_OUT" 2>&1
 fi
 
-# Normalize CRLF just in case
-tr -d '\r' < "$ACTUAL_OUT" > "${ACTUAL_OUT}.norm"
-tr -d '\r' < "$EXPECTED_OUT" > "${ACTUAL_OUT}.exp"
+# Normalize CRLF just in case, and strip the VM trailer "Reached Halt.".
+# Some course test packs want output.out to contain only program output.
+tr -d '\r' < "$ACTUAL_OUT" | sed 's/[[:space:]]*Reached Halt\.[[:space:]]*//g' | sed 's/[[:space:]]*$//' > "${ACTUAL_OUT}.norm"
+tr -d '\r' < "$EXPECTED_OUT" | sed 's/[[:space:]]*Reached Halt\.[[:space:]]*//g' | sed 's/[[:space:]]*$//' > "${ACTUAL_OUT}.exp"
 
 if diff -q "${ACTUAL_OUT}.norm" "${ACTUAL_OUT}.exp" >/dev/null 2>&1; then
   echo "True"

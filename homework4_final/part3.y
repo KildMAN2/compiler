@@ -246,8 +246,10 @@ block_stmt:
     ;
 
 declaration_stmt:
-    ID COLON type_specifier SEMICOLON {
-        declareVariable($1.name, $3.type);
+    id_list COLON type_specifier SEMICOLON {
+        for (size_t i = 0; i < $1.paramIds.size(); i++) {
+            declareVariable($1.paramIds[i], $3.type);
+        }
     }
     ;
 
