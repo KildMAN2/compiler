@@ -18,6 +18,12 @@ if [ "$#" -ge 1 ] && [ "$1" = "--debug" ]; then
   shift
 fi
 
+debug_note() {
+  if [ "$DEBUG" -eq 1 ]; then
+    echo "$@"
+  fi
+}
+
 if [ "$#" -lt 3 ]; then
   echo "Failed"
   exit 0
@@ -43,10 +49,24 @@ for src in "${SRC_FILES[@]}"; do
   src_abs="$(cd "$(dirname "$src")" && pwd)/$(basename "$src")"
   src_dir="$(dirname "$src_abs")"
 
-  (cd "$src_dir" && "$COMPILER" "$src_abs" >/dev/null 2>/dev/null)
+  compile_log=""
+  if [ "$DEBUG" -eq 1 ]; then
+    compile_log="$(mktemp)"
+    (cd "$src_dir" && "$COMPILER" "$src_abs" >"$compile_log" 2>&1)
+  else
+    (cd "$src_dir" && "$COMPILER" "$src_abs" >/dev/null 2>/dev/null)
+  fi
   if [ $? -ne 0 ]; then
+    if [ "$DEBUG" -eq 1 ]; then
+      echo "--- compiler failed: $src_abs ---"
+      cat "$compile_log" || true
+      rm -f "$compile_log" || true
+    fi
     echo "Failed"
     exit 0
+  fi
+  if [ "$DEBUG" -eq 1 ]; then
+    rm -f "$compile_log" || true
   fi
 
   rsk="${src_abs%.cmm}.rsk"
@@ -58,10 +78,24 @@ for src in "${SRC_FILES[@]}"; do
 done
 
 # Link (run from root so rx-runtime.rsk is found; output .e is created next to FIRST .rsk)
-(cd "$ROOT_DIR" && "$LINKER" "${RSK_FILES[@]}" >/dev/null 2>/dev/null)
+link_log=""
+if [ "$DEBUG" -eq 1 ]; then
+  link_log="$(mktemp)"
+  (cd "$ROOT_DIR" && "$LINKER" "${RSK_FILES[@]}" >"$link_log" 2>&1)
+else
+  (cd "$ROOT_DIR" && "$LINKER" "${RSK_FILES[@]}" >/dev/null 2>/dev/null)
+fi
 if [ $? -ne 0 ]; then
+  if [ "$DEBUG" -eq 1 ]; then
+    echo "--- linker failed ---"
+    cat "$link_log" || true
+    rm -f "$link_log" || true
+  fi
   echo "Failed"
   exit 0
+fi
+if [ "$DEBUG" -eq 1 ]; then
+  rm -f "$link_log" || true
 fi
 
 MAIN_SRC="${SRC_FILES[0]}"
