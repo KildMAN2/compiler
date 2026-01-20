@@ -605,20 +605,29 @@ expression:
         $$.type = int_;
         $$.RegNum = allocateRegister();
         
+        // Implement a <= b as !(a > b).
+        // This avoids relying on SLETI/SLETF semantics across different rx-vm builds.
+        int tmp = allocateRegister();
         stringstream ss;
         if ($1.type == int_) {
-            ss << "SLETI I" << $$.RegNum << " I" << $1.RegNum << " I" << $3.RegNum;
+            ss << "SGRTI I" << tmp << " I" << $1.RegNum << " I" << $3.RegNum;
             emitCode(ss.str());
         } else {
-            ss << "SLETF F" << $$.RegNum << " F" << $1.RegNum << " F" << $3.RegNum;
+            ss << "SGRTF F" << tmp << " F" << $1.RegNum << " F" << $3.RegNum;
             emitCode(ss.str());
 
             ss.str("");
-            ss << "CFTOI I" << $$.RegNum << " F" << $$.RegNum;
+            ss << "CFTOI I" << tmp << " F" << tmp;
             emitCode(ss.str());
         }
 
-        // (emitCode already done above)
+        ss.str("");
+        ss << "COPYI I" << $$.RegNum << " 1";
+        emitCode(ss.str());
+
+        ss.str("");
+        ss << "SUBTI I" << $$.RegNum << " I" << $$.RegNum << " I" << tmp;
+        emitCode(ss.str());
         
         $$.falseList.push_back(buffer->nextQuad());
         ss.str("");
@@ -635,22 +644,28 @@ expression:
         $$.type = int_;
         $$.RegNum = allocateRegister();
         
+        // Implement a >= b as !(a < b) == !(b > a).
+        int tmp = allocateRegister();
         stringstream ss;
         if ($1.type == int_) {
-            // a >= b  <=>  b <= a
-            ss << "SLETI I" << $$.RegNum << " I" << $3.RegNum << " I" << $1.RegNum;
+            ss << "SGRTI I" << tmp << " I" << $3.RegNum << " I" << $1.RegNum;
             emitCode(ss.str());
         } else {
-            // a >= b  <=>  b <= a
-            ss << "SLETF F" << $$.RegNum << " F" << $3.RegNum << " F" << $1.RegNum;
+            ss << "SGRTF F" << tmp << " F" << $3.RegNum << " F" << $1.RegNum;
             emitCode(ss.str());
 
             ss.str("");
-            ss << "CFTOI I" << $$.RegNum << " F" << $$.RegNum;
+            ss << "CFTOI I" << tmp << " F" << tmp;
             emitCode(ss.str());
         }
 
-        // (emitCode already done above)
+        ss.str("");
+        ss << "COPYI I" << $$.RegNum << " 1";
+        emitCode(ss.str());
+
+        ss.str("");
+        ss << "SUBTI I" << $$.RegNum << " I" << $$.RegNum << " I" << tmp;
+        emitCode(ss.str());
         
         $$.falseList.push_back(buffer->nextQuad());
         ss.str("");
