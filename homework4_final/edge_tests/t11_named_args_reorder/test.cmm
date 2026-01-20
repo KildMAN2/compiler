@@ -1,0 +1,8 @@
+int pack(x:int, y:int) {
+  return x*10 + y;
+}
+
+void main() {
+  write(pack(y:2, x:1));
+  write("\n");
+}

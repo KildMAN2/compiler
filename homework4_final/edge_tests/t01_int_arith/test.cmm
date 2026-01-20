@@ -1,0 +1,6 @@
+void main() {
+  a:int;
+  a = 2 + 3 * 4;
+  write(a);
+  write("\n");
+}

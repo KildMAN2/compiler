@@ -1,0 +1,12 @@
+void main() {
+  a:int;
+  a = 1;
+  {
+    a:int;
+    a = 2;
+    write(a);
+    write(" ");
+  }
+  write(a);
+  write("\n");
+}

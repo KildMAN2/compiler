@@ -1,0 +1,8 @@
+void main() {
+  a:int;
+  b:float;
+  a = 3;
+  b = (float)a + 0.25;
+  write(b);
+  write("\n");
+}

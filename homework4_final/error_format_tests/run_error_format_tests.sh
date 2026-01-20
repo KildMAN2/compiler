@@ -44,9 +44,16 @@ echo "========================================"
 echo "Error message format tests"
 echo "========================================"
 
-run_one lexical_error
-run_one syntax_error
-run_one semantic_error
+# Run every *.cmm that has a matching *.err file in this directory.
+for src in ./*.cmm; do
+  [ -f "$src" ] || continue
+  base="${src%.cmm}"
+  if [ -f "${base}.err" ]; then
+    run_one "$base"
+  else
+    echo "[$base] Skipping (missing .err)"
+  fi
+done
 
 echo "========================================"
 rm -f "$TMP_OUT" "${TMP_OUT}.norm" "${TMP_OUT}.exp"

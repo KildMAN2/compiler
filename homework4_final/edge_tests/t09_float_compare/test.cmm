@@ -1,0 +1,9 @@
+void main() {
+  a:float;
+  b:float;
+  a = 2.71;
+  b = 3.14;
+  if a < b then write(a);
+  else write(b);
+  write("\n");
+}

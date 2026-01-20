@@ -1,0 +1,6 @@
+void main() {
+  write(1 < 2);
+  write(" ");
+  write(2 < 1);
+  write("\n");
+}

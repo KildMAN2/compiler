@@ -1,0 +1,6 @@
+void main() {
+  a:float;
+  read(a);
+  write(a + 1.5);
+  write("\n");
+}

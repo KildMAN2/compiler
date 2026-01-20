@@ -1,0 +1,8 @@
+float addf(a: float, b: float) {
+  return a + b;
+}
+
+void main() {
+  write(addf(2.0, 3.25));
+  write("\n");
+}

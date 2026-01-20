@@ -1,0 +1,9 @@
+void main() {
+  a:int;
+  b:int;
+  a = 5;
+  b = 7;
+  if a < b then write(1);
+  else write(0);
+  write("\n");
+}

@@ -1,0 +1,8 @@
+int add10(x:int) {
+  return x + 10;
+}
+
+void main() {
+  write(add10(5));
+  write("\n");
+}

@@ -1,0 +1,6 @@
+int f(x:int, y:int);
+
+void main() {
+  write(f(2,3));
+  write("\n");
+}
