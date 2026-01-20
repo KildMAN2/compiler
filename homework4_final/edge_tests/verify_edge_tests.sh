@@ -9,9 +9,10 @@ ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 CHECKER="$ROOT_DIR/student_tests/checker.sh"
 
 if [ ! -x "$CHECKER" ]; then
-  echo "Error: checker not executable: $CHECKER"
-  echo "Run: chmod +x $ROOT_DIR/student_tests/checker.sh"
-  exit 1
+  if [ ! -f "$CHECKER" ]; then
+    echo "Error: checker missing: $CHECKER"
+    exit 1
+  fi
 fi
 
 MISMATCH=0
@@ -49,14 +50,14 @@ run_dir() {
   fi
 
   local result
-  result=$($CHECKER "${ordered[@]}" "$input" "$output" 2>/dev/null | tr -d '\r' | head -n 1)
+  result=$(bash "$CHECKER" "${ordered[@]}" "$input" "$output" 2>/dev/null | tr -d '\r' | head -n 1)
 
   if [ "$result" = "True" ]; then
     echo "[$d] VERIFIED"
   else
     echo "[$d] MISMATCH: got $result"
     if [ "$result" = "False" ]; then
-      $CHECKER --debug "${ordered[@]}" "$input" "$output" 2>/dev/null | tail -n +2
+      bash "$CHECKER" --debug "${ordered[@]}" "$input" "$output" 2>/dev/null | tail -n +2
     fi
     MISMATCH=$((MISMATCH+1))
   fi

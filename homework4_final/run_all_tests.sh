@@ -28,10 +28,10 @@ run_step() {
   fi
 }
 
-run_step "compare_examples_e (.e runtime equivalence)" "./compare_examples_e.sh"
-run_step "student_tests" "cd student_tests && ./verify_tests.sh"
-run_step "edge_tests" "cd edge_tests && ./verify_edge_tests.sh"
-run_step "error_format_tests" "cd error_format_tests && ./run_error_format_tests.sh"
+run_step "compare_examples_e (.e runtime equivalence)" "bash ./compare_examples_e.sh"
+run_step "student_tests" "cd student_tests && bash ./verify_tests.sh"
+run_step "edge_tests" "cd edge_tests && bash ./verify_edge_tests.sh"
+run_step "error_format_tests" "cd error_format_tests && bash ./run_error_format_tests.sh"
 
 echo "========================================"
 if [ $FAIL -eq 0 ]; then
