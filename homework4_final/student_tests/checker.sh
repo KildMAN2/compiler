@@ -91,7 +91,7 @@ fi
 # the expected output files for this checker.
 normalize_out() {
   tr -d '\r' \
-    | perl -0777 -pe 's/Input integer\?:|Input real\?:|Reached Halt\.//g; s/[\s\n]+\z/\n/'
+    | perl -0777 -pe 's/Input integer\?:|Input real\?:|Reached Halt\.//g; s/\s*\z/\n/'
 }
 
 normalize_out < "$ACTUAL_OUT" > "${ACTUAL_OUT}.norm"

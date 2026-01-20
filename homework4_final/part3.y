@@ -547,9 +547,11 @@ expression:
         
         stringstream ss;
         if ($1.type == int_) {
-            ss << "SLTTI I" << $$.RegNum << " I" << $1.RegNum << " I" << $3.RegNum;
+            // Avoid SLTTI (not supported by some rx-vm builds): a < b  <=>  b > a
+            ss << "SGRTI I" << $$.RegNum << " I" << $3.RegNum << " I" << $1.RegNum;
         } else {
-            ss << "SLTTF F" << $$.RegNum << " F" << $1.RegNum << " F" << $3.RegNum;
+            // a < b  <=>  b > a
+            ss << "SGRTF F" << $$.RegNum << " F" << $3.RegNum << " F" << $1.RegNum;
         }
         emitCode(ss.str());
 
@@ -605,37 +607,18 @@ expression:
         
         stringstream ss;
         if ($1.type == int_) {
-            // Implement <= as (<) OR (==) to avoid relying on VM-specific <= behavior.
-            int tmp = allocateRegister();
-
-            ss << "SLTTI I" << $$.RegNum << " I" << $1.RegNum << " I" << $3.RegNum;
+            ss << "SLETI I" << $$.RegNum << " I" << $1.RegNum << " I" << $3.RegNum;
             emitCode(ss.str());
-
-            ss.str("");
-            ss << "SEQUI I" << tmp << " I" << $1.RegNum << " I" << $3.RegNum;
-            emitCode(ss.str());
-
-            ss.str("");
-            ss << "ADD2I I" << $$.RegNum << " I" << $$.RegNum << " I" << tmp;
         } else {
-            int tmp = allocateRegister();
-
-            ss << "SLTTF F" << $$.RegNum << " F" << $1.RegNum << " F" << $3.RegNum;
-            emitCode(ss.str());
-
-            ss.str("");
-            ss << "SEQLF F" << tmp << " F" << $1.RegNum << " F" << $3.RegNum;
-            emitCode(ss.str());
-
-            ss.str("");
-            ss << "ADD2F F" << $$.RegNum << " F" << $$.RegNum << " F" << tmp;
+            ss << "SLETF F" << $$.RegNum << " F" << $1.RegNum << " F" << $3.RegNum;
             emitCode(ss.str());
 
             ss.str("");
             ss << "CFTOI I" << $$.RegNum << " F" << $$.RegNum;
+            emitCode(ss.str());
         }
 
-        emitCode(ss.str());
+        // (emitCode already done above)
         
         $$.falseList.push_back(buffer->nextQuad());
         ss.str("");
@@ -654,37 +637,20 @@ expression:
         
         stringstream ss;
         if ($1.type == int_) {
-            // Implement >= as (>) OR (==) to avoid relying on VM-specific >= behavior.
-            int tmp = allocateRegister();
-
-            ss << "SGRTI I" << $$.RegNum << " I" << $1.RegNum << " I" << $3.RegNum;
+            // a >= b  <=>  b <= a
+            ss << "SLETI I" << $$.RegNum << " I" << $3.RegNum << " I" << $1.RegNum;
             emitCode(ss.str());
-
-            ss.str("");
-            ss << "SEQUI I" << tmp << " I" << $1.RegNum << " I" << $3.RegNum;
-            emitCode(ss.str());
-
-            ss.str("");
-            ss << "ADD2I I" << $$.RegNum << " I" << $$.RegNum << " I" << tmp;
         } else {
-            int tmp = allocateRegister();
-
-            ss << "SGRTF F" << $$.RegNum << " F" << $1.RegNum << " F" << $3.RegNum;
-            emitCode(ss.str());
-
-            ss.str("");
-            ss << "SEQLF F" << tmp << " F" << $1.RegNum << " F" << $3.RegNum;
-            emitCode(ss.str());
-
-            ss.str("");
-            ss << "ADD2F F" << $$.RegNum << " F" << $$.RegNum << " F" << tmp;
+            // a >= b  <=>  b <= a
+            ss << "SLETF F" << $$.RegNum << " F" << $3.RegNum << " F" << $1.RegNum;
             emitCode(ss.str());
 
             ss.str("");
             ss << "CFTOI I" << $$.RegNum << " F" << $$.RegNum;
+            emitCode(ss.str());
         }
 
-        emitCode(ss.str());
+        // (emitCode already done above)
         
         $$.falseList.push_back(buffer->nextQuad());
         ss.str("");
