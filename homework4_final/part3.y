@@ -271,7 +271,11 @@ assignment_stmt:
         emitCode(ss.str());
         
         ss.str("");
-        ss << "STORI I" << $3.RegNum << " I" << targetReg << " 0";
+        if ($3.type == float_) {
+            ss << "STORF F" << $3.RegNum << " I" << targetReg << " 0";
+        } else {
+            ss << "STORI I" << $3.RegNum << " I" << targetReg << " 0";
+        }
         emitCode(ss.str());
     }
     ;
@@ -362,7 +366,11 @@ read_stmt:
         emitCode(ss.str());
         
         ss.str("");
-        ss << "STORI I" << reg << " I" << addrReg << " 0";
+        if (sym->type[sym->depth] == float_) {
+            ss << "STORF F" << reg << " I" << addrReg << " 0";
+        } else {
+            ss << "STORI I" << reg << " I" << addrReg << " 0";
+        }
         emitCode(ss.str());
     }
     ;
@@ -713,7 +721,11 @@ expression:
         $$.RegNum = allocateRegister();
         
         stringstream ss;
-        ss << "LOADI I" << $$.RegNum << " I1 " << sym->offset[sym->depth];
+        if ($$.type == float_) {
+            ss << "LOADF F" << $$.RegNum << " I1 " << sym->offset[sym->depth];
+        } else {
+            ss << "LOADI I" << $$.RegNum << " I1 " << sym->offset[sym->depth];
+        }
         emitCode(ss.str());
         
         $$.quad = buffer->nextQuad() - 1;
