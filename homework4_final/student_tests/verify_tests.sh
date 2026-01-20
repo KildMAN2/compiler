@@ -71,6 +71,9 @@ run_dir() {
     echo "[$d] VERIFIED ($kind)"
   else
     echo "[$d] MISMATCH: expected $expected, got $result"
+    if [ "$result" = "False" ]; then
+      $CHECKER --debug "${ordered[@]}" "$input" "$output" 2>/dev/null | tail -n +2
+    fi
     MISMATCH=$((MISMATCH+1))
   fi
 }

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Minimal checker (homework2-like):
-# ./checker.sh test.cmm [more.cmm ...] input.in output.out
+# ./checker.sh [--debug] test.cmm [more.cmm ...] input.in output.out
 # Prints: True | False | Failed
 
 set -u
@@ -11,6 +11,12 @@ ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 COMPILER="$ROOT_DIR/rx-cc"
 LINKER="$ROOT_DIR/rx-linker"
 VM="$ROOT_DIR/rx-vm"
+
+DEBUG=0
+if [ "$#" -ge 1 ] && [ "$1" = "--debug" ]; then
+  DEBUG=1
+  shift
+fi
 
 if [ "$#" -lt 3 ]; then
   echo "Failed"
@@ -88,6 +94,14 @@ if diff -q "${ACTUAL_OUT}.norm" "${ACTUAL_OUT}.exp" >/dev/null 2>&1; then
   echo "True"
 else
   echo "False"
+  if [ "$DEBUG" -eq 1 ]; then
+    echo "--- expected (normalized) ---"
+    cat "${ACTUAL_OUT}.exp"
+    echo "--- got (normalized) ---"
+    cat "${ACTUAL_OUT}.norm"
+    echo "--- diff -u ---"
+    diff -u "${ACTUAL_OUT}.exp" "${ACTUAL_OUT}.norm" || true
+  fi
 fi
 
 rm -f "$ACTUAL_OUT" "${ACTUAL_OUT}.norm" "${ACTUAL_OUT}.exp"
