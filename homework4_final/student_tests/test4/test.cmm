@@ -1,0 +1,8 @@
+int ex_func(a,b:int) {
+    return a + b;
+}
+
+void main() {
+    // Named-argument call (and grouped params are used in ex_func signature)
+    write(ex_func(b:2, a:1));
+}

@@ -1,0 +1,5 @@
+int f(x:int);
+
+void main() {
+    write(f(5));
+}

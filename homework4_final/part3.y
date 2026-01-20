@@ -8,6 +8,7 @@
 
 extern int yylex();
 extern int yylineno;
+extern char* yytext;
 void yyerror(const char* s);
 
 // Initialize buffer in parser (to avoid static linkage issues)
@@ -923,7 +924,9 @@ named_arg:
 %%
 
 void yyerror(const char* s) {
-    cerr << "Syntax error: '" << s << "' in line number " << yylineno << endl;
+    (void)s;
+    string lexeme = (yytext && yytext[0] != '\0') ? string(yytext) : string("EOF");
+    cerr << "Syntax error: '" << lexeme << "' in line number " << yylineno << endl;
     exit(SYNTAX_ERROR);
 }
 

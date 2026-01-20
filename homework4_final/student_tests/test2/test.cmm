@@ -1,0 +1,9 @@
+void main() {
+    x:int;
+    x = 5;
+    if x == 5 then {
+        write("OK");
+    } else {
+        write("BAD");
+    }
+}

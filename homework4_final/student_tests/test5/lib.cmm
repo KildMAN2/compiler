@@ -1,0 +1,3 @@
+int twice(x:int) {
+    return x * 2;
+}

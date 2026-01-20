@@ -1,0 +1,5 @@
+int twice(x:int);
+
+void main() {
+    write(twice(7));
+}

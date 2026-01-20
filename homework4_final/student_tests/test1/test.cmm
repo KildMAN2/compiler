@@ -1,0 +1,12 @@
+int add3(a,b,c:int) {
+    return (a + b) + b * c + (b + 10) / 2;
+}
+
+void main() {
+    a,b,c,res:int;
+    a = 1;
+    b = 2;
+    c = 3;
+    res = add3(a,b,c);
+    write(res);
+}
