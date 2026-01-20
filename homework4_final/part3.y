@@ -681,7 +681,7 @@ expression:
         // Call
         if (func->isDefined) {
             stringstream ss;
-            ss << "JLINK " << func->startLineImplementation;
+            ss << "JLINK " << (func->startLineImplementation + 4);  // +4 for header offset
             emitCode(ss.str());
         } else {
             int callLine = buffer->nextQuad();
