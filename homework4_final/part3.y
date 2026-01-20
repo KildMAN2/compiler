@@ -272,7 +272,12 @@ assignment_stmt:
         
         ss.str("");
         if ($3.type == float_) {
-            ss << "STORF F" << $3.RegNum << " I" << targetReg << " 0";
+            int baseF = allocateRegister();
+            ss << "CITOF F" << baseF << " I" << targetReg;
+            emitCode(ss.str());
+
+            ss.str("");
+            ss << "STORF F" << $3.RegNum << " F" << baseF << " 0";
         } else {
             ss << "STORI I" << $3.RegNum << " I" << targetReg << " 0";
         }
@@ -326,7 +331,12 @@ return_stmt:
         
         stringstream ss;
         if ($2.type == float_) {
-            ss << "STORF F" << $2.RegNum << " I1 -4";
+            int baseF = allocateRegister();
+            ss << "CITOF F" << baseF << " I1";
+            emitCode(ss.str());
+
+            ss.str("");
+            ss << "STORF F" << $2.RegNum << " F" << baseF << " -4";
         } else {
             ss << "STORI I" << $2.RegNum << " I1 -4";
         }
@@ -367,7 +377,12 @@ read_stmt:
         
         ss.str("");
         if (sym->type[sym->depth] == float_) {
-            ss << "STORF F" << reg << " I" << addrReg << " 0";
+            int baseF = allocateRegister();
+            ss << "CITOF F" << baseF << " I" << addrReg;
+            emitCode(ss.str());
+
+            ss.str("");
+            ss << "STORF F" << reg << " F" << baseF << " 0";
         } else {
             ss << "STORI I" << reg << " I" << addrReg << " 0";
         }
@@ -722,7 +737,17 @@ expression:
         
         stringstream ss;
         if ($$.type == float_) {
-            ss << "LOADF F" << $$.RegNum << " I1 " << sym->offset[sym->depth];
+            int addrReg = allocateRegister();
+            ss << "ADD2I I" << addrReg << " I1 " << sym->offset[sym->depth];
+            emitCode(ss.str());
+
+            int baseF = allocateRegister();
+            ss.str("");
+            ss << "CITOF F" << baseF << " I" << addrReg;
+            emitCode(ss.str());
+
+            ss.str("");
+            ss << "LOADF F" << $$.RegNum << " F" << baseF << " 0";
         } else {
             ss << "LOADI I" << $$.RegNum << " I1 " << sym->offset[sym->depth];
         }
