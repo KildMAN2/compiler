@@ -835,12 +835,16 @@ NAMED_ARG:
 
 /* Error handling function */
 void yyerror(const char *s) {
-    printf("Syntax error: '%s' in line %d\n", yytext, line_number);
+    const char* lexeme = yytext;
+    if (lexeme == nullptr || lexeme[0] == '\0') {
+        lexeme = "EOF";
+    }
+    printf("Syntax error: '%s' in line number %d\n", lexeme, line_number);
     exit(SYNTAX_ERROR);
 }
 
 void semanticError(const string& msg) {
-    printf("Semantic error in line %d: %s\n", line_number, msg.c_str());
+    printf("Semantic error: %s in line number %d\n", msg.c_str(), line_number);
     exit(SEMANTIC_ERROR);
 }
 

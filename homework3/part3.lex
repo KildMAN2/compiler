@@ -20,7 +20,14 @@ int line_number = 1;
 id          [a-zA-Z][a-zA-Z0-9_]*
 integernum  [0-9]+
 realnum     [0-9]+\.[0-9]+
-str         \"([^\n\r\"\\]|\\[nt\"])*\"
+/*
+ * String literal:
+ * - Must be closed on the same line
+ * - Allows escape sequences syntactically as \\.
+ * - We validate allowed escapes in the action (only \n, \t, \" are allowed).
+ */
+str         \"([^\n\r\"\\]|\\.)*\"
+unterminated_str  \"([^\n\r\"\\]|\\.)*
 
 %%
 
@@ -53,13 +60,36 @@ str         \"([^\n\r\"\\]|\\[nt\"])*\"
 {id}        { yylval.name = yytext; return ID; }
 {integernum} { yylval.name = yytext; yylval.type = int_; return INTEGERNUM; }
 {realnum}   { yylval.name = yytext; yylval.type = float_; return REALNUM; }
-{str}       { 
-              /* Extract string content without quotes and process escapes */
-              int len = strlen(yytext);
-              string str_val = string(yytext + 1, len - 2);
-              yylval.name = str_val;
-              return STR;
-            }
+{str}       {
+                            /* Validate escape sequences and strip surrounding quotes */
+                            const char* raw = yytext;
+                            int len = (int)strlen(raw);
+                            string inner = string(raw + 1, len - 2);
+
+                            for (size_t i = 0; i < inner.size(); i++) {
+                                if (inner[i] == '\\') {
+                                    if (i + 1 >= inner.size()) {
+                                        printf("Lexical error: '%s' in line number %d\n", raw, line_number);
+                                        exit(LEXICAL_ERROR);
+                                    }
+                                    char esc = inner[i + 1];
+                                    if (!(esc == 'n' || esc == 't' || esc == '\"')) {
+                                        printf("Lexical error: '%s' in line number %d\n", raw, line_number);
+                                        exit(LEXICAL_ERROR);
+                                    }
+                                    i++; /* skip escaped char */
+                                }
+                            }
+
+                            yylval.name = inner;
+                            return STR;
+                        }
+
+{unterminated_str} {
+                            /* Unterminated string (reached end of line/EOF without closing quote) */
+                            printf("Lexical error: '%s' in line number %d\n", yytext, line_number);
+                            exit(LEXICAL_ERROR);
+                        }
 
     /* Relational operators */
 "=="        { yylval.name = "=="; return RELOP; }
@@ -89,8 +119,8 @@ str         \"([^\n\r\"\\]|\\[nt\"])*\"
 
     /* Unrecognized characters */
 .           { 
-              printf("Lexical error: unrecognized character '%s' in line %d\n", yytext, line_number);
-              exit(LEXICAL_ERROR);
+                            printf("Lexical error: '%s' in line number %d\n", yytext, line_number);
+                            exit(LEXICAL_ERROR);
             }
 
 %%

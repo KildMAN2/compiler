@@ -34,16 +34,16 @@ bool currentFunctionHasReturn = false;
 int main(int argc, char* argv[]) {
     // Check command line arguments - now only needs input file
     if (argc != 2) {
-        cerr << "Usage: " << argv[0] << " <input.cmm>" << endl;
-        return 1;
+        cout << "Operational error: wrong number of arguments" << endl;
+        return OPERATIONAL_ERROR;
     }
     
     string inputFile = argv[1];
     
     // Verify input file has .cmm extension
     if (inputFile.size() < 4 || inputFile.substr(inputFile.size() - 4) != ".cmm") {
-        cerr << "Error: Input file must have .cmm extension" << endl;
-        return 1;
+        cout << "Operational error: input file must have .cmm extension" << endl;
+        return OPERATIONAL_ERROR;
     }
     
     // Generate output file name by replacing .cmm with .rsk
@@ -52,8 +52,8 @@ int main(int argc, char* argv[]) {
     // Open input file
     yyin = fopen(inputFile.c_str(), "r");
     if (!yyin) {
-        cerr << "Error: Cannot open input file: " << inputFile << endl;
-        return 1;
+        cout << "Operational error: cannot open input file" << endl;
+        return OPERATIONAL_ERROR;
     }
     
     // Parse the input
@@ -61,15 +61,15 @@ int main(int argc, char* argv[]) {
     fclose(yyin);
     
     if (parseResult != 0) {
-        cerr << "Parsing failed" << endl;
+        // yyerror/semanticError should have already printed the required message and exited.
         return parseResult;
     }
     
     // Write output to file
     ofstream outFile(outputFile.c_str());
     if (!outFile) {
-        cerr << "Error: Cannot open output file: " << outputFile << endl;
-        return 1;
+        cout << "Operational error: cannot open output file" << endl;
+        return OPERATIONAL_ERROR;
     }
     
     // Get the buffer output first to calculate line numbers
@@ -155,8 +155,6 @@ int main(int argc, char* argv[]) {
     // Print the generated code
     outFile << bufferOutput;
     outFile.close();
-    
-    cout << "Compilation successful. Output written to: " << outputFile << endl;
     
     // Clean up
     delete buffer;
