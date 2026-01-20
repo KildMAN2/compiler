@@ -881,6 +881,15 @@ void generateHeader() {
     string unimplementedLine = "<unimplemented>";
     for (map<string, Function>::iterator it = functionTable.begin(); it != functionTable.end(); ++it) {
         if (!it->second.isDefined) {
+            // The linker only *fixes* existing jump targets; it doesn't insert them.
+            // For calls to functions that remain unimplemented in this module, ensure
+            // the JLINK instruction already has a numeric placeholder target.
+            // We use 0 as an intentionally-invalid label that the linker will replace.
+            for (size_t i = 0; i < it->second.callingLines.size(); i++) {
+                vector<int> patchList(1, it->second.callingLines[i]);
+                buffer->backpatch(patchList, 0);
+            }
+
             // If there are no recorded call sites, still list the function name.
             // (Some reference outputs include externals declared but not called.)
             if (it->second.callingLines.empty()) {
