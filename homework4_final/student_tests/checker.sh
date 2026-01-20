@@ -85,10 +85,17 @@ else
   timeout 2 "$VM" "$E_FILE" >"$ACTUAL_OUT" 2>&1
 fi
 
-# Normalize CRLF just in case, and strip the VM trailer "Reached Halt.".
-# Some course test packs want output.out to contain only program output.
-tr -d '\r' < "$ACTUAL_OUT" | sed 's/[[:space:]]*Reached Halt\.[[:space:]]*//g' | sed 's/[[:space:]]*$//' > "${ACTUAL_OUT}.norm"
-tr -d '\r' < "$EXPECTED_OUT" | sed 's/[[:space:]]*Reached Halt\.[[:space:]]*//g' | sed 's/[[:space:]]*$//' > "${ACTUAL_OUT}.exp"
+# Compare only the program output (write/print).
+# The VM may also print input prompts ("Input integer?:" / "Input real?:")
+# and always prints "Reached Halt." at the end; these should NOT be part of
+# the expected output files for this checker.
+normalize_out() {
+  tr -d '\r' \
+    | perl -0777 -pe 's/Input integer\?:|Input real\?:|Reached Halt\.//g; s/[\s\n]+\z/\n/'
+}
+
+normalize_out < "$ACTUAL_OUT" > "${ACTUAL_OUT}.norm"
+normalize_out < "$EXPECTED_OUT" > "${ACTUAL_OUT}.exp"
 
 if diff -q "${ACTUAL_OUT}.norm" "${ACTUAL_OUT}.exp" >/dev/null 2>&1; then
   echo "True"

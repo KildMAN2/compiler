@@ -491,6 +491,13 @@ expression:
             ss << "SEQLF F" << $$.RegNum << " F" << $1.RegNum << " F" << $3.RegNum;
         }
         emitCode(ss.str());
+
+        // Float comparisons yield a float (0.0/1.0); convert to int (0/1) for branches and expression value.
+        if ($1.type == float_) {
+            ss.str("");
+            ss << "CFTOI I" << $$.RegNum << " F" << $$.RegNum;
+            emitCode(ss.str());
+        }
         
         $$.falseList.push_back(buffer->nextQuad());
         ss.str("");
@@ -514,6 +521,12 @@ expression:
             ss << "SNEQF F" << $$.RegNum << " F" << $1.RegNum << " F" << $3.RegNum;
         }
         emitCode(ss.str());
+
+        if ($1.type == float_) {
+            ss.str("");
+            ss << "CFTOI I" << $$.RegNum << " F" << $$.RegNum;
+            emitCode(ss.str());
+        }
         
         // Emit BREQZ - if result is 0 (false), jump to false target
         $$.falseList.push_back(buffer->nextQuad());
@@ -539,6 +552,12 @@ expression:
             ss << "SLTTF F" << $$.RegNum << " F" << $1.RegNum << " F" << $3.RegNum;
         }
         emitCode(ss.str());
+
+        if ($1.type == float_) {
+            ss.str("");
+            ss << "CFTOI I" << $$.RegNum << " F" << $$.RegNum;
+            emitCode(ss.str());
+        }
         
         $$.falseList.push_back(buffer->nextQuad());
         ss.str("");
@@ -562,6 +581,12 @@ expression:
             ss << "SGRTF F" << $$.RegNum << " F" << $1.RegNum << " F" << $3.RegNum;
         }
         emitCode(ss.str());
+
+        if ($1.type == float_) {
+            ss.str("");
+            ss << "CFTOI I" << $$.RegNum << " F" << $$.RegNum;
+            emitCode(ss.str());
+        }
         
         $$.falseList.push_back(buffer->nextQuad());
         ss.str("");
@@ -580,10 +605,36 @@ expression:
         
         stringstream ss;
         if ($1.type == int_) {
-            ss << "SLETI I" << $$.RegNum << " I" << $1.RegNum << " I" << $3.RegNum;
+            // Implement <= as (<) OR (==) to avoid relying on VM-specific <= behavior.
+            int tmp = allocateRegister();
+
+            ss << "SLTTI I" << $$.RegNum << " I" << $1.RegNum << " I" << $3.RegNum;
+            emitCode(ss.str());
+
+            ss.str("");
+            ss << "SEQUI I" << tmp << " I" << $1.RegNum << " I" << $3.RegNum;
+            emitCode(ss.str());
+
+            ss.str("");
+            ss << "ADD2I I" << $$.RegNum << " I" << $$.RegNum << " I" << tmp;
         } else {
-            ss << "SLETF F" << $$.RegNum << " F" << $1.RegNum << " F" << $3.RegNum;
+            int tmp = allocateRegister();
+
+            ss << "SLTTF F" << $$.RegNum << " F" << $1.RegNum << " F" << $3.RegNum;
+            emitCode(ss.str());
+
+            ss.str("");
+            ss << "SEQLF F" << tmp << " F" << $1.RegNum << " F" << $3.RegNum;
+            emitCode(ss.str());
+
+            ss.str("");
+            ss << "ADD2F F" << $$.RegNum << " F" << $$.RegNum << " F" << tmp;
+            emitCode(ss.str());
+
+            ss.str("");
+            ss << "CFTOI I" << $$.RegNum << " F" << $$.RegNum;
         }
+
         emitCode(ss.str());
         
         $$.falseList.push_back(buffer->nextQuad());
@@ -603,10 +654,36 @@ expression:
         
         stringstream ss;
         if ($1.type == int_) {
-            ss << "SGETI I" << $$.RegNum << " I" << $1.RegNum << " I" << $3.RegNum;
+            // Implement >= as (>) OR (==) to avoid relying on VM-specific >= behavior.
+            int tmp = allocateRegister();
+
+            ss << "SGRTI I" << $$.RegNum << " I" << $1.RegNum << " I" << $3.RegNum;
+            emitCode(ss.str());
+
+            ss.str("");
+            ss << "SEQUI I" << tmp << " I" << $1.RegNum << " I" << $3.RegNum;
+            emitCode(ss.str());
+
+            ss.str("");
+            ss << "ADD2I I" << $$.RegNum << " I" << $$.RegNum << " I" << tmp;
         } else {
-            ss << "SGETF F" << $$.RegNum << " F" << $1.RegNum << " F" << $3.RegNum;
+            int tmp = allocateRegister();
+
+            ss << "SGRTF F" << $$.RegNum << " F" << $1.RegNum << " F" << $3.RegNum;
+            emitCode(ss.str());
+
+            ss.str("");
+            ss << "SEQLF F" << tmp << " F" << $1.RegNum << " F" << $3.RegNum;
+            emitCode(ss.str());
+
+            ss.str("");
+            ss << "ADD2F F" << $$.RegNum << " F" << $$.RegNum << " F" << tmp;
+            emitCode(ss.str());
+
+            ss.str("");
+            ss << "CFTOI I" << $$.RegNum << " F" << $$.RegNum;
         }
+
         emitCode(ss.str());
         
         $$.falseList.push_back(buffer->nextQuad());
