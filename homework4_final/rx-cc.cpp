@@ -11,17 +11,25 @@ extern FILE* yyin;
 extern string getGeneratedCode();
 
 int main(int argc, char** argv) {
-    if (argc < 2) {
-        cerr << "Usage: " << argv[0] << " <input_file.cmm>" << endl;
-        return 1;
+    if (argc != 2) {
+        cerr << "Operational error: wrong number of arguments" << endl;
+        return OPERATIONAL_ERROR;
     }
 
     string inputFile = argv[1];
+
+    // Input file must be a single .cmm file
+    const string suffix = ".cmm";
+    if (inputFile.size() < suffix.size() || inputFile.substr(inputFile.size() - suffix.size()) != suffix) {
+        cerr << "Operational error: input file must have .cmm extension" << endl;
+        return OPERATIONAL_ERROR;
+    }
+
     yyin = fopen(inputFile.c_str(), "r");
     
     if (!yyin) {
-        cerr << "Error: Cannot open file " << inputFile << endl;
-        return 1;
+        cerr << "Operational error: cannot open file" << endl;
+        return OPERATIONAL_ERROR;
     }
 
     // Parse the input (buffer initialized in parser)
@@ -44,8 +52,8 @@ int main(int argc, char** argv) {
     // Write the output
     ofstream outFile(outputFile.c_str());
     if (!outFile) {
-        cerr << "Error: Cannot create output file " << outputFile << endl;
-        return 1;
+        cerr << "Operational error: cannot create output file" << endl;
+        return OPERATIONAL_ERROR;
     }
 
     outFile << getGeneratedCode();
