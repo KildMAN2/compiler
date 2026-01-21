@@ -6,6 +6,9 @@
 
 #include "part3_helpers.hpp"
 
+#include <iomanip>
+#include <sstream>
+
 extern int yylex();
 extern int yylineno;
 extern char* yytext;
@@ -758,8 +761,19 @@ expression:
         $$.type = float_;
         $$.RegNum = allocateRegister();
         
+        // Emit float constants in a stable form (some toolchains are picky)
+        double v = 0.0;
+        try {
+            v = stod($1.name);
+        } catch (...) {
+            semanticError("Invalid float literal");
+        }
+
+        ostringstream lit;
+        lit << fixed << setprecision(6) << v;
+
         stringstream ss;
-        ss << "COPYF F" << $$.RegNum << " " << $1.name;
+        ss << "COPYF F" << $$.RegNum << " " << lit.str();
         emitCode(ss.str());
         
         $$.quad = buffer->nextQuad() - 1;
