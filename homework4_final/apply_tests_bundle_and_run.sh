@@ -19,19 +19,49 @@ if [ ! -f "$ZIP" ]; then
   exit 1
 fi
 
-# Extract bundle (overwrites existing files)
-if command -v unzip >/dev/null 2>&1; then
-  unzip -o "$ZIP" >/dev/null
-elif command -v python3 >/dev/null 2>&1; then
+# Extract bundle (overwrites existing files).
+# IMPORTANT: this ZIP may be created on Windows and contain backslashes in entry
+# names; unzip warns and may not lay out directories correctly. Prefer python3
+# extraction that normalizes path separators.
+if command -v python3 >/dev/null 2>&1; then
   python3 - <<'PY'
-import os, zipfile
+import os
+import zipfile
+
 zip_path = 'tests_bundle.zip'
+
+def safe_relpath(name: str) -> str:
+    # Normalize Windows separators to POSIX.
+    name = name.replace('\\', '/')
+    # Remove drive letters just in case.
+    if len(name) >= 2 and name[1] == ':':
+        name = name[2:]
+    name = name.lstrip('/').strip()
+    # Normalize and block path traversal.
+    norm = os.path.normpath(name)
+    if norm.startswith('..') or os.path.isabs(norm):
+        raise ValueError(f"unsafe path in zip: {name}")
+    return norm
+
 with zipfile.ZipFile(zip_path) as z:
-    z.extractall('.')
+    for info in z.infolist():
+        # Skip directory entries.
+        if info.is_dir():
+            continue
+        rel = safe_relpath(info.filename)
+        if not rel:
+            continue
+        os.makedirs(os.path.dirname(rel) or '.', exist_ok=True)
+        with z.open(info, 'r') as src, open(rel, 'wb') as dst:
+            dst.write(src.read())
+
 print('Extracted', zip_path)
 PY
+elif command -v unzip >/dev/null 2>&1; then
+  # Fallback: unzip. (May warn about backslashes but we attempt anyway.)
+  unzip -o "$ZIP"
 else
-  echo "Error: need unzip or python3 to extract $ZIP" >&2
+  echo "Error: need python3 (preferred) or unzip to extract $ZIP" >&2
   exit 1
 fi
 
