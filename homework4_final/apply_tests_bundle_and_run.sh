@@ -30,7 +30,7 @@ import zipfile
 
 zip_path = 'tests_bundle.zip'
 
-def safe_relpath(name: str) -> str:
+def safe_relpath(name):
     # Normalize Windows separators to POSIX.
     name = name.replace('\\', '/')
     # Remove drive letters just in case.
@@ -40,13 +40,13 @@ def safe_relpath(name: str) -> str:
     # Normalize and block path traversal.
     norm = os.path.normpath(name)
     if norm.startswith('..') or os.path.isabs(norm):
-        raise ValueError(f"unsafe path in zip: {name}")
+      raise ValueError("unsafe path in zip: {0}".format(name))
     return norm
 
 with zipfile.ZipFile(zip_path) as z:
     for info in z.infolist():
         # Skip directory entries.
-        if info.is_dir():
+    if info.filename.endswith('/') or info.filename.endswith('\\'):
             continue
         rel = safe_relpath(info.filename)
         if not rel:
