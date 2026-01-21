@@ -54,6 +54,7 @@ void generateHeader();
 %left LT GT LTEQ GTEQ
 %left PLUS MINUS
 %left MULT DIV
+%right CAST
 
 %%
 
@@ -424,130 +425,69 @@ write_stmt:
 
 expression:
     expression PLUS expression {
-        // Allow numeric promotion: int + float => float
-        if ($1.type != $3.type && !($1.type == int_ && $3.type == float_) && !($1.type == float_ && $3.type == int_)) {
+        if ($1.type != $3.type) {
             semanticError("Type mismatch");
         }
 
-        $$.type = ($1.type == float_ || $3.type == float_) ? float_ : int_;
+        $$.type = $1.type;
         $$.RegNum = allocateRegister();
 
-        int leftReg = $1.RegNum;
-        int rightReg = $3.RegNum;
         stringstream ss;
-        if ($$.type == float_) {
-            if ($1.type == int_) {
-                leftReg = allocateRegister();
-                ss << "CITOF F" << leftReg << " I" << $1.RegNum;
-                emitCode(ss.str());
-            }
-            if ($3.type == int_) {
-                ss.str("");
-                rightReg = allocateRegister();
-                ss << "CITOF F" << rightReg << " I" << $3.RegNum;
-                emitCode(ss.str());
-            }
-
-            ss.str("");
-            ss << "ADD2F F" << $$.RegNum << " F" << leftReg << " F" << rightReg;
+        if ($$.type == int_) {
+            ss << "ADD2I I" << $$.RegNum << " I" << $1.RegNum << " I" << $3.RegNum;
         } else {
-            ss << "ADD2I I" << $$.RegNum << " I" << leftReg << " I" << rightReg;
+            ss << "ADD2F F" << $$.RegNum << " F" << $1.RegNum << " F" << $3.RegNum;
         }
         emitCode(ss.str());
         $$.quad = buffer->nextQuad() - 1;
     }
     | expression MINUS expression {
-        if ($1.type != $3.type && !($1.type == int_ && $3.type == float_) && !($1.type == float_ && $3.type == int_)) {
+        if ($1.type != $3.type) {
             semanticError("Type mismatch");
         }
 
-        $$.type = ($1.type == float_ || $3.type == float_) ? float_ : int_;
+        $$.type = $1.type;
         $$.RegNum = allocateRegister();
 
-        int leftReg = $1.RegNum;
-        int rightReg = $3.RegNum;
         stringstream ss;
-        if ($$.type == float_) {
-            if ($1.type == int_) {
-                leftReg = allocateRegister();
-                ss << "CITOF F" << leftReg << " I" << $1.RegNum;
-                emitCode(ss.str());
-            }
-            if ($3.type == int_) {
-                ss.str("");
-                rightReg = allocateRegister();
-                ss << "CITOF F" << rightReg << " I" << $3.RegNum;
-                emitCode(ss.str());
-            }
-
-            ss.str("");
-            ss << "SUBTF F" << $$.RegNum << " F" << leftReg << " F" << rightReg;
+        if ($$.type == int_) {
+            ss << "SUBTI I" << $$.RegNum << " I" << $1.RegNum << " I" << $3.RegNum;
         } else {
-            ss << "SUBTI I" << $$.RegNum << " I" << leftReg << " I" << rightReg;
+            ss << "SUBTF F" << $$.RegNum << " F" << $1.RegNum << " F" << $3.RegNum;
         }
         emitCode(ss.str());
         $$.quad = buffer->nextQuad() - 1;
     }
     | expression MULT expression {
-        if ($1.type != $3.type && !($1.type == int_ && $3.type == float_) && !($1.type == float_ && $3.type == int_)) {
+        if ($1.type != $3.type) {
             semanticError("Type mismatch");
         }
 
-        $$.type = ($1.type == float_ || $3.type == float_) ? float_ : int_;
+        $$.type = $1.type;
         $$.RegNum = allocateRegister();
 
-        int leftReg = $1.RegNum;
-        int rightReg = $3.RegNum;
         stringstream ss;
-        if ($$.type == float_) {
-            if ($1.type == int_) {
-                leftReg = allocateRegister();
-                ss << "CITOF F" << leftReg << " I" << $1.RegNum;
-                emitCode(ss.str());
-            }
-            if ($3.type == int_) {
-                ss.str("");
-                rightReg = allocateRegister();
-                ss << "CITOF F" << rightReg << " I" << $3.RegNum;
-                emitCode(ss.str());
-            }
-
-            ss.str("");
-            ss << "MULTF F" << $$.RegNum << " F" << leftReg << " F" << rightReg;
+        if ($$.type == int_) {
+            ss << "MULTI I" << $$.RegNum << " I" << $1.RegNum << " I" << $3.RegNum;
         } else {
-            ss << "MULTI I" << $$.RegNum << " I" << leftReg << " I" << rightReg;
+            ss << "MULTF F" << $$.RegNum << " F" << $1.RegNum << " F" << $3.RegNum;
         }
         emitCode(ss.str());
         $$.quad = buffer->nextQuad() - 1;
     }
     | expression DIV expression {
-        if ($1.type != $3.type && !($1.type == int_ && $3.type == float_) && !($1.type == float_ && $3.type == int_)) {
+        if ($1.type != $3.type) {
             semanticError("Type mismatch");
         }
 
-        $$.type = ($1.type == float_ || $3.type == float_) ? float_ : int_;
+        $$.type = $1.type;
         $$.RegNum = allocateRegister();
 
-        int leftReg = $1.RegNum;
-        int rightReg = $3.RegNum;
         stringstream ss;
-        if ($$.type == float_) {
-            if ($1.type == int_) {
-                leftReg = allocateRegister();
-                ss << "CITOF F" << leftReg << " I" << $1.RegNum;
-                emitCode(ss.str());
-            }
-            if ($3.type == int_) {
-                ss.str("");
-                rightReg = allocateRegister();
-                ss << "CITOF F" << rightReg << " I" << $3.RegNum;
-                emitCode(ss.str());
-            }
-
-            ss.str("");
-            ss << "DIVDF F" << $$.RegNum << " F" << leftReg << " F" << rightReg;
+        if ($$.type == int_) {
+            ss << "DIVDI I" << $$.RegNum << " I" << $1.RegNum << " I" << $3.RegNum;
         } else {
-            ss << "DIVDI I" << $$.RegNum << " I" << leftReg << " I" << rightReg;
+            ss << "DIVDF F" << $$.RegNum << " F" << $1.RegNum << " F" << $3.RegNum;
         }
         emitCode(ss.str());
         $$.quad = buffer->nextQuad() - 1;
@@ -753,7 +693,7 @@ expression:
     | LPAREN expression RPAREN {
         $$ = $2;
     }
-    | LPAREN type_specifier RPAREN expression {
+    | LPAREN type_specifier RPAREN expression %prec CAST {
         $$.type = $2.type;
         $$.RegNum = allocateRegister();
         
