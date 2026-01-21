@@ -1,0 +1,6 @@
+void main() {
+  a:int;
+  a = (int)3.9 * 2;
+  write(a);
+  write("\n");
+}

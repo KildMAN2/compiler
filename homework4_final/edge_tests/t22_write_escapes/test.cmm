@@ -1,0 +1,4 @@
+void main() {
+  write("A\tB\n");
+  write("\"quote\"\\\n");
+}

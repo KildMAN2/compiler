@@ -1,0 +1,7 @@
+void main() {
+  if 1 + 2 * 3 == 7 then write(1);
+  else write(0);
+  if 1 + 2 * 3 == 9 then write(1);
+  else write(0);
+  write("\n");
+}

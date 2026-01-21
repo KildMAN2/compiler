@@ -1,0 +1,7 @@
+void main() {
+  if 1 < 2 then
+    if 2 < 1 then write(1);
+    else write(2);
+  else write(3);
+  write("\n");
+}

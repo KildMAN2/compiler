@@ -1,0 +1,10 @@
+int f(a,b:int, c:float) {
+  return a + b + (int)c;
+}
+
+void main() {
+  r:int;
+  r = f(b:2, a:1, c:(float)3);
+  write(r);
+  write("\n");
+}

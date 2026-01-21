@@ -1,0 +1,5 @@
+void main() {
+  write(7 / 2);
+  write((float)7 / 2.0);
+  write("\n");
+}
