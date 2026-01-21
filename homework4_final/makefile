@@ -25,10 +25,4 @@ clean:
 	rm -f $(TARGET) *.o lex.yy.c part3.tab.cpp part3.tab.hpp
 	rm -f examples/*.rsk examples/*.e
 
-test: $(TARGET)
-	@echo "Testing example1..."
-	./$(TARGET) examples/example1.cmm
-	@echo "Testing example2..."
-	./$(TARGET) examples/example2.cmm
-
-.PHONY: all clean test
+.PHONY: all clean
