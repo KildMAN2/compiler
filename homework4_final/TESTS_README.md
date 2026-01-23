@@ -57,3 +57,7 @@ sed -i 's/\r$//' run_all_tests.sh compare_examples_e.sh \
 - Correctness is judged by **program output** (not assembly diffs).
 - VM noise is stripped by the checker by default (`Input integer?:`, `Input real?:`, `Reached Halt.`).
 - Error-format tests compare exact stderr strings.
+
+## Comment style
+- Source comments are **part1-style**: single-line comments start with `#`.
+- Using `//` is **not allowed** and is expected to produce a **Lexical error** (tested under `error_format_tests`).

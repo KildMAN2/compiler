@@ -69,7 +69,13 @@ extern int yylineno;
 
 [ \t\r\n]+      { /* ignore whitespace */ }
 
-"//"[^\n]*      { /* ignore single-line comments */ }
+"#"[^\n]*       { /* ignore single-line comments (part1-style) */ }
+
+"//"[^\n]*      {
+    // part1-style requirement: comments start with '#', so '//' is not allowed.
+    cerr << "Lexical error: '//' in line number " << yylineno << endl;
+    exit(LEXICAL_ERROR);
+}
 
 .               { 
     cerr << "Lexical error: '" << yytext << "' in line number " << yylineno << endl;

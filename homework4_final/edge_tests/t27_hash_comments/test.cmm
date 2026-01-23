@@ -1,0 +1,8 @@
+void main() {
+  # This is a part1-style comment
+  a:int;
+  a = 5;
+  # Another comment
+  write(a);
+  write("\n");
+}

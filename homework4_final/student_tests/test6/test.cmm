@@ -1,5 +1,5 @@
 void main() {
     a:int;
-    // Syntax error: '+' appears where an ID is expected (line 3)
+        # Syntax error: '+' appears where an ID is expected (line 3)
     read(a+"a");
 }

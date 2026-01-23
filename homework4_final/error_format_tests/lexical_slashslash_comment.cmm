@@ -1,0 +1,6 @@
+void main() {
+    a:int;
+    a = 1;
+    // this should be a lexical error (comments must start with '#')
+    write(a);
+}

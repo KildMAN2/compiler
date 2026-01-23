@@ -3,6 +3,6 @@ int ex_func(a,b:int) {
 }
 
 void main() {
-    // Named-argument call (and grouped params are used in ex_func signature)
+    # Named-argument call (and grouped params are used in ex_func signature)
     write(ex_func(b:2, a:1));
 }
