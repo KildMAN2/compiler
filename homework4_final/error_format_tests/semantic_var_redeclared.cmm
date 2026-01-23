@@ -1,5 +1,4 @@
-int main() {
-    int x;
-    int x;
-    return 0;
+void main() {
+    x:int;
+    x:int;
 }
