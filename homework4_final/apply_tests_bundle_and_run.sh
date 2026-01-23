@@ -47,7 +47,7 @@ with zipfile.ZipFile(zip_path) as z:
     for info in z.infolist():
         # Skip directory entries.
     if info.filename.endswith('/') or info.filename.endswith('\\'):
-            continue
+      continue
         rel = safe_relpath(info.filename)
         if not rel:
             continue

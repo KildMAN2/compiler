@@ -1,0 +1,3 @@
+int f(a, a:int) {
+    return 0;
+}
