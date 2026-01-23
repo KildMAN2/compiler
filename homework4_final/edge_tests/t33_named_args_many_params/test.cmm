@@ -1,0 +1,8 @@
+int pack(a,b,c,d,e:int) {
+  return a*10000 + b*1000 + c*100 + d*10 + e;
+}
+
+void main() {
+  write(pack(e:5, a:1, c:3, b:2, d:4));
+  write("\n");
+}

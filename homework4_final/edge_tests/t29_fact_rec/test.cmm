@@ -1,0 +1,9 @@
+int fact(n:int) {
+  if n == 0 then return 1;
+  else return n * fact(n - 1);
+}
+
+void main() {
+  write(fact(6));
+  write("\n");
+}
