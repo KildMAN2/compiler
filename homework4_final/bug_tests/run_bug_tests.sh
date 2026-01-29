@@ -79,16 +79,13 @@ for test in test_recursive_return test_recursive_return2 test_recursive_fibonacc
                     # Just use inline expected values
                     case "${test}" in
                         test_recursive_return)
-                            echo "5! = 120 " > "${COMPARE_FILE}"
-                            echo "Reached Halt." >> "${COMPARE_FILE}"
+                            printf "5! = 120 \nReached Halt.\n" > "${COMPARE_FILE}"
                             ;;
                         test_recursive_return2)
-                            echo "2.0^3 = 8.000000 " > "${COMPARE_FILE}"
-                            echo "Reached Halt." >> "${COMPARE_FILE}"
+                            printf "2.0^3 = 8.000000 \nReached Halt.\n" > "${COMPARE_FILE}"
                             ;;
                         test_recursive_fibonacci)
-                            echo "0 1 1 2 3 5 8 13 " > "${COMPARE_FILE}"
-                            echo "Reached Halt." >> "${COMPARE_FILE}"
+                            printf "0 1 1 2 3 5 8 13 \nReached Halt.\n" > "${COMPARE_FILE}"
                             ;;
                     esac
                 fi
@@ -156,20 +153,16 @@ for test in test_float_equality_seqlf test_float_equality_complex; do
     # Compile
     $COMPILER "${test}.cmm" 2>&1
     
-    if [ $Link
+    if [ $? -eq 0 ] && [ -f "${test}.rsk" ]; then
+        # Link
         $LINKER "${test}.rsk" 2>&1
         
         if [ $? -eq 0 ] && [ -f "${test}.e" ]; then
             # Check assembly
             if grep -q "SEQLF" "${test}.rsk"; then
                 echo -e "${YELLOW}⚠ BUG CONFIRMED${NC}: Uses SEQLF (should be SEQEF)"
-                
-                # But check if it still works
-                $VM "${test}.et still works
-            $VM "${test}.rsk" < "${test}.in" > "${test}.out" 2>&1
-            if diff -q "${test}.out" "${test}.e" > /dev/null 2>&1; then
-                echo -e "  ${GREEN}Note${NC}: Program produces correct output despite bug"
-                PASSED=$((PASSED + 1))
+                FAILED=$((FAILED + 1))
+            elif grep -q "SEQEF" "${test}.rsk"; then
                 echo -e "${GREEN}✓ PASS${NC}: Correctly uses SEQEF"
                 PASSED=$((PASSED + 1))
             else
@@ -178,11 +171,6 @@ for test in test_float_equality_seqlf test_float_equality_complex; do
             fi
         else
             echo -e "${RED}✗ FAIL${NC}: Linking failed"
-        elif grep -q "SEQEF" "${test}.rsk"; then
-            echo -e "${GREEN}✓ PASS${NC}: Correctly uses SEQEF"
-            PASSED=$((PASSED + 1))
-        else
-            echo -e "${YELLOW}? UNKNOWN${NC}: Neither SEQLF nor SEQEF found"
             FAILED=$((FAILED + 1))
         fi
     else
