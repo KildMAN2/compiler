@@ -14,6 +14,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 COMPILER="../rx-cc"
+LINKER="../rx-linker"
 VM="../rx-vm"
 
 # Test counter
@@ -58,19 +59,51 @@ for test in test_recursive_return test_recursive_return2 test_recursive_fibonacc
     $COMPILER "${test}.cmm" 2>&1
     
     if [ $? -eq 0 ] && [ -f "${test}.rsk" ]; then
-        # Run
-        $VM "${test}.rsk" < "${test}.in" > "${test}.out" 2>&1
+        # Link
+        $LINKER "${test}.rsk" 2>&1
         
-        # Compare
-        if diff -q "${test}.out" "${test}.e" > /dev/null 2>&1; then
-            echo -e "${GREEN}✓ PASS${NC}: Recursive function works correctly"
-            PASSED=$((PASSED + 1))
+        if [ $? -eq 0 ] && [ -f "${test}.e" ]; then
+            # Run
+            $VM "${test}.e" < "${test}.in" > "${test}.out" 2>&1
+        
+            # Compare with expected output file (not the .e executable!)
+            EXPECTED_FILE="${test}.expected"
+            # Use the .e extension file we created during test creation as expected output
+            if [ -f "${EXPECTED_FILE}" ]; then
+                COMPARE_FILE="${EXPECTED_FILE}"
+            else
+                # Fallback: create expected file name from test name
+                COMPARE_FILE=$(echo "${test}" | sed 's/test_recursive_//' | sed 's/_/./')
+                COMPARE_FILE="${COMPARE_FILE}.expected"
+                if [ ! -f "${COMPARE_FILE}" ]; then
+                    # Just use inline expected values
+                    case "${test}" in
+                        test_recursive_return)
+                            echo "5! = 120" > "${COMPARE_FILE}"
+                            ;;
+                        test_recursive_return2)
+                            echo "2.0^3 = 8.000000" > "${COMPARE_FILE}"
+                            ;;
+                        test_recursive_fibonacci)
+                            echo "0 1 1 2 3 5 8 13 " > "${COMPARE_FILE}"
+                            ;;
+                    esac
+                fi
+            fi
+            
+            if diff -q "${test}.out" "${COMPARE_FILE}" > /dev/null 2>&1; then
+                echo -e "${GREEN}✓ PASS${NC}: Recursive function works correctly"
+                PASSED=$((PASSED + 1))
+            else
+                echo -e "${RED}✗ FAIL${NC}: Output mismatch"
+                echo "Expected:"
+                cat "${COMPARE_FILE}"
+                echo "Got:"
+                cat "${test}.out"
+                FAILED=$((FAILED + 1))
+            fi
         else
-            echo -e "${RED}✗ FAIL${NC}: Output mismatch"
-            echo "Expected:"
-            cat "${test}.e"
-            echo "Got:"
-            cat "${test}.out"
+            echo -e "${RED}✗ FAIL${NC}: Linking failed"
             FAILED=$((FAILED + 1))
         fi
     else
@@ -120,20 +153,28 @@ for test in test_float_equality_seqlf test_float_equality_complex; do
     # Compile
     $COMPILER "${test}.cmm" 2>&1
     
-    if [ $? -eq 0 ] && [ -f "${test}.rsk" ]; then
-        # Check assembly
-        if grep -q "SEQLF" "${test}.rsk"; then
-            echo -e "${YELLOW}⚠ BUG CONFIRMED${NC}: Uses SEQLF (should be SEQEF)"
-            
-            # But check if it still works
+    if [ $Link
+        $LINKER "${test}.rsk" 2>&1
+        
+        if [ $? -eq 0 ] && [ -f "${test}.e" ]; then
+            # Check assembly
+            if grep -q "SEQLF" "${test}.rsk"; then
+                echo -e "${YELLOW}⚠ BUG CONFIRMED${NC}: Uses SEQLF (should be SEQEF)"
+                
+                # But check if it still works
+                $VM "${test}.et still works
             $VM "${test}.rsk" < "${test}.in" > "${test}.out" 2>&1
             if diff -q "${test}.out" "${test}.e" > /dev/null 2>&1; then
                 echo -e "  ${GREEN}Note${NC}: Program produces correct output despite bug"
                 PASSED=$((PASSED + 1))
+                echo -e "${GREEN}✓ PASS${NC}: Correctly uses SEQEF"
+                PASSED=$((PASSED + 1))
             else
-                echo -e "  ${RED}Note${NC}: Program output is incorrect"
+                echo -e "${YELLOW}? UNKNOWN${NC}: Neither SEQLF nor SEQEF found"
                 FAILED=$((FAILED + 1))
             fi
+        else
+            echo -e "${RED}✗ FAIL${NC}: Linking failed"
         elif grep -q "SEQEF" "${test}.rsk"; then
             echo -e "${GREEN}✓ PASS${NC}: Correctly uses SEQEF"
             PASSED=$((PASSED + 1))
