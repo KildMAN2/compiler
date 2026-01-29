@@ -840,27 +840,27 @@ expression:
         }
         
         // Calling convention (matches provided reference outputs):
-        // - Save I0..I15 and F0..F15 below current SP
+        // - Save I0..I31 and F0..F15 below current SP (extended to save all used registers)
         // - Allocate a call frame of: saved-regs + (return slot + params)
         // - Set FP=SP
         // - Params live at [FP-8], [FP-12], ... and return at [FP-4]
-        const int savedIntCount = 16;   // I0..I15
+        const int savedIntCount = 32;   // I0..I31 (extended from 16 to preserve return values)
         const int savedFloatCount = 16; // F0..F15
-        const int savedBytes = (savedIntCount + savedFloatCount) * 4; // 128
+        const int savedBytes = (savedIntCount + savedFloatCount) * 4; // 192
         int extraBytes = (int)(($3.paramRegs.size() + 1) * 4); // return slot + params
         int frameSizeBytes = savedBytes + extraBytes;
 
-        // Save integer registers at [SP + 0..60]
+        // Save integer registers at [SP + 0..124]
         for (int r = 0; r < savedIntCount; r++) {
             stringstream ss;
             ss << "STORI I" << r << " I2 " << (r * 4);
             emitCode(ss.str());
         }
-        // Save float registers at [SP + 64..124]
+        // Save float registers at [SP + 128..188]
         emitCode("CITOF F2 I2");
         for (int r = 0; r < savedFloatCount; r++) {
             stringstream ss;
-            ss << "STORF F" << r << " F2 " << (64 + (r * 4));
+            ss << "STORF F" << r << " F2 " << (128 + (r * 4));
             emitCode(ss.str());
         }
 
@@ -940,14 +940,14 @@ expression:
                 continue;
             }
             stringstream ss;
-            ss << "LOADF F" << r << " F2 " << (64 + (r * 4));
+            ss << "LOADF F" << r << " F2 " << (128 + (r * 4));
             emitCode(ss.str());
         }
         // Restore base registers last (I3, I2, F2)
         emitCode("LOADI I3 I2 12");
         emitCode("LOADI I2 I2 8");
         emitCode("CITOF F2 I2");
-        emitCode("LOADF F2 F2 72");
+        emitCode("LOADF F2 F2 136");
         
         $$.quad = buffer->nextQuad() - 1;
     }
