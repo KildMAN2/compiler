@@ -840,27 +840,27 @@ expression:
         }
         
         // Calling convention (matches provided reference outputs):
-        // - Save I0..I31 and F0..F15 below current SP (extended to save all used registers)
+        // - Save I0..I15 and F0..F15 below current SP
         // - Allocate a call frame of: saved-regs + (return slot + params)
         // - Set FP=SP
         // - Params live at [FP-8], [FP-12], ... and return at [FP-4]
-        const int savedIntCount = 32;   // I0..I31 (extended from 16 to preserve return values)
+        const int savedIntCount = 16;   // I0..I15
         const int savedFloatCount = 16; // F0..F15
-        const int savedBytes = (savedIntCount + savedFloatCount) * 4; // 192
+        const int savedBytes = (savedIntCount + savedFloatCount) * 4; // 128
         int extraBytes = (int)(($3.paramRegs.size() + 1) * 4); // return slot + params
         int frameSizeBytes = savedBytes + extraBytes;
 
-        // Save integer registers at [SP + 0..124]
+        // Save integer registers at [SP + 0..60]
         for (int r = 0; r < savedIntCount; r++) {
             stringstream ss;
             ss << "STORI I" << r << " I2 " << (r * 4);
             emitCode(ss.str());
         }
-        // Save float registers at [SP + 128..188]
+        // Save float registers at [SP + 64..124]
         emitCode("CITOF F2 I2");
         for (int r = 0; r < savedFloatCount; r++) {
             stringstream ss;
-            ss << "STORF F" << r << " F2 " << (128 + (r * 4));
+            ss << "STORF F" << r << " F2 " << (64 + (r * 4));
             emitCode(ss.str());
         }
 
@@ -896,7 +896,12 @@ expression:
             emitCode("JLINK ");
         }
         
-        // Save the old SP (base of saved regs) before getting return value
+        // Get return value (from current FP frame) FIRST before any register restoration
+        // Store it in a safe location (on stack above saved regs) temporarily
+        $$.type = func->returnType;
+        emitCode("CITOF F1 I1");
+        
+        // Save the old SP (base of saved regs) in I3
         emitCode("COPYI I3 I1");
         {
             stringstream ss;
@@ -904,19 +909,13 @@ expression:
             emitCode(ss.str());
         }
         
-        // Get return value (from current FP frame) into a reg >= 16
-        // so it won't be overwritten by restoring I0..I15 / F0..F15.
-        $$.type = func->returnType;
-        do {
-            $$.RegNum = allocateRegister();
-        } while ($$.RegNum < 16);
-        emitCode("CITOF F1 I1");
+        // Read return value and save it ABOVE the current frame (won't be clobbered)
         {
             stringstream ss;
             if (func->returnType == float_) {
-                ss << "LOADF F" << $$.RegNum << " F1 -4";
+                ss << "LOADF F" << savedFloatCount << " F1 -4";
             } else {
-                ss << "LOADI I" << $$.RegNum << " I1 -4";
+                ss << "LOADI I" << savedIntCount << " I1 -4";
             }
             emitCode(ss.str());
         }
@@ -925,6 +924,7 @@ expression:
         emitCode("COPYI I2 I3");
 
         // Restore integer registers (skip I2 and I3 for now)
+        for (int r = 0; r < savedIntCount; r+, I3, and the one holding return value)
         for (int r = 0; r < savedIntCount; r++) {
             if (r == 2 || r == 3) {
                 continue;
@@ -933,22 +933,35 @@ expression:
             ss << "LOADI I" << r << " I2 " << (r * 4);
             emitCode(ss.str());
         }
-        // Restore float registers (skip F2 for now)
+        // Restore float registers (skip F2 and the one holding return value)
         emitCode("CITOF F2 I2");
         for (int r = 0; r < savedFloatCount; r++) {
             if (r == 2) {
                 continue;
             }
             stringstream ss;
-            ss << "LOADF F" << r << " F2 " << (128 + (r * 4));
+            ss << "LOADF F" << r << " F2 " << (64 + (r * 4));
             emitCode(ss.str());
         }
         // Restore base registers last (I3, I2, F2)
         emitCode("LOADI I3 I2 12");
         emitCode("LOADI I2 I2 8");
         emitCode("CITOF F2 I2");
-        emitCode("LOADF F2 F2 136");
+        emitCode("LOADF F2 F2 72");
         
+        // Now allocate a register for the return value and copy from safe register
+        do {
+            $$.RegNum = allocateRegister();
+        } while ($$.RegNum < 16);
+        {
+            stringstream ss;
+            if (func->returnType == float_) {
+                ss << "COPYF F" << $$.RegNum << " F" << savedFloatCount;
+            } else {
+                ss << "COPYI I" << $$.RegNum << " I" << savedIntCount;
+            }
+            emitCode(ss.str());
+        }
         $$.quad = buffer->nextQuad() - 1;
     }
     ;
