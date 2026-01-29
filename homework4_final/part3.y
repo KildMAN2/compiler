@@ -848,7 +848,9 @@ expression:
         //
         // Important: nested calls like fib(n-1)+fib(n-2) require preserving the
         // first call's result register across the second call.
-        const int savedIntCount = (regCounter > 16) ? regCounter : 16;
+        // allocateRegister() cycles registers 3..30, so regCounter can wrap.
+        // Save a fixed superset (I0..I29) to preserve any live temporaries across calls.
+        const int savedIntCount = 30;
         const int savedFloatCount = 16;
         const int floatBase = savedIntCount * 4;
         const int savedBytes = floatBase + (savedFloatCount * 4);
