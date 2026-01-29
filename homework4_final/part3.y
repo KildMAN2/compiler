@@ -504,7 +504,7 @@ expression:
         if ($1.type == int_) {
             ss << "SEQUI I" << $$.RegNum << " I" << $1.RegNum << " I" << $3.RegNum;
         } else {
-            ss << "SEQLF F" << $$.RegNum << " F" << $1.RegNum << " F" << $3.RegNum;
+            ss << "SEQEF F" << $$.RegNum << " F" << $1.RegNum << " F" << $3.RegNum;
         }
         emitCode(ss.str());
 
@@ -896,6 +896,14 @@ expression:
             emitCode("JLINK ");
         }
         
+        // Save the old SP (base of saved regs) before getting return value
+        emitCode("COPYI I3 I1");
+        {
+            stringstream ss;
+            ss << "SUBTI I3 I3 " << frameSizeBytes;
+            emitCode(ss.str());
+        }
+        
         // Get return value (from current FP frame) into a reg >= 16
         // so it won't be overwritten by restoring I0..I15 / F0..F15.
         $$.type = func->returnType;
@@ -913,24 +921,19 @@ expression:
             emitCode(ss.str());
         }
 
-        // Restore SP to old SP (base of saved regs)
-        emitCode("COPYI I2 I1");
-        {
-            stringstream ss;
-            ss << "SUBTI I2 I2 " << frameSizeBytes;
-            emitCode(ss.str());
-        }
+        // Restore SP to saved base
+        emitCode("COPYI I2 I3");
 
-        // Restore integer registers (restore I2 last since it's our base)
+        // Restore integer registers (skip I2 and I3 for now)
         for (int r = 0; r < savedIntCount; r++) {
-            if (r == 2) {
+            if (r == 2 || r == 3) {
                 continue;
             }
             stringstream ss;
             ss << "LOADI I" << r << " I2 " << (r * 4);
             emitCode(ss.str());
         }
-        // Restore float registers (restore F2 last since it's our base)
+        // Restore float registers (skip F2 for now)
         emitCode("CITOF F2 I2");
         for (int r = 0; r < savedFloatCount; r++) {
             if (r == 2) {
@@ -940,8 +943,10 @@ expression:
             ss << "LOADF F" << r << " F2 " << (64 + (r * 4));
             emitCode(ss.str());
         }
-        // Restore base registers last
+        // Restore base registers last (I3, I2, F2)
+        emitCode("LOADI I3 I2 12");
         emitCode("LOADI I2 I2 8");
+        emitCode("CITOF F2 I2");
         emitCode("LOADF F2 F2 72");
         
         $$.quad = buffer->nextQuad() - 1;
