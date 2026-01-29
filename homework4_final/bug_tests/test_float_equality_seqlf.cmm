@@ -1,0 +1,18 @@
+/* Test: Float equality comparison uses SEQLF instruction
+ * Expected: Should work correctly with proper SEQEF instruction
+ * Bug: Uses SEQLF instead of SEQEF (wrong assembly command)
+ * Note: This didn't lower grade but is incorrect
+ */
+
+void main() {
+    a, b:float;
+    
+    a = 3.14;
+    b = 3.14;
+    
+    /* This generates SEQLF which is wrong, should be SEQEF */
+    if a == b then
+        write("Equal\n");
+    else
+        write("Not equal\n");
+}

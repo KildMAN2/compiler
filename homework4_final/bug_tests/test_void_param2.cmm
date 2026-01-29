@@ -1,0 +1,12 @@
+/* Test: Multiple parameters, one is void
+ * Expected: Semantic error (parameters cannot be void)
+ * Bug: No check for void parameter types
+ */
+
+int bar(a:int, b:void, c:float) {
+    return a;
+}
+
+void main() {
+    write(bar(1, 2, 3.5));
+}

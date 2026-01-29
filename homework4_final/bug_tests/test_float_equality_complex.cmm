@@ -1,0 +1,22 @@
+/* Test: Complex float equality check
+ * Expected: Should work correctly
+ * Bug: Assembly uses SEQLF instead of SEQEF
+ */
+
+void main() {
+    x, y, z:float;
+    
+    x = 1.5;
+    y = 2.5;
+    z = x + y;
+    
+    /* Check if z == 4.0 (uses SEQLF instruction - bug) */
+    if z == 4.0 then
+        write("z is 4.0\n");
+    else
+        write("z is not 4.0\n");
+    
+    /* Another float comparison */
+    if x == 1.5 then
+        write("x is 1.5\n");
+}

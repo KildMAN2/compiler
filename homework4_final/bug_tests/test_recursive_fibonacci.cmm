@@ -1,0 +1,22 @@
+/* Test: Fibonacci recursive function
+ * Expected: Should correctly compute fibonacci numbers
+ * Bug: Problems in return value of recursive functions
+ */
+
+int fib(n:int) {
+    if n <= 1 then
+        return n;
+    else
+        return fib(n-1) + fib(n-2);
+}
+
+void main() {
+    i:int;
+    i = 0;
+    while i < 8 do {
+        write(fib(i));
+        write(" ");
+        i = i + 1;
+    }
+    write("\n");
+}

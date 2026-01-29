@@ -1,0 +1,17 @@
+/* Test: Recursive function with float return value
+ * Expected: Should work correctly with float returns
+ * Bug: Problems in return value of recursive functions (especially with floats)
+ */
+
+float power(base:float, exp:int) {
+    if exp == 0 then
+        return 1.0;
+    else
+        return base * power(base, exp - 1);
+}
+
+void main() {
+    write("2.0^3 = ");
+    write(power(2.0, 3));
+    write("\n");
+}
