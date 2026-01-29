@@ -1,7 +1,6 @@
-/* Test: Type mismatch in comparison should be semantic error
- * Expected: Semantic error (type mismatch)
- * Bug: May report syntax error instead of semantic error
- */
+# Test: Type mismatch in comparison should be semantic error
+# Expected: Semantic error (type mismatch)
+# Bug: May report syntax error instead of semantic error
 
 void main() {
     x:int;
@@ -10,7 +9,7 @@ void main() {
     x = 10;
     y = 5.5;
     
-    /* Type mismatch in comparison - should be semantic error */
+    # Type mismatch in comparison - should be semantic error
     if x < y then
         write("True\n");
 }

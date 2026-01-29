@@ -1,7 +1,6 @@
-/* Test: Type mismatch in assignment should be semantic error
- * Expected: Semantic error (type mismatch)
- * Bug: Reports syntax error instead of semantic error
- */
+# Test: Type mismatch in assignment should be semantic error
+# Expected: Semantic error (type mismatch)
+# Bug: Reports syntax error instead of semantic error
 
 void main() {
     a:int;
@@ -10,6 +9,6 @@ void main() {
     a = 5;
     b = 3.14;
     
-    /* This should be a SEMANTIC error, not syntax */
+    # This should be a SEMANTIC error, not syntax
     a = a + b;
 }

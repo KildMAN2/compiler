@@ -1,7 +1,6 @@
-/* Test: Fibonacci recursive function
- * Expected: Should correctly compute fibonacci numbers
- * Bug: Problems in return value of recursive functions
- */
+# Test: Fibonacci recursive function
+# Expected: Should correctly compute fibonacci numbers
+# Bug: Problems in return value of recursive functions
 
 int fib(n:int) {
     if n <= 1 then

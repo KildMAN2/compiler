@@ -1,7 +1,6 @@
-/* Test: Recursive function with return value
- * Expected: Should work correctly and return proper values
- * Bug: Problems in return value of recursive functions
- */
+# Test: Recursive function with return value
+# Expected: Should work correctly and return proper values
+# Bug: Problems in return value of recursive functions
 
 int factorial(n:int) {
     if n <= 1 then 

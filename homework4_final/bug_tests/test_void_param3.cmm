@@ -1,7 +1,6 @@
-/* Test: Grouped parameters with void type
- * Expected: Semantic error (parameters cannot be void)
- * Bug: No check for void parameter types
- */
+# Test: Grouped parameters with void type
+# Expected: Semantic error (parameters cannot be void)
+# Bug: No check for void parameter types
 
 float compute(x, y, z:void) {
     return 1.0;

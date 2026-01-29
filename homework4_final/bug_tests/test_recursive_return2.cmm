@@ -1,7 +1,6 @@
-/* Test: Recursive function with float return value
- * Expected: Should work correctly with float returns
- * Bug: Problems in return value of recursive functions (especially with floats)
- */
+# Test: Recursive function with float return value
+# Expected: Should work correctly with float returns
+# Bug: Problems in return value of recursive functions (especially with floats)
 
 float power(base:float, exp:int) {
     if exp == 0 then

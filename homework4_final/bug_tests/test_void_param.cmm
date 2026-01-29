@@ -1,7 +1,6 @@
-/* Test: Function parameter should not be allowed to have void type
- * Expected: Semantic error (parameters cannot be void)
- * Bug: No check for void parameter types
- */
+# Test: Function parameter should not be allowed to have void type
+# Expected: Semantic error (parameters cannot be void)
+# Bug: No check for void parameter types
 
 int foo(x:void) {
     return 5;

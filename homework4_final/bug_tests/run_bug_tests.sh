@@ -31,7 +31,7 @@ for test in test_void_param.cmm test_void_param2.cmm test_void_param3.cmm; do
     TOTAL=$((TOTAL + 1))
     echo "Testing: $test"
     
-    OUTPUT=$($COMPILER $test 2>&1)
+    OUTPUT=$($COMPILER "$test" 2>&1)
     
     if echo "$OUTPUT" | grep -q "Semantic error"; then
         echo -e "${GREEN}✓ PASS${NC}: Properly rejects void parameter with semantic error"
@@ -55,22 +55,22 @@ for test in test_recursive_return test_recursive_return2 test_recursive_fibonacc
     echo "Testing: ${test}.cmm"
     
     # Compile
-    $COMPILER ${test}.cmm -o ${test}.rsk 2>&1
+    $COMPILER "${test}.cmm" 2>&1
     
-    if [ $? -eq 0 ]; then
+    if [ $? -eq 0 ] && [ -f "${test}.rsk" ]; then
         # Run
-        $VM ${test}.rsk < ${test}.in > ${test}.out 2>&1
+        $VM "${test}.rsk" < "${test}.in" > "${test}.out" 2>&1
         
         # Compare
-        if diff -q ${test}.out ${test}.e > /dev/null 2>&1; then
+        if diff -q "${test}.out" "${test}.e" > /dev/null 2>&1; then
             echo -e "${GREEN}✓ PASS${NC}: Recursive function works correctly"
             PASSED=$((PASSED + 1))
         else
             echo -e "${RED}✗ FAIL${NC}: Output mismatch"
             echo "Expected:"
-            cat ${test}.e
+            cat "${test}.e"
             echo "Got:"
-            cat ${test}.out
+            cat "${test}.out"
             FAILED=$((FAILED + 1))
         fi
     else
@@ -90,7 +90,7 @@ for test in test_type_mismatch_semantic.cmm test_type_mismatch_semantic2.cmm; do
     TOTAL=$((TOTAL + 1))
     echo "Testing: $test"
     
-    OUTPUT=$($COMPILER $test 2>&1 | head -n 1)
+    OUTPUT=$($COMPILER "$test" 2>&1 | head -n 1)
     
     if echo "$OUTPUT" | grep -q "Semantic error"; then
         echo -e "${GREEN}✓ PASS${NC}: Type mismatch correctly reported as semantic error"
@@ -118,23 +118,23 @@ for test in test_float_equality_seqlf test_float_equality_complex; do
     echo "Testing: ${test}.cmm"
     
     # Compile
-    $COMPILER ${test}.cmm -o ${test}.rsk 2>&1
+    $COMPILER "${test}.cmm" 2>&1
     
-    if [ $? -eq 0 ]; then
+    if [ $? -eq 0 ] && [ -f "${test}.rsk" ]; then
         # Check assembly
-        if grep -q "SEQLF" ${test}.rsk; then
+        if grep -q "SEQLF" "${test}.rsk"; then
             echo -e "${YELLOW}⚠ BUG CONFIRMED${NC}: Uses SEQLF (should be SEQEF)"
             
             # But check if it still works
-            $VM ${test}.rsk < ${test}.in > ${test}.out 2>&1
-            if diff -q ${test}.out ${test}.e > /dev/null 2>&1; then
+            $VM "${test}.rsk" < "${test}.in" > "${test}.out" 2>&1
+            if diff -q "${test}.out" "${test}.e" > /dev/null 2>&1; then
                 echo -e "  ${GREEN}Note${NC}: Program produces correct output despite bug"
                 PASSED=$((PASSED + 1))
             else
                 echo -e "  ${RED}Note${NC}: Program output is incorrect"
                 FAILED=$((FAILED + 1))
             fi
-        elif grep -q "SEQEF" ${test}.rsk; then
+        elif grep -q "SEQEF" "${test}.rsk"; then
             echo -e "${GREEN}✓ PASS${NC}: Correctly uses SEQEF"
             PASSED=$((PASSED + 1))
         else
