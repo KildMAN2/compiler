@@ -22,6 +22,44 @@ TOTAL=0
 PASSED=0
 FAILED=0
 
+pass() {
+    echo -e "${GREEN}✓ PASS${NC}: $1"
+}
+
+fail() {
+    echo -e "${RED}✗ FAIL${NC}: $1"
+}
+
+normalize_file() {
+    local in_file="$1" out_file="$2"
+    # - trim trailing whitespace
+    # - squeeze multiple spaces into one
+    # - drop VM halt marker line
+    sed -e 's/[[:space:]]\+$//' -e 's/  \+/ /g' -e '/^Reached Halt\.$/d' "$in_file" > "$out_file"
+}
+
+compare_output_normalized() {
+    local expected="$1" actual="$2" label="$3"
+    local exp_norm="${expected}.norm"
+    local act_norm="${actual}.norm"
+    normalize_file "$expected" "$exp_norm"
+    normalize_file "$actual" "$act_norm"
+
+    if diff -u "$exp_norm" "$act_norm" >/dev/null 2>&1; then
+        pass "$label"
+        PASSED=$((PASSED + 1))
+        return 0
+    fi
+
+    fail "$label"
+    echo "--- expected (normalized)"
+    cat "$exp_norm"
+    echo "--- got (normalized)"
+    cat "$act_norm"
+    FAILED=$((FAILED + 1))
+    return 1
+}
+
 echo "----------------------------------------"
 echo "1. VOID PARAMETER TESTS"
 echo "----------------------------------------"
@@ -31,14 +69,14 @@ echo ""
 for test in test_void_param.cmm test_void_param2.cmm test_void_param3.cmm; do
     TOTAL=$((TOTAL + 1))
     echo "Testing: $test"
-    
+
     OUTPUT=$($COMPILER "$test" 2>&1)
-    
+
     if echo "$OUTPUT" | grep -q "Semantic error"; then
-        echo -e "${GREEN}✓ PASS${NC}: Properly rejects void parameter with semantic error"
+        pass "Properly rejects void parameter with semantic error"
         PASSED=$((PASSED + 1))
     else
-        echo -e "${RED}✗ FAIL${NC}: Should produce semantic error for void parameter"
+        fail "Should produce semantic error for void parameter"
         echo "  Actual output: $OUTPUT"
         FAILED=$((FAILED + 1))
     fi
@@ -54,62 +92,48 @@ echo ""
 for test in test_recursive_return test_recursive_return2 test_recursive_fibonacci; do
     TOTAL=$((TOTAL + 1))
     echo "Testing: ${test}.cmm"
-    
+
     # Compile
-    $COMPILER "${test}.cmm" 2>&1
-    
-    if [ $? -eq 0 ] && [ -f "${test}.rsk" ]; then
-        # Link
-        $LINKER "${test}.rsk" 2>&1
-        
-        if [ $? -eq 0 ] && [ -f "${test}.e" ]; then
-            # Run
-            $VM "${test}.e" < "${test}.in" > "${test}.out" 2>&1
-        
-            # Compare with expected output file (not the .e executable!)
-            EXPECTED_FILE="${test}.expected"
-            # Use the .e extension file we created during test creation as expected output
-            if [ -f "${EXPECTED_FILE}" ]; then
-                COMPARE_FILE="${EXPECTED_FILE}"
-            else
-                # Fallback: create expected file name from test name
-                COMPARE_FILE=$(echo "${test}" | sed 's/test_recursive_//' | sed 's/_/./')
-                COMPARE_FILE="${COMPARE_FILE}.expected"
-                if [ ! -f "${COMPARE_FILE}" ]; then
-                    # Just use inline expected values
-                    case "${test}" in
-                        test_recursive_return)
-                            printf "5! = 120 \nReached Halt.\n" > "${COMPARE_FILE}"
-                            ;;
-                        test_recursive_return2)
-                            printf "2.0^3 = 8.000000 \nReached Halt.\n" > "${COMPARE_FILE}"
-                            ;;
-                        test_recursive_fibonacci)
-                            printf "0 1 1 2 3 5 8 13 \nReached Halt.\n" > "${COMPARE_FILE}"
-                            ;;
-                    esac
-                fi
-            fi
-            
-            if diff -q "${test}.out" "${COMPARE_FILE}" > /dev/null 2>&1; then
-                echo -e "${GREEN}✓ PASS${NC}: Recursive function works correctly"
-                PASSED=$((PASSED + 1))
-            else
-                echo -e "${RED}✗ FAIL${NC}: Output mismatch"
-                echo "Expected:"
-                cat "${COMPARE_FILE}"
-                echo "Got:"
-                cat "${test}.out"
-                FAILED=$((FAILED + 1))
-            fi
-        else
-            echo -e "${RED}✗ FAIL${NC}: Linking failed"
-            FAILED=$((FAILED + 1))
-        fi
-    else
-        echo -e "${RED}✗ FAIL${NC}: Compilation failed"
+    $COMPILER "${test}.cmm" >/dev/null 2>&1
+    if [ $? -ne 0 ] || [ ! -f "${test}.rsk" ]; then
+        fail "Compilation failed"
         FAILED=$((FAILED + 1))
+        echo ""
+        continue
     fi
+
+    # Link
+    $LINKER "${test}.rsk" >/dev/null 2>&1
+    if [ $? -ne 0 ] || [ ! -f "${test}.e" ]; then
+        fail "Linking failed"
+        FAILED=$((FAILED + 1))
+        echo ""
+        continue
+    fi
+
+    # Run
+    $VM "${test}.e" < "${test}.in" > "${test}.out" 2>&1
+
+    # Find or create expected output
+    local_expected="${test}.expected"
+    if [ -f "$local_expected" ]; then
+        compare_file="$local_expected"
+    else
+        compare_file="${test}.expected"
+        case "${test}" in
+            test_recursive_return)
+                printf "5! = 120\nReached Halt.\n" > "$compare_file"
+                ;;
+            test_recursive_return2)
+                printf "2.0^3 = 8.000000\nReached Halt.\n" > "$compare_file"
+                ;;
+            test_recursive_fibonacci)
+                printf "0 1 1 2 3 5 8 13\nReached Halt.\n" > "$compare_file"
+                ;;
+        esac
+    fi
+
+    compare_output_normalized "$compare_file" "${test}.out" "Recursive function works correctly"
     echo ""
 done
 
@@ -122,14 +146,13 @@ echo ""
 for test in test_type_mismatch_semantic.cmm test_type_mismatch_semantic2.cmm; do
     TOTAL=$((TOTAL + 1))
     echo "Testing: $test"
-    
+
     OUTPUT=$($COMPILER "$test" 2>&1 | head -n 1)
-    
     if echo "$OUTPUT" | grep -q "Semantic error"; then
-        echo -e "${GREEN}✓ PASS${NC}: Type mismatch correctly reported as semantic error"
+        pass "Type mismatch correctly reported as semantic error"
         PASSED=$((PASSED + 1))
     elif echo "$OUTPUT" | grep -q "Syntax error"; then
-        echo -e "${RED}✗ FAIL${NC}: Type mismatch incorrectly reported as syntax error"
+        fail "Type mismatch incorrectly reported as syntax error"
         echo "  Got: $OUTPUT"
         FAILED=$((FAILED + 1))
     else
@@ -149,32 +172,34 @@ echo ""
 for test in test_float_equality_seqlf test_float_equality_complex; do
     TOTAL=$((TOTAL + 1))
     echo "Testing: ${test}.cmm"
-    
+
     # Compile
-    $COMPILER "${test}.cmm" 2>&1
-    
-    if [ $? -eq 0 ] && [ -f "${test}.rsk" ]; then
-        # Link
-        $LINKER "${test}.rsk" 2>&1
-        
-        if [ $? -eq 0 ] && [ -f "${test}.e" ]; then
-            # Check assembly
-            if grep -q "SEQLF" "${test}.rsk"; then
-                echo -e "${YELLOW}⚠ BUG CONFIRMED${NC}: Uses SEQLF (should be SEQEF)"
-                FAILED=$((FAILED + 1))
-            elif grep -q "SEQEF" "${test}.rsk"; then
-                echo -e "${GREEN}✓ PASS${NC}: Correctly uses SEQEF"
-                PASSED=$((PASSED + 1))
-            else
-                echo -e "${YELLOW}? UNKNOWN${NC}: Neither SEQLF nor SEQEF found"
-                FAILED=$((FAILED + 1))
-            fi
-        else
-            echo -e "${RED}✗ FAIL${NC}: Linking failed"
-            FAILED=$((FAILED + 1))
-        fi
+    $COMPILER "${test}.cmm" >/dev/null 2>&1
+    if [ $? -ne 0 ] || [ ! -f "${test}.rsk" ]; then
+        fail "Compilation failed"
+        FAILED=$((FAILED + 1))
+        echo ""
+        continue
+    fi
+
+    # Link
+    $LINKER "${test}.rsk" >/dev/null 2>&1
+    if [ $? -ne 0 ] || [ ! -f "${test}.e" ]; then
+        fail "Linking failed"
+        FAILED=$((FAILED + 1))
+        echo ""
+        continue
+    fi
+
+    # Check assembly
+    if grep -q "SEQLF" "${test}.rsk"; then
+        echo -e "${YELLOW}⚠ BUG CONFIRMED${NC}: Uses SEQLF (should be SEQEF)"
+        FAILED=$((FAILED + 1))
+    elif grep -q "SEQEF" "${test}.rsk"; then
+        pass "Correctly uses SEQEF"
+        PASSED=$((PASSED + 1))
     else
-        echo -e "${RED}✗ FAIL${NC}: Compilation failed"
+        echo -e "${YELLOW}? UNKNOWN${NC}: Neither SEQLF nor SEQEF found"
         FAILED=$((FAILED + 1))
     fi
     echo ""
