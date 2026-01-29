@@ -923,8 +923,7 @@ expression:
         // Restore SP to saved base
         emitCode("COPYI I2 I3");
 
-        // Restore integer registers (skip I2 and I3 for now)
-        for (int r = 0; r < savedIntCount; r+, I3, and the one holding return value)
+        // Restore integer registers (skip I2 and I3)
         for (int r = 0; r < savedIntCount; r++) {
             if (r == 2 || r == 3) {
                 continue;
@@ -933,7 +932,7 @@ expression:
             ss << "LOADI I" << r << " I2 " << (r * 4);
             emitCode(ss.str());
         }
-        // Restore float registers (skip F2 and the one holding return value)
+        // Restore float registers (skip F2)
         emitCode("CITOF F2 I2");
         for (int r = 0; r < savedFloatCount; r++) {
             if (r == 2) {
