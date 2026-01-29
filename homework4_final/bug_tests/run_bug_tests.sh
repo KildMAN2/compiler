@@ -79,13 +79,16 @@ for test in test_recursive_return test_recursive_return2 test_recursive_fibonacc
                     # Just use inline expected values
                     case "${test}" in
                         test_recursive_return)
-                            echo "5! = 120" > "${COMPARE_FILE}"
+                            echo "5! = 120 " > "${COMPARE_FILE}"
+                            echo "Reached Halt." >> "${COMPARE_FILE}"
                             ;;
                         test_recursive_return2)
-                            echo "2.0^3 = 8.000000" > "${COMPARE_FILE}"
+                            echo "2.0^3 = 8.000000 " > "${COMPARE_FILE}"
+                            echo "Reached Halt." >> "${COMPARE_FILE}"
                             ;;
                         test_recursive_fibonacci)
                             echo "0 1 1 2 3 5 8 13 " > "${COMPARE_FILE}"
+                            echo "Reached Halt." >> "${COMPARE_FILE}"
                             ;;
                     esac
                 fi
